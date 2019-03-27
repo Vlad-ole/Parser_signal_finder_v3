@@ -1,0 +1,4 @@
+Board_Name v1740
+HORIZ_INTERVAL(ns_per_point) 16
+WAVE_ARRAY_COUNT(number_of_points_in_one_event) 9999
+N_event_per_file 1000
