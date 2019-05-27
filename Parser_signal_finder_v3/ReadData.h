@@ -35,11 +35,11 @@ class ReadData
 public:
 	ReadData();
 	virtual ~ReadData() = 0;
-	virtual std::vector< std::vector<double> >& GetDataDouble();
+	virtual std::vector< std::vector< std::vector<double> > >& GetDataDouble();
 	virtual std::vector<double>& GetTimeArray();
 //protected:
-	std::vector< std::vector<short int> > data;//old variant
-	std::vector< std::vector<double> > data_double;//several events in one run; many data points
+	std::vector< std::vector<short int> > data;
+	std::vector< std::vector< std::vector<double> > > data_ev_ch_points;
 	std::vector<double> time;
 };
 

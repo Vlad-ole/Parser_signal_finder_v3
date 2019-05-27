@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{9734DD41-D98C-4A0A-AC2D-766962BF465D}</ProjectGuid>
+    <ProjectGuid>{858C54E4-7ACB-4CB0-BBAF-44DF38C923BC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Parser_signal_finder_v3</RootNamespace>
+    <RootNamespace>ReadAndAnalyseTree</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -41,15 +41,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>D:\git_repositories\Parser_signal_finder_v3\Parser_signal_finder_v3;C:\root_v5.34.36\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\root_v5.34.36\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\root_v5.34.36\include;$(IncludePath)</IncludePath>
+    <SourcePath>D:\git_repositories\Parser_signal_finder_v3\Parser_signal_finder_v3;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>D:\git_repositories\Parser_signal_finder_v3\Parser_signal_finder_v3;C:\root_v5.34.36\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\root_v5.34.36\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\root_v5.34.36\include;$(IncludePath)</IncludePath>
+    <SourcePath>D:\git_repositories\Parser_signal_finder_v3\Parser_signal_finder_v3;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -57,10 +57,9 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_NDEBUG;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_NDEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <ForcedIncludeFiles>w32pragma.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -76,10 +75,9 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_NDEBUG;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_NDEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <ForcedIncludeFiles>w32pragma.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -90,23 +88,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Calc.cpp" />
+    <ClCompile Include="..\EventMainCh.cpp" />
+    <ClCompile Include="..\mainDic.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="mainDic.cpp" />
-    <ClCompile Include="ReadData.cpp" />
-    <ClCompile Include="ReadData_CAEN.cpp" />
-    <ClCompile Include="RunDescription.cpp" />
-    <ClCompile Include="EventMainCh.cpp" />
-    <ClCompile Include="TypeConvertion.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Calc.h" />
-    <ClInclude Include="mainDic.h" />
-    <ClInclude Include="ReadData.h" />
-    <ClInclude Include="ReadData_CAEN.h" />
-    <ClInclude Include="RunDescription.h" />
-    <ClInclude Include="EventMainCh.h" />
-    <ClInclude Include="TypeConvertion.h" />
+    <ClInclude Include="..\EventMainCh.h" />
+    <ClInclude Include="..\mainDic.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

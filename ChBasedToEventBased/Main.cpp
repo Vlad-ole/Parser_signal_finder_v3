@@ -15,15 +15,19 @@ int main(int argc, char **argv)
 {
 	
 	//Read DAQ_info.txt
-	const unsigned short ns_per_point = 16;
-	const unsigned int points_per_event = 9999;
-	const unsigned short N_events_per_file = 1000;
+	const unsigned short ns_per_point = 4/*16*/;
+	const unsigned int points_per_event = 40000/*9999*/;
+	const unsigned short N_events_per_file_input = 1000;
+	const unsigned short N_events_per_file_output = 100;
 	//vector<unsigned short> ch_list= {0,1,2,3,4,5,6,7,32,33,34,35,36,37,38,39,40,41,42,43,44,48,49,50,51,52,53,54,55,56,57,58,59};
 	//vector<unsigned short> ch_list = {0, 1, 2, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59};
-	vector<unsigned short> ch_list = { 0, 1, 2};
+	vector<unsigned short> ch_list = { 1, 2, 3, 4};
 	
-	unsigned int start_run_number = 323;
-	unsigned int stop_run_number = 324;
+	unsigned int start_run_number = 1;
+	unsigned int stop_run_number = 3;
+
+	string common_path_input = "E:\\190521\\190521_caen_raw\\f1\\";
+	string common_path_out = "E:\\190521\\190521_caen_raw\\f1_mod\\";
 
 	
 	unsigned int file_counter = 0;
@@ -39,21 +43,21 @@ int main(int argc, char **argv)
 		{
 			cout << "\t \t ch_" << ch_list[ch] << endl;
 			
-			data_ch_event_point[ch].resize(N_events_per_file);
+			data_ch_event_point[ch].resize(N_events_per_file_input);
 			
-			string common_path = "D:\\Data_work\\Reco_test\\171123_caen_raw\\x_ray_20kV_PMT550_0dB_coll_2mm\\";
+			
 			ostringstream file_name_raw_in_osst;
-			file_name_raw_in_osst << common_path << "run_" << run_number << "__ch_" << ch_list[ch] << ".dat";
+			file_name_raw_in_osst << common_path_input << "run_" << run_number << "__ch_" << ch_list[ch] << ".dat";
 			string file_name_raw_in = file_name_raw_in_osst.str();
 
-			ReadData_CAEN_v2 rdt(file_name_raw_in, N_events_per_file, points_per_event);
+			ReadData_CAEN_v2 rdt(file_name_raw_in, N_events_per_file_input, points_per_event);
 			rdt.Read();
 
 			std::vector< std::vector<short int> > data_ev_point = rdt.GetDataEvPoint();
 
 			
 			
-			for (int ev = 0; ev < N_events_per_file; ev++)
+			for (int ev = 0; ev < N_events_per_file_input; ev++)
 			{
 				data_ch_event_point[ch][ev].resize(points_per_event);
 				
@@ -67,15 +71,20 @@ int main(int argc, char **argv)
 			//data_ch_event[ch][]
 		}
 
-		cout << "\t Write file" << endl;
-		file_counter++;
-		string common_path_out = "D:\\Data_work\\Reco_test\\171123_caen_raw\\x_ray_20kV_PMT550_0dB_coll_2mm_mod\\";
+		
+				
+		
+		
+		/*int event_from = 0;
+		int event_to = N_events_per_file_output;
 		ostringstream file_name_raw_out_osst;
 		file_name_raw_out_osst << common_path_out << "file_" << file_counter << ".dat";
 		string file_name_raw_out = file_name_raw_out_osst.str();
-		FILE *f_out = fopen(file_name_raw_out.c_str(), "wb");
-		unsigned int file_size = N_events_per_file * ch_list.size() * points_per_event;
-		unsigned int file_block_size = ch_list.size() * points_per_event;
+		FILE *f_out = fopen(file_name_raw_out.c_str(), "wb");*/
+
+
+		//unsigned int file_size = N_events_per_file * ch_list.size() * points_per_event;
+		//unsigned int file_block_size = ch_list.size() * points_per_event;
 		//ofstream f_out(file_name_raw_out);
 		
 		//v1
@@ -116,6 +125,14 @@ int main(int argc, char **argv)
 		//	}
 		//}
 
+		//v3
+		/*int event_from = 0;
+		int event_to = N_events_per_file_output;
+		ostringstream file_name_raw_out_osst;
+		file_name_raw_out_osst << common_path_out << "file_" << file_counter << ".dat";
+		string file_name_raw_out = file_name_raw_out_osst.str();
+		FILE *f_out = fopen(file_name_raw_out.c_str(), "wb");
+
 		for (int ev = 0; ev < N_events_per_file; ev++)
 		{
 			if (ev % 100 == 0)
@@ -124,11 +141,53 @@ int main(int argc, char **argv)
 			{
 				fwrite(&data_ch_event_point[ch][ev][0], sizeof(vector<short int>::value_type), points_per_event, f_out);
 			}
-		}	
-		
-		
-		fclose(f_out);
+		}		
+		fclose(f_out);*/
 
+		//v4
+		cout << "\t Write file" << endl;		
+		FILE *f_out = NULL; 
+
+		for (int ev = 0; ev < N_events_per_file_input; ev++)
+		{
+			if (ev % N_events_per_file_output == 0)
+			{
+				cout << "\t \t ev_" << ev << endl;
+				int event_from = ev + file_counter * N_events_per_file_input;
+				int event_to = ev + N_events_per_file_output - 1 + file_counter * N_events_per_file_input;
+				ostringstream file_name_raw_out_osst;
+				file_name_raw_out_osst << common_path_out << std::setfill('0') << std::setw(6) << event_from << "__" << std::setfill('0') << std::setw(6) << event_to << ".dat";
+				string file_name_raw_out = file_name_raw_out_osst.str();
+				f_out = fopen(file_name_raw_out.c_str(), "wb");
+
+				if (f_out == NULL)
+				{
+					cout << "can't open this file: " << file_name_raw_out.c_str() << endl;
+					system("pause");
+					//fclose(f);
+					exit(1);
+				}
+
+			}
+			for (int ch = 0; ch < ch_list.size(); ch++)
+			{
+				if (f_out == NULL)
+				{
+					cout << "can't open the file" << endl;
+					system("pause");
+					exit(1);
+				}
+				fwrite(&data_ch_event_point[ch][ev][0], sizeof(vector<short int>::value_type), points_per_event, f_out);
+			}
+			if ( (ev + 1) % N_events_per_file_output == 0)
+			{
+				fclose(f_out);
+			}			
+		}
+		
+
+
+		file_counter++;
 	}
 
 	cout << "all is ok" << endl;

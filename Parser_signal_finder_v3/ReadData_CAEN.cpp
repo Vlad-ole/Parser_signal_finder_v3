@@ -5,21 +5,26 @@ using namespace std;
 
 
 
-ReadData_CAEN::ReadData_CAEN(string file_name_raw, int N_events_per_file, int points_per_event)
+ReadData_CAEN::ReadData_CAEN(string file_name_raw, unsigned int N_events_per_file, unsigned int N_ch, unsigned int points_per_event_per_ch)
 {
 	//vectors initialisation
-	data_double.resize(N_events_per_file);
-	for (int temp_event_id = 0; temp_event_id < N_events_per_file; temp_event_id++)
-	{
-		data_double[temp_event_id].resize(points_per_event);
+	data_ev_ch_points.resize(N_events_per_file);
+	
+	for (int ev = 0; ev < N_events_per_file; ev++)
+	{ 
+		data_ev_ch_points[ev].resize(N_ch);
+		for (int ch = 0; ch < N_ch; ch++)
+		{
+			data_ev_ch_points[ev][ch].resize(points_per_event_per_ch);
+		}
 	}
 		
 
-	const int run_size = N_events_per_file * points_per_event;
+	const int run_size = N_events_per_file * N_ch * points_per_event_per_ch;
+	
 
-
-
-		vector<short int> data_tmp;
+		vector<short int> data_tmp;		
+		//data_tmp.resize(1000*1000*200);
 		data_tmp.resize(run_size);
 	
 		//I do not why, but c++ style of reading gives unexpected result, i.e. incorrect reading
@@ -34,23 +39,25 @@ ReadData_CAEN::ReadData_CAEN(string file_name_raw, int N_events_per_file, int po
 			//fclose(f);
 			exit(1);
 		}
+		else
+		{
+			cout << "File was opened correctly: " << file_name_raw.c_str() << endl;
+		}
 
 		fread(&data_tmp[0], sizeof(vector<short int>::value_type), run_size, f);
 		fclose(f);
 
 		//y points to volts
-		for (int temp_event_id = 0; temp_event_id < N_events_per_file; temp_event_id++)
+		for (int ev = 0; ev < N_events_per_file; ev++)
 		{
-			for (int j = 0; j < points_per_event; j++)
+			for (int ch = 0; ch < N_ch; ch++)
 			{
-				const int abs_point = j + temp_event_id * points_per_event;
-				data_double[temp_event_id][j] = ((2 / 4095.0) * data_tmp[abs_point] - 1) * 1000;
-				//cout << i << " " << j << " " << data[i][j] << " " <<  data_double[i][j] << endl;
-				//if (ch == 0)
-				//{
-				//	f_out << j << "\t" << temp_event_id << "\t" << data_tmp[abs_point] << "\t" << data_double[temp_event_id][ch][j] << endl;
-				//}
-			}
+				for (int point = 0; point < points_per_event_per_ch; point++)
+				{
+					const int abs_point = point + ch * points_per_event_per_ch + ev * points_per_event_per_ch * N_ch;
+					data_ev_ch_points[ev][ch][point] = ((2 / 4095.0) * data_tmp[abs_point] - 1) * 1000;
+				}
+			}			
 		}		
 
 	//}

@@ -4,9 +4,9 @@ ReadData::ReadData()
 {
 }
 
-std::vector< std::vector<double> >& ReadData::GetDataDouble()
+std::vector< std::vector< std::vector<double> > >& ReadData::GetDataDouble()
 {
-	return data_double;
+	return data_ev_ch_points;
 }
 
 std::vector<double>& ReadData::GetTimeArray()

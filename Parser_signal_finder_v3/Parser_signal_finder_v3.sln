@@ -7,6 +7,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Parser_signal_finder_v3", "
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChBasedToEventBased", "..\ChBasedToEventBased\ChBasedToEventBased.vcxproj", "{FD994F79-4CDB-42FD-800A-BE450F259E51}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReadAndAnalyseTree", "ReadAndAnalyseTree\ReadAndAnalyseTree.vcxproj", "{858C54E4-7ACB-4CB0-BBAF-44DF38C923BC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_1", "..\test_1\test_1.vcxproj", "{3E7247E9-5A27-48EA-A204-5F9062700846}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -21,6 +25,14 @@ Global
 		{FD994F79-4CDB-42FD-800A-BE450F259E51}.Debug|Win32.Build.0 = Debug|Win32
 		{FD994F79-4CDB-42FD-800A-BE450F259E51}.Release|Win32.ActiveCfg = Release|Win32
 		{FD994F79-4CDB-42FD-800A-BE450F259E51}.Release|Win32.Build.0 = Release|Win32
+		{858C54E4-7ACB-4CB0-BBAF-44DF38C923BC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{858C54E4-7ACB-4CB0-BBAF-44DF38C923BC}.Debug|Win32.Build.0 = Debug|Win32
+		{858C54E4-7ACB-4CB0-BBAF-44DF38C923BC}.Release|Win32.ActiveCfg = Release|Win32
+		{858C54E4-7ACB-4CB0-BBAF-44DF38C923BC}.Release|Win32.Build.0 = Release|Win32
+		{3E7247E9-5A27-48EA-A204-5F9062700846}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3E7247E9-5A27-48EA-A204-5F9062700846}.Debug|Win32.Build.0 = Debug|Win32
+		{3E7247E9-5A27-48EA-A204-5F9062700846}.Release|Win32.ActiveCfg = Release|Win32
+		{3E7247E9-5A27-48EA-A204-5F9062700846}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
