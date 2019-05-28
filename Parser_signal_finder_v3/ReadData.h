@@ -5,29 +5,29 @@
 #include <fstream>
 #include <sstream>
 
-struct path_info
-{
-	std::string path_name;
-	int run_number;
-	int events_per_file;
-	//path_info();
-};
-
-
-struct ch_info
-{
-	int id;
-	double VERTICAL_OFFSET;
-	double VERTICAL_GAIN;
-};
-
-struct comm_info
-{
-	int write_type;
-	double HORIZ_INTERVAL;
-	double time_offset;
-	int WAVE_ARRAY_COUNT;
-};
+//struct path_info
+//{
+//	std::string path_name;
+//	int run_number;
+//	int events_per_file;
+//	//path_info();
+//};
+//
+//
+//struct ch_info
+//{
+//	int id;
+//	double VERTICAL_OFFSET;
+//	double VERTICAL_GAIN;
+//};
+//
+//struct comm_info
+//{
+//	int write_type;
+//	double HORIZ_INTERVAL;
+//	double time_offset;
+//	int WAVE_ARRAY_COUNT;
+//};
 
 
 class ReadData

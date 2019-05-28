@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 
 	//string file_name_raw("D:\\Data_work\\Reco_test\\171123_caen_raw\\x_ray_20kV_PMT550_0dB_coll_2mm\\run_323__ch_0.dat");
 
-	//some code for prorerly root cern operation
+	//some code for proper root cern operation
 	TApplication theApp("theApp", &argc, argv);//let's add some magic! https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=22972
 	gROOT->SetBatch(kTRUE);
 
@@ -70,24 +70,26 @@ int main(int argc, char **argv)
 
 	TTree tree_main("TreeMain", "TreeMain");
 
-	EventMainCh *event = new EventMainCh(ch_list.size());
+	EventMainCh *event = new EventMainCh(/*ch_list.size()*/);
 
 	tree_main.Branch("EventMainCh", &event, 16000, 0);
 
 	//analyze and fill tree
 	for (int ev = 0; ev < N_events_per_file; ev++)
 	{
+		event->event_number = ev;
+		
 		for (int ch = 0; ch < ch_list.size(); ch++)
 		{
-			Calc calc(rdt.GetDataDouble()[ev][ch], ns_per_point, is_positive_polarity_type_list[ch]);
-
-			event->event_number = ev;
-			event->ymin[ch] = calc.GetYmin();
-			event->ymax[ch] = calc.GetYmax();
-
-			tree_main.Fill();
-			event->Clear();
+			Calc calc(rdt.GetDataDouble()[ev][ch], ns_per_point, is_positive_polarity_type_list[ch]);			
+			event->ymin.push_back( calc.GetYmin() );
+			event->ymax.push_back( calc.GetYmax() );
+			event->baseline.push_back( calc.GetBaselineMean(0, 30000) );
 		}
+
+		tree_main.Fill();
+		event->Clear();
+
 	}
 
 	file_for_tree.Write();

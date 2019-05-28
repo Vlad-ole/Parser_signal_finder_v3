@@ -7,6 +7,10 @@
 #include <iomanip>
 #include <fstream>
 
+//my
+#include "CalcDer.h" 
+
+class CalcDer;
 
 class Calc
 {
@@ -20,11 +24,13 @@ public:
 	//double ymin;
 	//double ymax;
 
+	double GetBaselineMean(double from_ns, double to_ns);
 	double GetYmin();
 	double GetYmax();
-
+	std::vector<double> &GetFilteredWaveformGolay(const int param_n_points, const int order_of_derivative);
+	
 private:
 	std::vector<double> &data_points;
-
+	CalcDer *calc_der;
 };
 

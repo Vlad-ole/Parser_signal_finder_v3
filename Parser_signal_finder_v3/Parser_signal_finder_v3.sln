@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReadAndAnalyseTree", "ReadA
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_1", "..\test_1\test_1.vcxproj", "{3E7247E9-5A27-48EA-A204-5F9062700846}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EventViewer", "..\EventViewer\EventViewer.vcxproj", "{0174A81B-00EA-4BBD-829E-FD63288481D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -33,6 +35,10 @@ Global
 		{3E7247E9-5A27-48EA-A204-5F9062700846}.Debug|Win32.Build.0 = Debug|Win32
 		{3E7247E9-5A27-48EA-A204-5F9062700846}.Release|Win32.ActiveCfg = Release|Win32
 		{3E7247E9-5A27-48EA-A204-5F9062700846}.Release|Win32.Build.0 = Release|Win32
+		{0174A81B-00EA-4BBD-829E-FD63288481D6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0174A81B-00EA-4BBD-829E-FD63288481D6}.Debug|Win32.Build.0 = Debug|Win32
+		{0174A81B-00EA-4BBD-829E-FD63288481D6}.Release|Win32.ActiveCfg = Release|Win32
+		{0174A81B-00EA-4BBD-829E-FD63288481D6}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
