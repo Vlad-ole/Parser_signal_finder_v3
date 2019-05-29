@@ -55,7 +55,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ForcedIncludeFiles>w32pragma.h</ForcedIncludeFiles>
@@ -90,6 +90,7 @@
   <ItemGroup>
     <ClCompile Include="..\Parser_signal_finder_v3\Calc.cpp" />
     <ClCompile Include="..\Parser_signal_finder_v3\CalcDer.cpp" />
+    <ClCompile Include="..\Parser_signal_finder_v3\PeakFinder.cpp" />
     <ClCompile Include="..\Parser_signal_finder_v3\ReadData.cpp" />
     <ClCompile Include="..\Parser_signal_finder_v3\ReadData_CAEN.cpp" />
     <ClCompile Include="..\Parser_signal_finder_v3\TypeConvertion.cpp" />
@@ -98,6 +99,7 @@
   <ItemGroup>
     <ClInclude Include="..\Parser_signal_finder_v3\Calc.h" />
     <ClInclude Include="..\Parser_signal_finder_v3\CalcDer.h" />
+    <ClInclude Include="..\Parser_signal_finder_v3\PeakFinder.h" />
     <ClInclude Include="..\Parser_signal_finder_v3\ReadData.h" />
     <ClInclude Include="..\Parser_signal_finder_v3\ReadData_CAEN.h" />
     <ClInclude Include="..\Parser_signal_finder_v3\TypeConvertion.h" />

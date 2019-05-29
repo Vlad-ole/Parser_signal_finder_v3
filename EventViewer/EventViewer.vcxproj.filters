@@ -33,6 +33,9 @@
     <ClCompile Include="..\Parser_signal_finder_v3\CalcDer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Parser_signal_finder_v3\PeakFinder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Parser_signal_finder_v3\ReadData.h">
@@ -48,6 +51,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Parser_signal_finder_v3\CalcDer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parser_signal_finder_v3\PeakFinder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

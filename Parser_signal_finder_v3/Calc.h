@@ -7,8 +7,10 @@
 #include <iomanip>
 #include <fstream>
 
+
 //my
 #include "CalcDer.h" 
+#include "PeakFinder.h"
 
 class CalcDer;
 
@@ -21,16 +23,20 @@ public:
 	const bool is_positive_polarity;
 	const double ns_per_point;
 
-	//double ymin;
-	//double ymax;
+	void CalcBaselineMeanSigma(double from_ns, double to_ns);
+	void SubtractBaseline();
 
-	double GetBaselineMean(double from_ns, double to_ns);
+	double GetBaselineMean();
+	double GetBaselineSigma();
 	double GetYmin();
 	double GetYmax();
 	std::vector<double> &GetFilteredWaveformGolay(const int param_n_points, const int order_of_derivative);
 	
+
 private:
 	std::vector<double> &data_points;
 	CalcDer *calc_der;
+	double baseline_mean;
+	double baseline_sigma;
 };
 
