@@ -24,12 +24,18 @@
     <ClCompile Include="..\EventMainCh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Peaks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\mainDic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\EventMainCh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Peaks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

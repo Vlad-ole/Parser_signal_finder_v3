@@ -91,8 +91,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Calc.cpp" />
+    <ClCompile Include="CalcDer.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="mainDic.cpp" />
+    <ClCompile Include="PeakFinder.cpp" />
+    <ClCompile Include="Peaks.cpp" />
     <ClCompile Include="ReadData.cpp" />
     <ClCompile Include="ReadData_CAEN.cpp" />
     <ClCompile Include="RunDescription.cpp" />
@@ -101,7 +104,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Calc.h" />
+    <ClInclude Include="CalcDer.h" />
     <ClInclude Include="mainDic.h" />
+    <ClInclude Include="PeakFinder.h" />
+    <ClInclude Include="Peaks.h" />
     <ClInclude Include="ReadData.h" />
     <ClInclude Include="ReadData_CAEN.h" />
     <ClInclude Include="RunDescription.h" />

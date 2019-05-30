@@ -1,2 +1,2 @@
-rootcint -f mainDic.cpp -c  EventMainCh.h linkdef.h
+rootcint -f mainDic.cpp -c Peaks.h EventMainCh.h linkdef.h
 pause

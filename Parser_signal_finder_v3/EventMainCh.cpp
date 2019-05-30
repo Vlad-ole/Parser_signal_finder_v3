@@ -4,9 +4,7 @@ using namespace std;
 
 ClassImp(EventMainCh)
 
-EventMainCh::EventMainCh(/*unsigned int number_of_channels*/) /*: 
-ymin(number_of_channels, 0.), ymax(number_of_channels, 0.), 
-peaks_number(number_of_channels, 0)*//*, peak_position_amp(number_of_channels)*/
+EventMainCh::EventMainCh() : peaks(NULL)
 {
 	event_number = 0.;
 }
@@ -21,8 +19,11 @@ void EventMainCh::Clear()
 	ymin.clear();
 	ymax.clear();
 	baseline.clear();
-	peaks_number.clear();
-	
+
+	for (size_t i = 0; i<peaks.size(); i++)
+		delete peaks.at(i);
+	peaks.clear();
+
 
 	//for (int i = 0; i < peak_position_amp.size(); i++)
 	//{

@@ -70,19 +70,52 @@ int main(int argc, char *argv[])
 	for (unsigned int ev = 0; ev < tree->GetEntries(); ev++)
 	{
 		//read branch "EventMainCh"only
+		cout << "ev = " << ev << endl;
 		branch->GetEntry(ev);
+
+		vector<Peaks*> peaks = event->peaks;
+		cout << "\t" << "peaks.size() = " << peaks.size() << endl;
 
 		//ch loop
 		for (unsigned int ch = 0; ch < ch_list.size(); ch++)
 		{
-			if (ch_list[ch] == 1)//chose channel "1"
-			{
-				hist_ymin->Fill(event->ymin[ch]);
-				hist_ymax->Fill(event->ymax[ch]);
-				hist_baseline_mean->Fill(event->baseline[ch]);
+			cout << "\t" << "ch_id = " << ch_list[ch] << endl;
 
-				cout << "ev = " << ev << "; event->baseline[" << ch << "] = " << event->baseline[ch] << endl;
+
+			vector< pair<int, int> > pair_vec = peaks[ch]->peak_start_stop_poits;
+			vector<double> local_baseline = peaks[ch]->local_baseline_v;
+			vector<double> avr_peak_time = peaks[ch]->avr_peak_time;
+			vector<double> peak_time = peaks[ch]->peak_time;
+			vector<double> peak_area = peaks[ch]->peak_area;
+
+			//cout peak characterictics
+			cout << "\t " << "N_peaks = " << pair_vec.size() << endl;
+			//cout << "\t " << "N_peaks = " << pair_vec.size() << endl;
+			for (int j = 0; j < pair_vec.size(); j++)
+			{
+				cout << "\t \t" << "peak number = " << j << endl;
+				cout << "\t \t" << "local_baseline = " << local_baseline[j] << endl;
+				cout << "\t \t" << "avr_peak_time = " << avr_peak_time[j] << endl;
+				cout << "\t \t" << "peak_time = " << peak_time[j] << endl;
+				cout << "\t \t" << "peak_area = " << peak_area[j] << endl;
+				cout << endl;
 			}
+
+
+			//if (ch_list[ch] == 1)//chose channel "1"
+			//{
+			//	//hist_ymin->Fill(event->ymin[ch]);
+			//	//hist_ymax->Fill(event->ymax[ch]);
+			//	//hist_baseline_mean->Fill(event->baseline[ch]);
+
+			//	////cout << "ev = " << ev << "; event->baseline[" << ch << "] = " << event->baseline[ch] << endl;
+			//}
+
+			//
+			//if (ev == 0 && peaks.size() > 0)
+			//{
+
+			//}
 			
 		}
 		
@@ -90,7 +123,7 @@ int main(int argc, char *argv[])
 		event->Clear();
 	}
 
-	hist_baseline_mean->Draw();
+	//hist_baseline_mean->Draw();
 
 	cout << endl;
 	cout << "all is ok" << endl;

@@ -1,9 +1,15 @@
 #pragma once
 
-#include "TObject.h"
-
+//c++
 #include <vector>
 #include <utility>      // std::pair, std::make_pair
+
+//root cern
+#include "TObject.h"
+
+//my
+#include "Peaks.h"
+
 
 class EventMainCh : public TObject
 {
@@ -17,11 +23,12 @@ public:
 	std::vector<double> ymin;
 	std::vector<double> ymax;
 	std::vector<double> baseline;
-	std::vector<int> peaks_number;
+	std::vector<Peaks*> peaks;
 
+	//std::vector< std::vector< std::pair<double, double> > > peak_position_amp;
 	//std::vector< std::vector< std::pair<double, double> > > peak_position_amp;
 
 
-	ClassDef(EventMainCh, 6);
+	ClassDef(EventMainCh, 8);
 };
 
