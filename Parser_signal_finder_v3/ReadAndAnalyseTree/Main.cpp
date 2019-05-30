@@ -16,6 +16,7 @@
 #include "TThread.h"
 #include "TSystem.h"
 #include "TH1F.h"
+#include "TCanvas.h"
 
 //my
 #include "EventMainCh.h"
@@ -61,6 +62,21 @@ int main(int argc, char *argv[])
 	branch->SetAddress(&event);
 	//tree->SetBranchAddress("EventMainCh", &event);
 
+	//define hists
+	vector<TH1F*> hist_ymin_v(ch_list.size(), NULL);
+	vector<TH1F*> hist_ymax_v(ch_list.size(), NULL);
+	for (int ch = 0; ch < ch_list.size(); ch++)
+	{
+		ostringstream hist_ymin_name;
+		ostringstream hist_ymax_name;
+		
+		hist_ymin_name << "hist_ymin_ch_" << ch_list[ch];
+		hist_ymax_name << "hist_ymax_ch_" << ch_list[ch];
+
+		hist_ymin_v[ch] = new TH1F(hist_ymin_name.str().c_str(), hist_ymin_name.str().c_str(), 1000, -1100, 1100);
+		hist_ymax_v[ch] = new TH1F(hist_ymax_name.str().c_str(), hist_ymax_name.str().c_str(), 1000, -1100, 1100);
+	}
+
 	TH1F *hist_ymin = new TH1F("hist_ymin", "hist_ymin", 1000, -1000, 1000);
 	TH1F *hist_ymax = new TH1F("hist_ymax", "hist_ymax", 1000, -1000, 1000);
 	TH1F *hist_baseline_mean = new TH1F("hist_baseline_mean", "hist_baseline_mean", 1000, -1000, 1000);
@@ -70,36 +86,40 @@ int main(int argc, char *argv[])
 	for (unsigned int ev = 0; ev < tree->GetEntries(); ev++)
 	{
 		//read branch "EventMainCh"only
-		cout << "ev = " << ev << endl;
+		if (ev % 1000 == 0)
+			cout << "ev = " << ev << endl;
+		
 		branch->GetEntry(ev);
 
 		vector<Peaks*> peaks = event->peaks;
-		cout << "\t" << "peaks.size() = " << peaks.size() << endl;
+		//cout << "\t" << "peaks.size() = " << peaks.size() << endl;
 
 		//ch loop
 		for (unsigned int ch = 0; ch < ch_list.size(); ch++)
 		{
-			cout << "\t" << "ch_id = " << ch_list[ch] << endl;
+			//cout << "\t" << "ch_id = " << ch_list[ch] << endl;
 
+			hist_ymin_v[ch]->Fill(event->ymin[ch]);
+			hist_ymax_v[ch]->Fill(event->ymax[ch]);
 
-			vector< pair<int, int> > pair_vec = peaks[ch]->peak_start_stop_poits;
-			vector<double> local_baseline = peaks[ch]->local_baseline_v;
-			vector<double> avr_peak_time = peaks[ch]->avr_peak_time;
-			vector<double> peak_time = peaks[ch]->peak_time;
-			vector<double> peak_area = peaks[ch]->peak_area;
-
-			//cout peak characterictics
-			cout << "\t " << "N_peaks = " << pair_vec.size() << endl;
+			//test
+			//vector< pair<int, int> > pair_vec = peaks[ch]->peak_start_stop_poits;
+			//vector<double> local_baseline = peaks[ch]->local_baseline_v;
+			//vector<double> avr_peak_time = peaks[ch]->avr_peak_time;
+			//vector<double> peak_time = peaks[ch]->peak_time;
+			//vector<double> peak_area = peaks[ch]->peak_area;
+			////cout peak characterictics
 			//cout << "\t " << "N_peaks = " << pair_vec.size() << endl;
-			for (int j = 0; j < pair_vec.size(); j++)
-			{
-				cout << "\t \t" << "peak number = " << j << endl;
-				cout << "\t \t" << "local_baseline = " << local_baseline[j] << endl;
-				cout << "\t \t" << "avr_peak_time = " << avr_peak_time[j] << endl;
-				cout << "\t \t" << "peak_time = " << peak_time[j] << endl;
-				cout << "\t \t" << "peak_area = " << peak_area[j] << endl;
-				cout << endl;
-			}
+			////cout << "\t " << "N_peaks = " << pair_vec.size() << endl;
+			//for (int j = 0; j < pair_vec.size(); j++)
+			//{
+			//	cout << "\t \t" << "peak number = " << j << endl;
+			//	cout << "\t \t" << "local_baseline = " << local_baseline[j] << endl;
+			//	cout << "\t \t" << "avr_peak_time = " << avr_peak_time[j] << endl;
+			//	cout << "\t \t" << "peak_time = " << peak_time[j] << endl;
+			//	cout << "\t \t" << "peak_area = " << peak_area[j] << endl;
+			//	cout << endl;
+			//}
 
 
 			//if (ch_list[ch] == 1)//chose channel "1"
@@ -123,7 +143,31 @@ int main(int argc, char *argv[])
 		event->Clear();
 	}
 
-	//hist_baseline_mean->Draw();
+	//draw
+
+	//y_min
+	/*TCanvas *c1 = new TCanvas("c1", "ymin");
+	c1->Divide(2, 2, 0.01, 0.01);
+	c1->cd(1);
+	hist_ymin_v[0]->Draw();
+	c1->cd(2);
+	hist_ymin_v[1]->Draw();
+	c1->cd(3);
+	hist_ymin_v[2]->Draw();
+	c1->cd(4);
+	hist_ymin_v[3]->Draw();*/
+
+	//y_max
+	TCanvas *c2 = new TCanvas("c2", "ymax");
+	c2->Divide(2, 2, 0.01, 0.01);
+	c2->cd(1);
+	hist_ymax_v[0]->Draw();
+	c2->cd(2);
+	hist_ymax_v[1]->Draw();
+	c2->cd(3);
+	hist_ymax_v[2]->Draw();
+	c2->cd(4);
+	hist_ymax_v[3]->Draw();
 
 	cout << endl;
 	cout << "all is ok" << endl;

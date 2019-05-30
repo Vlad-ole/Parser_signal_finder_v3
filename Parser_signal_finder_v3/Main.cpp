@@ -31,6 +31,9 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+	TStopwatch timer_total;
+	timer_total.Start();
+	
 	cout << "argc = " << argc << endl;
 	for (int i = 0; i < argc; i++)
 	{
@@ -62,58 +65,71 @@ int main(int argc, char **argv)
 	vector<unsigned short> ch_list = {1, 2, 3, 4};
 	vector<bool> is_positive_polarity_type_list = { true, true, true, true };
 
-	//Read one .dat file
-	//ReadData_CAEN rdt(PathInfo, ch_list, str_comm);
-	ReadData_CAEN rdt(file_name_raw, N_events_per_file, ch_list.size(), points_per_event_per_ch);
+	//const unsigned int n_event_to_process = 2;
+	const unsigned int number_of_input_files = 1;
+	string path_to_folder = "E:\\190521\\190521_caen_raw\\f1_mod\\";
 
+	//create tree
 	ostringstream file_for_tree_name;
 	file_for_tree_name << "E:\\190521\\190521_caen_trees\\file_1" << ".root";
 	TFile file_for_tree(file_for_tree_name.str().c_str(), "RECREATE");
-
 	TTree tree_main("TreeMain", "TreeMain");
-
 	EventMainCh *event = new EventMainCh();
-
 	tree_main.Branch("EventMainCh", &event, 16000, 0);
 
-	//analyze and fill tree
-	for (int ev = 0; ev < /*N_events_per_file*/2; ev++)
+	unsigned int absolute_event_counter = 0;
+	for (int file_index = 0; file_index < number_of_input_files; file_index++)
 	{
-		if (ev % 10 == 0)
-			cout << "ev = " << ev << endl;
-		
-		event->event_number = ev;
-		
-		for (int ch = 0; ch < ch_list.size(); ch++)
-		{
-			Calc calc(rdt.GetDataDouble()[ev][ch], ns_per_point, is_positive_polarity_type_list[ch]);			
-			event->ymin.push_back( calc.GetYmin() );
-			event->ymax.push_back( calc.GetYmax() );
+		int event_from = file_index * N_events_per_file;
+		int event_to = (file_index + 1) * N_events_per_file - 1;
+		ostringstream datafile_name;
+		datafile_name << path_to_folder << std::setfill('0') << std::setw(6) << event_from << "__" << std::setfill('0') << std::setw(6) << event_to << ".dat";
+		//cout << datafile_name.str() << endl << endl;
 
-			calc.CalcBaselineMeanSigma(0, 30000);
-			event->baseline.push_back(calc.GetBaselineMean());
-			
-			calc.SubtractBaseline();
-			vector<double> yv_filtered(points_per_event_per_ch); 
-			yv_filtered = calc.GetFilteredWaveformGolay(/*21*/ 21, 0);
+		//Read one xxxxxx__xxxxxx.dat file
+		ReadData_CAEN rdt(file_name_raw, N_events_per_file, ch_list.size(), points_per_event_per_ch);
 
-			PeakFinder peak_finder(yv_filtered, ns_per_point);
-			peak_finder.FindPeaksByAmp(80/*mV*/);
-			
-			Peaks *peaks_obj = new Peaks();
-			peaks_obj->peak_start_stop_poits = peak_finder.GetPeakPositions();
-			peaks_obj->avr_peak_time = peak_finder.GetAvrPeakTime();
-			peaks_obj->peak_time = peak_finder.GetPeakTime();
-			peaks_obj->peak_amp = peak_finder.GetPeakAmp();
-			peaks_obj->peak_area = peak_finder.GetPeakArea();
-			peaks_obj->local_baseline_v = peak_finder.GetLocalBaselineV();
+		//analyze and fill tree
+		for (int ev = 0; ev < N_events_per_file; ev++)
+		{			
+			if (ev % 10 == 0)
+				cout << "abs_ev = " << absolute_event_counter << "; rel_ev = " << ev << endl;
 
-			event->peaks.push_back(peaks_obj);
+			event->event_number = absolute_event_counter;
 
+			for (int ch = 0; ch < ch_list.size(); ch++)
+			{
+				Calc calc(rdt.GetDataDouble()[ev][ch], ns_per_point, is_positive_polarity_type_list[ch]);
+				event->ymin.push_back(calc.GetYmin());
+				event->ymax.push_back(calc.GetYmax());
+
+				calc.CalcBaselineMeanSigma(0, 30000);
+				event->baseline_mean.push_back(calc.GetBaselineMean());
+				event->baseline_sigma.push_back(calc.GetBaselineSigma());
+
+				calc.SubtractBaseline();
+				vector<double> yv_filtered(points_per_event_per_ch);
+				yv_filtered = calc.GetFilteredWaveformGolay(/*21*/ 21, 0);
+
+				PeakFinder peak_finder(yv_filtered, ns_per_point);
+				peak_finder.FindPeaksByAmp(80/*mV*/);
+
+				Peaks *peaks_obj = new Peaks();
+				peaks_obj->peak_start_stop_poits = peak_finder.GetPeakPositions();
+				peaks_obj->avr_peak_time = peak_finder.GetAvrPeakTime();
+				peaks_obj->peak_time = peak_finder.GetPeakTime();
+				peaks_obj->peak_amp = peak_finder.GetPeakAmp();
+				peaks_obj->peak_area = peak_finder.GetPeakArea();
+				peaks_obj->local_baseline_v = peak_finder.GetLocalBaselineV();
+
+				event->peaks.push_back(peaks_obj);
+
+			}
+
+			tree_main.Fill();
+			event->Clear();
+			absolute_event_counter++;
 		}
-
-		tree_main.Fill();
-		event->Clear();
 
 	}
 
@@ -121,6 +137,12 @@ int main(int argc, char **argv)
 	file_for_tree.Write();
 
 	//EventMainCh *event_main_ch = new EventMainCh();
+
+	timer_total.Stop();
+	cout << endl;
+	cout << "-------------------------------" << endl;
+	cout << "total time = " << timer_total.RealTime() << " sec" << endl;
+	cout << "time per event = " << timer_total.RealTime() / absolute_event_counter << " sec per event" << endl;
 
 	cout << endl;
 	cout << "all is ok" << endl;

@@ -18,7 +18,8 @@ void EventMainCh::Clear()
 
 	ymin.clear();
 	ymax.clear();
-	baseline.clear();
+	baseline_mean.clear();
+	baseline_sigma.clear();
 
 	for (size_t i = 0; i<peaks.size(); i++)
 		delete peaks.at(i);
