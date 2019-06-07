@@ -37,8 +37,11 @@ int main(int argc, char *argv[])
 	if (is_batch_mode)
 		gROOT->SetBatch(kTRUE);
 
-	string output_folder = "E:\\190521\\190521_caen_raw\\f1_analysis\\";
-	ofstream file_detailed_info_output(output_folder + "detailed_info.txt");
+	string date = "190606";
+	string subfolder_name = "f1";
+	string output_folder = "E:\\" + date + "\\" + date + "_caen_raw\\analysis\\";
+	ofstream file_detailed_info_output(output_folder + subfolder_name + "_detailed_info.txt");
+	string file_name_output = output_folder + subfolder_name + ".root";
 	
 
 	unsigned int ns_per_point = 4/*16*/;
@@ -47,7 +50,7 @@ int main(int argc, char *argv[])
 	vector<unsigned short> ch_list = { 1, 2, 3, 4 };
 	vector<bool> is_positive_polarity_type_list = { true, true, true, true };
 
-	string file_name_raw = "E:\\190521\\190521_caen_raw\\f1_mod\\000000__000099.dat";
+	string file_name_raw = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod" + "\\000000__000099.dat";
 	ReadData_CAEN rdt(file_name_raw, N_events_per_file, ch_list.size(), points_per_event_per_ch);
 
 	vector<double> yv_filtered(points_per_event_per_ch);
@@ -66,7 +69,7 @@ int main(int argc, char *argv[])
 	//TGraph* gr;                 // create a pointer to a TGraph
 	TCanvas* canv;
 	//const unsigned int n_events = N_events_per_file;
-	const unsigned int n_events = 3;
+	const unsigned int n_events = 10;
 	cout << endl;
 	for (int ev = 0; ev < n_events; ev++)
 	{
@@ -89,7 +92,7 @@ int main(int argc, char *argv[])
 			yv_filtered = calc.GetFilteredWaveformGolay(/*21*/ 21, 0);
 
 			PeakFinder peak_finder(yv_filtered, ns_per_point);
-			peak_finder.FindPeaksByAmp(80/*mV*/);
+			peak_finder.FindPeaksByAmp(50/*mV*/);
 			vector< pair<int, int> > pair_vec = peak_finder.GetPeakPositions();
 			vector<double> local_baseline = peak_finder.GetLocalBaselineV();
 			vector<double> avr_peak_time = peak_finder.GetAvrPeakTime();
@@ -181,8 +184,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (is_batch_mode)
-	{ 
-		string file_name_output = output_folder + "analysis.root";		
+	{ 			
 		cout << endl << "Save plots in " << file_name_output.c_str() << endl;
 		TFile f_root_out(file_name_output.c_str(), "recreate");
 		TObjArraylist.Write();

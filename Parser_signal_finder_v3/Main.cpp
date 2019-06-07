@@ -30,9 +30,15 @@ using namespace std;
 
 
 int main(int argc, char **argv)
-{
+{	
+	cout << "Press any key to confirm the execution." << endl;
+	system("pause");
+	
+	//timer
 	TStopwatch timer_total;
 	timer_total.Start();
+	double time_read_binary = 0;
+	double time_find_peaks = 0;
 	
 	cout << "argc = " << argc << endl;
 	for (int i = 0; i < argc; i++)
@@ -66,12 +72,14 @@ int main(int argc, char **argv)
 	vector<bool> is_positive_polarity_type_list = { true, true, true, true };
 
 	//const unsigned int n_event_to_process = 2;
-	const unsigned int number_of_input_files = 1;
-	string path_to_folder = "E:\\190521\\190521_caen_raw\\f1_mod\\";
+	string date = "190606";
+	string subfolder_name = "f1";
+	const unsigned int number_of_input_files = 5;
+	string path_to_folder = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod\\";
 
 	//create tree
 	ostringstream file_for_tree_name;
-	file_for_tree_name << "E:\\190521\\190521_caen_trees\\file_1" << ".root";
+	file_for_tree_name << "E:\\" << date << "\\" << date << "_caen_trees\\" << subfolder_name << ".root";
 	TFile file_for_tree(file_for_tree_name.str().c_str(), "RECREATE");
 	TTree tree_main("TreeMain", "TreeMain");
 	EventMainCh *event = new EventMainCh();
@@ -80,6 +88,7 @@ int main(int argc, char **argv)
 	unsigned int absolute_event_counter = 0;
 	for (int file_index = 0; file_index < number_of_input_files; file_index++)
 	{
+		cout << endl;
 		int event_from = file_index * N_events_per_file;
 		int event_to = (file_index + 1) * N_events_per_file - 1;
 		ostringstream datafile_name;
@@ -87,7 +96,11 @@ int main(int argc, char **argv)
 		//cout << datafile_name.str() << endl << endl;
 
 		//Read one xxxxxx__xxxxxx.dat file
-		ReadData_CAEN rdt(file_name_raw, N_events_per_file, ch_list.size(), points_per_event_per_ch);
+		TStopwatch timer_read_binary;
+		timer_read_binary.Start();		
+		ReadData_CAEN rdt(datafile_name.str().c_str(), N_events_per_file, ch_list.size(), points_per_event_per_ch);
+		timer_read_binary.Stop();
+		time_read_binary += timer_read_binary.RealTime();
 
 		//analyze and fill tree
 		for (int ev = 0; ev < N_events_per_file; ev++)
@@ -111,8 +124,12 @@ int main(int argc, char **argv)
 				vector<double> yv_filtered(points_per_event_per_ch);
 				yv_filtered = calc.GetFilteredWaveformGolay(/*21*/ 21, 0);
 
+				TStopwatch timer_find_peaks;
+				timer_find_peaks.Start();
 				PeakFinder peak_finder(yv_filtered, ns_per_point);
-				peak_finder.FindPeaksByAmp(80/*mV*/);
+				peak_finder.FindPeaksByAmp(75/*mV*/);
+				timer_find_peaks.Stop();
+				time_find_peaks += timer_find_peaks.RealTime();
 
 				Peaks *peaks_obj = new Peaks();
 				peaks_obj->peak_start_stop_poits = peak_finder.GetPeakPositions();
@@ -134,13 +151,19 @@ int main(int argc, char **argv)
 	}
 
 	cout << endl << "Write tree:" << file_for_tree_name.str().c_str() << endl;
+	TStopwatch timer_write_and_close;
+	timer_write_and_close.Start();
 	file_for_tree.Write();
+	timer_write_and_close.Stop();
 
 	//EventMainCh *event_main_ch = new EventMainCh();
 
 	timer_total.Stop();
 	cout << endl;
 	cout << "-------------------------------" << endl;
+	cout << "time to read binary files = " << time_read_binary << " sec (" << time_read_binary*100.0 / timer_total.RealTime() << " %)" << endl;
+	cout << "time to find peaks = " << time_find_peaks << " sec (" << time_find_peaks*100.0 / timer_total.RealTime() << " %)" << endl;
+	cout << "time to write and close = " << timer_write_and_close.RealTime() << " sec (" << timer_write_and_close.RealTime()*100.0 / timer_total.RealTime() << " %)" << endl;
 	cout << "total time = " << timer_total.RealTime() << " sec" << endl;
 	cout << "time per event = " << timer_total.RealTime() / absolute_event_counter << " sec per event" << endl;
 

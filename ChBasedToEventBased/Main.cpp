@@ -23,11 +23,14 @@ int main(int argc, char **argv)
 	//vector<unsigned short> ch_list = {0, 1, 2, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59};
 	vector<unsigned short> ch_list = { 1, 2, 3, 4};
 	
-	unsigned int start_run_number = 1;
-	unsigned int stop_run_number = 40;
+	unsigned int start_run_number = 115;
+	unsigned int stop_run_number = 141;
 
-	string common_path_input = "E:\\190521\\190521_caen_raw\\f1\\";
-	string common_path_out = "E:\\190521\\190521_caen_raw\\f1_mod\\";
+	string date = "190606";
+	string subfolder_name = "f6";
+
+	string common_path_input = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "\\";
+	string common_path_out = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod\\";
 
 	
 	unsigned int file_counter = 0;
