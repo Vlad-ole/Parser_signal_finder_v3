@@ -31,15 +31,17 @@ using namespace std;
 
 int main(int argc, char **argv)
 {	
-	cout << "Press any key to confirm the execution." << endl;
-	system("pause");
+	
 	
 	//timer
 	TStopwatch timer_total;
 	timer_total.Start();
 	double time_read_binary = 0;
 	double time_find_peaks = 0;
+	double time_filter_waveform = 0;
 	
+	double peak_finder_th = 60;
+
 	cout << "argc = " << argc << endl;
 	for (int i = 0; i < argc; i++)
 	{
@@ -50,13 +52,19 @@ int main(int argc, char **argv)
 	string file_name_raw = "empty";
 	if (argc > 1)
 	{
-		file_name_raw = argv[1];
+		//file_name_raw = argv[1];
+		peak_finder_th = atof(argv[1]);
 	}
 	else
 	{
-		file_name_raw = "E:\\190521\\190521_caen_raw\\f1_mod\\000000__000099.dat";
-	}
+		//file_name_raw = "E:\\190521\\190521_caen_raw\\f1_mod\\000000__000099.dat";		
+	}	
 	cout << endl;
+	cout << "peak_finder_th = " << peak_finder_th << endl;
+
+	//cout << "Press any key to confirm the execution." << endl;
+	//system("pause");
+
 
 	//string file_name_raw("D:\\Data_work\\Reco_test\\171123_caen_raw\\x_ray_20kV_PMT550_0dB_coll_2mm\\run_323__ch_0.dat");
 
@@ -72,14 +80,14 @@ int main(int argc, char **argv)
 	vector<bool> is_positive_polarity_type_list = { true, true, true, true };
 
 	//const unsigned int n_event_to_process = 2;
-	string date = "190606";
+	string date = "190523";
 	string subfolder_name = "f1";
-	const unsigned int number_of_input_files = 5;
+	const unsigned int number_of_input_files = 10;
 	string path_to_folder = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod\\";
 
 	//create tree
 	ostringstream file_for_tree_name;
-	file_for_tree_name << "E:\\" << date << "\\" << date << "_caen_trees\\" << subfolder_name << ".root";
+	file_for_tree_name << "E:\\" << date << "\\" << date << "_caen_trees\\" << subfolder_name << "_th" << peak_finder_th << "mV.root";
 	TFile file_for_tree(file_for_tree_name.str().c_str(), "RECREATE");
 	TTree tree_main("TreeMain", "TreeMain");
 	EventMainCh *event = new EventMainCh();
@@ -121,13 +129,18 @@ int main(int argc, char **argv)
 				event->baseline_sigma.push_back(calc.GetBaselineSigma());
 
 				calc.SubtractBaseline();
+
+				TStopwatch timer_filter_waveform;
+				timer_filter_waveform.Start();
 				vector<double> yv_filtered(points_per_event_per_ch);
 				yv_filtered = calc.GetFilteredWaveformGolay(/*21*/ 21, 0);
+				timer_filter_waveform.Stop();
+				time_filter_waveform += timer_filter_waveform.RealTime();
 
 				TStopwatch timer_find_peaks;
 				timer_find_peaks.Start();
 				PeakFinder peak_finder(yv_filtered, ns_per_point);
-				peak_finder.FindPeaksByAmp(75/*mV*/);
+				peak_finder.FindPeaksByAmp(peak_finder_th/*mV*/);
 				timer_find_peaks.Stop();
 				time_find_peaks += timer_find_peaks.RealTime();
 
@@ -162,6 +175,7 @@ int main(int argc, char **argv)
 	cout << endl;
 	cout << "-------------------------------" << endl;
 	cout << "time to read binary files = " << time_read_binary << " sec (" << time_read_binary*100.0 / timer_total.RealTime() << " %)" << endl;
+	cout << "time to filter waveform = " << time_filter_waveform << " sec (" << time_filter_waveform*100.0 / timer_total.RealTime() << " %)" << endl;
 	cout << "time to find peaks = " << time_find_peaks << " sec (" << time_find_peaks*100.0 / timer_total.RealTime() << " %)" << endl;
 	cout << "time to write and close = " << timer_write_and_close.RealTime() << " sec (" << timer_write_and_close.RealTime()*100.0 / timer_total.RealTime() << " %)" << endl;
 	cout << "total time = " << timer_total.RealTime() << " sec" << endl;
@@ -169,6 +183,6 @@ int main(int argc, char **argv)
 
 	cout << endl;
 	cout << "all is ok" << endl;
-	system("pause");
+	//system("pause");
 	return 0;
 }

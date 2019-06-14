@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 			yv_filtered = calc.GetFilteredWaveformGolay(/*21*/ 21, 0);
 
 			PeakFinder peak_finder(yv_filtered, ns_per_point);
-			peak_finder.FindPeaksByAmp(50/*mV*/);
+			peak_finder.FindPeaksByAmp(30/*mV*/);
 			vector< pair<int, int> > pair_vec = peak_finder.GetPeakPositions();
 			vector<double> local_baseline = peak_finder.GetLocalBaselineV();
 			vector<double> avr_peak_time = peak_finder.GetAvrPeakTime();

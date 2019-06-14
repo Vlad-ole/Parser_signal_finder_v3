@@ -44,10 +44,13 @@ int main(int argc, char *argv[])
 
 	gSystem->Load("libTree");// (to fix: no dictionary for class ttree is available) https://root.cern.ch/root/roottalk/roottalk04/1580.html
 	
-	string date = "190606";
-	string subfolder_name = "f1_th80mV";
+	double peak_finder_th = 75;
+	string date = "190523";
+	//string subfolder_name = "f1_th80mV";
+	ostringstream subfolder_name;
+	subfolder_name << "f1_th" << peak_finder_th << "mV";
 	
-	string file_name_tree = "E:\\" + date + "\\" + date + "_caen_trees\\" + subfolder_name + ".root";
+	string file_name_tree = "E:\\" + date + "\\" + date + "_caen_trees\\" + subfolder_name.str() + ".root";
 	TFile *f = new TFile(file_name_tree.c_str());
 	if (!(f->IsOpen()))
 	{
@@ -113,8 +116,8 @@ int main(int argc, char *argv[])
 	//define graphs
 	//vector<TGraph*> gr_time_spectrum_v(ch_list.size(), NULL);
 	//vector< vector<double> > peak_time_v(ch_list.size());
-	//vector< vector<double> > peak_amp_v(ch_list.size());
-	//vector< vector<double> > peak_area_v(ch_list.size());
+	vector< vector<double> > peak_amp_v(ch_list.size());
+	vector< vector<double> > peak_area_v(ch_list.size());
 
 	COUT( tree->GetEntries() )
 	//ev loop
@@ -154,11 +157,14 @@ int main(int argc, char *argv[])
 				bool is_in_34_100_us = event->peaks[ch]->peak_time[peak_id] > 34000 && event->peaks[ch]->peak_time[peak_id] < 100000;
 				bool is_in_70_100_us = event->peaks[ch]->peak_time[peak_id] > 70000 && event->peaks[ch]->peak_time[peak_id] < 100000;
 				bool is_in_110_155_us = event->peaks[ch]->peak_time[peak_id] > 110000 && event->peaks[ch]->peak_time[peak_id] < 155000;
-				if (!is_noise && is_in_34_100_us)
+				if (!is_noise && is_in_110_155_us)
 				{
 					hist_peak_time_v[ch]->Fill(event->peaks[ch]->peak_time[peak_id]);
 					hist_peak_amp_v[ch]->Fill(event->peaks[ch]->peak_amp[peak_id]);
 					hist_peak_area_v[ch]->Fill(event->peaks[ch]->peak_area[peak_id]);
+
+					peak_amp_v[ch].push_back(event->peaks[ch]->peak_amp[peak_id]);
+					peak_area_v[ch].push_back(event->peaks[ch]->peak_area[peak_id]);
 				}
 				
 			}
@@ -206,8 +212,8 @@ int main(int argc, char *argv[])
 		event->Clear();
 	}
 
-	string draw_var = "ymin ymax baseline_mean baseline_sigma peak_time peak_amp peak_area n_peaks";
-	//string draw_var = "peak_time";
+	//string draw_var = "ymin ymax baseline_mean baseline_sigma peak_time peak_amp peak_area n_peaks peak_amp_vs_peak_area";
+	string draw_var = "peak_time";
 
 	//draw
 	if (draw_var.find("ymin") != std::string::npos)
@@ -321,6 +327,27 @@ int main(int argc, char *argv[])
 		c8->cd(4);
 		hist_n_peaks_v[3]->Draw();
 	}
+
+	if (draw_var.find("peak_amp_vs_peak_area") != std::string::npos)
+	{
+		TCanvas *c9 = new TCanvas("c9", "peak_amp_vs_peak_area");
+		vector<TGraph*> gr_peak_amp_peak_area(ch_list.size());
+		c9->Divide(2, 2, 0.01, 0.01);
+		c9->cd(1);
+		gr_peak_amp_peak_area[0] = new TGraph(peak_amp_v[0].size(), &peak_amp_v[0][0], &peak_area_v[0][0]);
+		gr_peak_amp_peak_area[0]->Draw("AP");
+		gr_peak_amp_peak_area[0]->SetMarkerStyle(20);
+		c9->cd(2);
+		gr_peak_amp_peak_area[1] = new TGraph(peak_amp_v[1].size(), &peak_amp_v[1][0], &peak_area_v[1][0]);
+		gr_peak_amp_peak_area[1]->Draw("AP");
+		c9->cd(3);
+		gr_peak_amp_peak_area[2] = new TGraph(peak_amp_v[2].size(), &peak_amp_v[2][0], &peak_area_v[2][0]);
+		gr_peak_amp_peak_area[2]->Draw("AP");
+		c9->cd(4);
+		gr_peak_amp_peak_area[3] = new TGraph(peak_amp_v[3].size(), &peak_amp_v[3][0], &peak_area_v[3][0]);
+		gr_peak_amp_peak_area[3]->Draw("AP");
+	}
+	
 
 	cout << endl;
 	cout << "all is ok" << endl;
