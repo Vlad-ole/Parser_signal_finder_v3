@@ -32,7 +32,6 @@ using namespace std;
 int main(int argc, char **argv)
 {	
 	
-	
 	//timer
 	TStopwatch timer_total;
 	timer_total.Start();
@@ -40,7 +39,7 @@ int main(int argc, char **argv)
 	double time_find_peaks = 0;
 	double time_filter_waveform = 0;
 	
-	double peak_finder_th = 60;
+	double peak_finder_th = 80;
 
 	cout << "argc = " << argc << endl;
 	for (int i = 0; i < argc; i++)
@@ -80,9 +79,9 @@ int main(int argc, char **argv)
 	vector<bool> is_positive_polarity_type_list = { true, true, true, true };
 
 	//const unsigned int n_event_to_process = 2;
-	string date = "190523";
+	string date = "190606";
 	string subfolder_name = "f1";
-	const unsigned int number_of_input_files = 10;
+	const unsigned int number_of_input_files = 200;
 	string path_to_folder = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod\\";
 
 	//create tree

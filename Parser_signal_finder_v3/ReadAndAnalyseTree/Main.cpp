@@ -44,11 +44,11 @@ int main(int argc, char *argv[])
 
 	gSystem->Load("libTree");// (to fix: no dictionary for class ttree is available) https://root.cern.ch/root/roottalk/roottalk04/1580.html
 	
-	double peak_finder_th = 75;
-	string date = "190523";
+	double peak_finder_th = 80;
+	string date = "190606";
 	//string subfolder_name = "f1_th80mV";
 	ostringstream subfolder_name;
-	subfolder_name << "f1_th" << peak_finder_th << "mV";
+	subfolder_name << "f6_th" << peak_finder_th << "mV";
 	
 	string file_name_tree = "E:\\" + date + "\\" + date + "_caen_trees\\" + subfolder_name.str() + ".root";
 	TFile *f = new TFile(file_name_tree.c_str());
