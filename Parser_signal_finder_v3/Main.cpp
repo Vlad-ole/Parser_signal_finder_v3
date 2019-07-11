@@ -21,6 +21,8 @@
 #include "Peaks.h"
 #include "Calc.h"
 #include "PeakFinder.h"
+#include "ReadInfo.h"
+#include "ReadDaqInfo.h"
 //#include "TreeRaw.h"
 //#include "CalcData.h"
 //#include "TreeInfo.h"
@@ -71,22 +73,29 @@ int main(int argc, char **argv)
 	TApplication theApp("theApp", &argc, argv);//let's add some magic! https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=22972
 	gROOT->SetBatch(kTRUE);
 
+	string date = "190704";
+	string subfolder_name = "f2";
+	string file_name_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
+	string file_name_daq_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
+	
+	ReadDAQInfo rd_daq_inf(file_name_daq_info);
+	rd_daq_inf.Read();
 	//Read DAQ_info.txt
-	unsigned int ns_per_point = 4/*16*/;
-	unsigned int points_per_event_per_ch = 40000/*9999*/;
-	unsigned int N_events_per_file = 100;
-	vector<unsigned short> ch_list = {1, 2, 3, 4};
-	vector<bool> is_positive_polarity_type_list = { true, true, true, true };
+	unsigned int ns_per_point = /*4*//*16*/rd_daq_inf.GetNsPerPoint();
+	unsigned int points_per_event_per_ch = /*40000*//*9999*/rd_daq_inf.GetPointsPerEventPerCh();
+	unsigned int N_events_per_file = /*100*/rd_daq_inf.GetNEventsPerFileOutput();
+	ReadInfo rd_inf(file_name_info);
+	rd_inf.Read();
+	//vector<unsigned short> ch_list = {1, 2, 3, 4};
+	//vector<bool> is_positive_polarity_type_list = { true, true, true, true };
 
 	//const unsigned int n_event_to_process = 2;
-	string date = "190606";
-	string subfolder_name = "f1";
 	const unsigned int number_of_input_files = 200;
 	string path_to_folder = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod\\";
 
 	//create tree
 	ostringstream file_for_tree_name;
-	file_for_tree_name << "E:\\" << date << "\\" << date << "_caen_trees\\" << subfolder_name << "_th" << peak_finder_th << "mV.root";
+	file_for_tree_name << "E:\\" << date << "\\" << date << "_caen_trees\\" << subfolder_name  /* << "_th" << peak_finder_th << "mV.root" */;
 	TFile file_for_tree(file_for_tree_name.str().c_str(), "RECREATE");
 	TTree tree_main("TreeMain", "TreeMain");
 	EventMainCh *event = new EventMainCh();
@@ -105,7 +114,7 @@ int main(int argc, char **argv)
 		//Read one xxxxxx__xxxxxx.dat file
 		TStopwatch timer_read_binary;
 		timer_read_binary.Start();		
-		ReadData_CAEN rdt(datafile_name.str().c_str(), N_events_per_file, ch_list.size(), points_per_event_per_ch);
+		ReadData_CAEN rdt(datafile_name.str().c_str(), N_events_per_file, rd_inf.GetChList().size(), points_per_event_per_ch);
 		timer_read_binary.Stop();
 		time_read_binary += timer_read_binary.RealTime();
 
@@ -117,9 +126,9 @@ int main(int argc, char **argv)
 
 			event->event_number = absolute_event_counter;
 
-			for (int ch = 0; ch < ch_list.size(); ch++)
+			for (int ch = 0; ch < rd_inf.GetChList().size(); ch++)
 			{
-				Calc calc(rdt.GetDataDouble()[ev][ch], ns_per_point, is_positive_polarity_type_list[ch]);
+				Calc calc(rdt.GetDataDouble()[ev][ch], ns_per_point, rd_inf.GetIsPositivePolarityTypeList()[ch]);
 				event->ymin.push_back(calc.GetYmin());
 				event->ymax.push_back(calc.GetYmax());
 
@@ -139,7 +148,7 @@ int main(int argc, char **argv)
 				TStopwatch timer_find_peaks;
 				timer_find_peaks.Start();
 				PeakFinder peak_finder(yv_filtered, ns_per_point);
-				peak_finder.FindPeaksByAmp(peak_finder_th/*mV*/);
+				peak_finder.FindPeaksByAmp(rd_inf.GetThList()[ch]/*peak_finder_th*//*mV*/);
 				timer_find_peaks.Stop();
 				time_find_peaks += timer_find_peaks.RealTime();
 
@@ -182,6 +191,6 @@ int main(int argc, char **argv)
 
 	cout << endl;
 	cout << "all is ok" << endl;
-	//system("pause");
+	system("pause");
 	return 0;
 }

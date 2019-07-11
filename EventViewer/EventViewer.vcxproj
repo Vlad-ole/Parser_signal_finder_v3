@@ -91,8 +91,10 @@
     <ClCompile Include="..\Parser_signal_finder_v3\Calc.cpp" />
     <ClCompile Include="..\Parser_signal_finder_v3\CalcDer.cpp" />
     <ClCompile Include="..\Parser_signal_finder_v3\PeakFinder.cpp" />
+    <ClCompile Include="..\Parser_signal_finder_v3\ReadDAQInfo.cpp" />
     <ClCompile Include="..\Parser_signal_finder_v3\ReadData.cpp" />
     <ClCompile Include="..\Parser_signal_finder_v3\ReadData_CAEN.cpp" />
+    <ClCompile Include="..\Parser_signal_finder_v3\ReadInfo.cpp" />
     <ClCompile Include="..\Parser_signal_finder_v3\TypeConvertion.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
@@ -100,8 +102,10 @@
     <ClInclude Include="..\Parser_signal_finder_v3\Calc.h" />
     <ClInclude Include="..\Parser_signal_finder_v3\CalcDer.h" />
     <ClInclude Include="..\Parser_signal_finder_v3\PeakFinder.h" />
+    <ClInclude Include="..\Parser_signal_finder_v3\ReadDAQInfo.h" />
     <ClInclude Include="..\Parser_signal_finder_v3\ReadData.h" />
     <ClInclude Include="..\Parser_signal_finder_v3\ReadData_CAEN.h" />
+    <ClInclude Include="..\Parser_signal_finder_v3\ReadInfo.h" />
     <ClInclude Include="..\Parser_signal_finder_v3\TypeConvertion.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

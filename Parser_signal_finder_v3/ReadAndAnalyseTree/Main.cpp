@@ -21,6 +21,9 @@
 
 //my
 #include "EventMainCh.h"
+#include "ReadInfo.h"
+#include "ReadDaqInfo.h"
+#include "ChMapping.h"
 //#include "TreeRaw.h"
 //#include "CalcData.h"
 //#include "TreeInfo.h"
@@ -37,20 +40,52 @@ int main(int argc, char *argv[])
 {
 	TApplication theApp("theApp", &argc, argv);//let's add some magic! https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=22972
 	
-	
-	vector<unsigned short> ch_list = { 1, 2, 3, 4 };
-	const double ns_per_point = 4;
+	//string draw_var = "ymin ymax baseline_mean baseline_sigma peak_time peak_amp peak_area n_peaks peak_amp_vs_peak_area";
+	string draw_var = "peak_amp peak_amp_vs_peak_area";
+	vector<int> ch_list_to_view = {32, 33, 34, 35};
+
+	/*int hist_peak_area_nbins = 1000;
+	int hist_peak_area_xmin = -5000;
+	int hist_peak_area_xmax = 500000;*/
+
+	int hist_peak_area_nbins = 800;
+	int hist_peak_area_xmin = -500;
+	int hist_peak_area_xmax = 25000;
+
+	int hist_baseline_sigma_xmax = 50;
+
+	int hist_peak_amp_nbins = 300;
+	int hist_peak_amp_xmin = 0;
+	int hist_peak_amp_xmax = 100;
+
+	//vector<unsigned short> ch_list = { 1, 2, 3, 4 };
+	//const double ns_per_point = 4;
 	//map <unsigned short, unsigned short> ;
 
 	gSystem->Load("libTree");// (to fix: no dictionary for class ttree is available) https://root.cern.ch/root/roottalk/roottalk04/1580.html
 	
-	double peak_finder_th = 80;
-	string date = "190606";
-	//string subfolder_name = "f1_th80mV";
-	ostringstream subfolder_name;
-	subfolder_name << "f6_th" << peak_finder_th << "mV";
+	//double peak_finder_th = 80;
+	//string date = "190704";
+	////string subfolder_name = "f1_th80mV";
+	//ostringstream subfolder_name;
+	////subfolder_name << "f6_th" << peak_finder_th << "mV";
+	//subfolder_name << "f2" ;
+
+	string date = "190704";
+	string subfolder_name = "f2";
+	string file_name_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
+	string file_name_daq_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
+
+	ReadDAQInfo rd_daq_inf(file_name_daq_info);
+	rd_daq_inf.Read();
+	ReadInfo rd_inf(file_name_info);
+	rd_inf.Read();
+	vector<int> ch_list = rd_inf.GetChList(); //all ch
+	double ns_per_point = rd_daq_inf.GetNsPerPoint();
+	ChMapping ch_map(ch_list, ch_list_to_view);
+	vector<int> ch_index_for_view_list = ch_map.GetChIndexList();
 	
-	string file_name_tree = "E:\\" + date + "\\" + date + "_caen_trees\\" + subfolder_name.str() + ".root";
+	string file_name_tree = "E:\\" + date + "\\" + date + "_caen_trees\\" + subfolder_name + ".root";
 	TFile *f = new TFile(file_name_tree.c_str());
 	if (!(f->IsOpen()))
 	{
@@ -105,11 +140,11 @@ int main(int argc, char *argv[])
 		hist_ymin_v[ch] = new TH1F(hist_ymin_name.str().c_str(), hist_ymin_name.str().c_str(), 1000, -1100, 1100);
 		hist_ymax_v[ch] = new TH1F(hist_ymax_name.str().c_str(), hist_ymax_name.str().c_str(), 1000, -1100, 1100);
 		hist_baseline_mean_v[ch] = new TH1F(hist_baseline_mean_name.str().c_str(), hist_baseline_mean_name.str().c_str(), 1000, -1100, 1100);
-		hist_baseline_sigma_v[ch] = new TH1F(hist_baseline_sigma_name.str().c_str(), hist_baseline_sigma_name.str().c_str(), 1000, 0, 100);
+		hist_baseline_sigma_v[ch] = new TH1F(hist_baseline_sigma_name.str().c_str(), hist_baseline_sigma_name.str().c_str(), 1000, 0, hist_baseline_sigma_xmax);
 		hist_n_peaks_v[ch] = new TH1F(hist_n_peaks_name.str().c_str(), hist_n_peaks_name.str().c_str(), 100, 0, 100);
 		hist_peak_time_v[ch] = new TH1F(hist_peak_time_name.str().c_str(), hist_peak_time_name.str().c_str(), 160, 0, 160000);
-		hist_peak_amp_v[ch] = new TH1F(hist_peak_amp_name.str().c_str(), hist_peak_amp_name.str().c_str(), 110, 0, 2000);
-		hist_peak_area_v[ch] = new TH1F(hist_peak_area_name.str().c_str(), hist_peak_area_name.str().c_str(), 2000, -10000, 500000);
+		hist_peak_amp_v[ch] = new TH1F(hist_peak_amp_name.str().c_str(), hist_peak_amp_name.str().c_str(), hist_peak_amp_nbins, hist_peak_amp_xmin, hist_peak_amp_xmax);
+		hist_peak_area_v[ch] = new TH1F(hist_peak_area_name.str().c_str(), hist_peak_area_name.str().c_str(), hist_peak_area_nbins, hist_peak_area_xmin, hist_peak_area_xmax);
 		
 	}
 
@@ -147,26 +182,31 @@ int main(int argc, char *argv[])
 			hist_baseline_sigma_v[ch]->Fill(event->baseline_sigma[ch]);
 			hist_n_peaks_v[ch]->Fill(event->peaks[ch]->peak_time.size());
 			
-			for (unsigned int peak_id = 0; peak_id < event->peaks[ch]->peak_time.size(); peak_id++)
+			//if (ev == 0)//cuts
 			{
-			//	peak_time_v[ch].push_back( event->peaks[ch]->peak_time[peak_id] );
-			//	peak_amp_v[ch].push_back( event->peaks[ch]->peak_amp[peak_id] );
-
-				//cuts
-				bool is_noise = (event->peaks[ch]->avr_peak_time[peak_id] > 31000 && event->peaks[ch]->avr_peak_time[peak_id] < 34000);
-				bool is_in_34_100_us = event->peaks[ch]->peak_time[peak_id] > 34000 && event->peaks[ch]->peak_time[peak_id] < 100000;
-				bool is_in_70_100_us = event->peaks[ch]->peak_time[peak_id] > 70000 && event->peaks[ch]->peak_time[peak_id] < 100000;
-				bool is_in_110_155_us = event->peaks[ch]->peak_time[peak_id] > 110000 && event->peaks[ch]->peak_time[peak_id] < 155000;
-				if (!is_noise && is_in_110_155_us)
+				for (unsigned int peak_id = 0; peak_id < event->peaks[ch]->peak_time.size(); peak_id++)
 				{
-					hist_peak_time_v[ch]->Fill(event->peaks[ch]->peak_time[peak_id]);
-					hist_peak_amp_v[ch]->Fill(event->peaks[ch]->peak_amp[peak_id]);
-					hist_peak_area_v[ch]->Fill(event->peaks[ch]->peak_area[peak_id]);
+					//	peak_time_v[ch].push_back( event->peaks[ch]->peak_time[peak_id] );
+					//	peak_amp_v[ch].push_back( event->peaks[ch]->peak_amp[peak_id] );
 
-					peak_amp_v[ch].push_back(event->peaks[ch]->peak_amp[peak_id]);
-					peak_area_v[ch].push_back(event->peaks[ch]->peak_area[peak_id]);
+					//cuts
+					bool is_noise = (event->peaks[ch]->avr_peak_time[peak_id] > 31000 && event->peaks[ch]->avr_peak_time[peak_id] < 34000);
+					bool is_in_34_100_us = event->peaks[ch]->peak_time[peak_id] > 34000 && event->peaks[ch]->peak_time[peak_id] < 100000;
+					bool is_in_70_100_us = event->peaks[ch]->peak_time[peak_id] > 70000 && event->peaks[ch]->peak_time[peak_id] < 100000;
+					bool is_in_110_155_us = event->peaks[ch]->peak_time[peak_id] > 110000 && event->peaks[ch]->peak_time[peak_id] < 155000;
+					if (/*!is_noise && is_in_110_155_us*/ true)
+					{
+						hist_peak_time_v[ch]->Fill(event->peaks[ch]->peak_time[peak_id]);
+						hist_peak_amp_v[ch]->Fill(event->peaks[ch]->peak_amp[peak_id]);
+						hist_peak_area_v[ch]->Fill(event->peaks[ch]->peak_area[peak_id]);
+
+						peak_amp_v[ch].push_back(event->peaks[ch]->peak_amp[peak_id]);
+						peak_area_v[ch].push_back(event->peaks[ch]->peak_area[peak_id]);
+
+						//cout << "ev = " << ev << "; ch = " << ch_list[ch] << "; peak_id = " << peak_id << "; peak_area = " << event->peaks[ch]->peak_area[peak_id] << endl;
+					}
+
 				}
-				
 			}
 			
 			//gr_time_spectrum_v[ch] = new TGraph();
@@ -212,8 +252,7 @@ int main(int argc, char *argv[])
 		event->Clear();
 	}
 
-	//string draw_var = "ymin ymax baseline_mean baseline_sigma peak_time peak_amp peak_area n_peaks peak_amp_vs_peak_area";
-	string draw_var = "peak_time";
+
 
 	//draw
 	if (draw_var.find("ymin") != std::string::npos)
@@ -221,13 +260,13 @@ int main(int argc, char *argv[])
 		TCanvas *c1 = new TCanvas("c1", "ymin");
 		c1->Divide(2, 2, 0.01, 0.01);
 		c1->cd(1);
-		hist_ymin_v[0]->Draw();
+		hist_ymin_v[ch_index_for_view_list[0]]->Draw();
 		c1->cd(2);
-		hist_ymin_v[1]->Draw();
+		hist_ymin_v[ch_index_for_view_list[1]]->Draw();
 		c1->cd(3);
-		hist_ymin_v[2]->Draw();
+		hist_ymin_v[ch_index_for_view_list[2]]->Draw();
 		c1->cd(4);
-		hist_ymin_v[3]->Draw();
+		hist_ymin_v[ch_index_for_view_list[3]]->Draw();
 	}
 
 	if (draw_var.find("ymax") != std::string::npos)
@@ -235,13 +274,13 @@ int main(int argc, char *argv[])
 		TCanvas *c2 = new TCanvas("c2", "ymax");
 		c2->Divide(2, 2, 0.01, 0.01);
 		c2->cd(1);
-		hist_ymax_v[0]->Draw();
+		hist_ymax_v[ch_index_for_view_list[0]]->Draw();
 		c2->cd(2);
-		hist_ymax_v[1]->Draw();
+		hist_ymax_v[ch_index_for_view_list[1]]->Draw();
 		c2->cd(3);
-		hist_ymax_v[2]->Draw();
+		hist_ymax_v[ch_index_for_view_list[2]]->Draw();
 		c2->cd(4);
-		hist_ymax_v[3]->Draw();
+		hist_ymax_v[ch_index_for_view_list[3]]->Draw();
 	}
 
 	if (draw_var.find("baseline_mean") != std::string::npos)
@@ -249,13 +288,13 @@ int main(int argc, char *argv[])
 		TCanvas *c3 = new TCanvas("c3", "baseline_mean");
 		c3->Divide(2, 2, 0.01, 0.01);
 		c3->cd(1);
-		hist_baseline_mean_v[0]->Draw();
+		hist_baseline_mean_v[ch_index_for_view_list[0]]->Draw();
 		c3->cd(2);
-		hist_baseline_mean_v[1]->Draw();
+		hist_baseline_mean_v[ch_index_for_view_list[1]]->Draw();
 		c3->cd(3);
-		hist_baseline_mean_v[2]->Draw();
+		hist_baseline_mean_v[ch_index_for_view_list[2]]->Draw();
 		c3->cd(4);
-		hist_baseline_mean_v[3]->Draw();
+		hist_baseline_mean_v[ch_index_for_view_list[3]]->Draw();
 	}
 
 	if (draw_var.find("baseline_sigma") != std::string::npos)
@@ -263,13 +302,17 @@ int main(int argc, char *argv[])
 		TCanvas *c4 = new TCanvas("c4", "baseline_sigma");
 		c4->Divide(2, 2, 0.01, 0.01);
 		c4->cd(1);
-		hist_baseline_sigma_v[0]->Draw();
+		gPad->SetLogy();
+		hist_baseline_sigma_v[ch_index_for_view_list[0]]->Draw();
 		c4->cd(2);
-		hist_baseline_sigma_v[1]->Draw();
+		gPad->SetLogy();
+		hist_baseline_sigma_v[ch_index_for_view_list[1]]->Draw();
 		c4->cd(3);
-		hist_baseline_sigma_v[2]->Draw();
+		gPad->SetLogy();
+		hist_baseline_sigma_v[ch_index_for_view_list[2]]->Draw();
 		c4->cd(4);
-		hist_baseline_sigma_v[3]->Draw();
+		gPad->SetLogy();
+		hist_baseline_sigma_v[ch_index_for_view_list[3]]->Draw();
 	}
 
 	if (draw_var.find("peak_time") != std::string::npos)
@@ -277,13 +320,13 @@ int main(int argc, char *argv[])
 		TCanvas *c5 = new TCanvas("c5", "peak_time");
 		c5->Divide(2, 2, 0.01, 0.01);
 		c5->cd(1);
-		hist_peak_time_v[0]->Draw();
+		hist_peak_time_v[ch_index_for_view_list[0]]->Draw();
 		c5->cd(2);
-		hist_peak_time_v[1]->Draw();
+		hist_peak_time_v[ch_index_for_view_list[1]]->Draw();
 		c5->cd(3);
-		hist_peak_time_v[2]->Draw();
+		hist_peak_time_v[ch_index_for_view_list[2]]->Draw();
 		c5->cd(4);
-		hist_peak_time_v[3]->Draw();
+		hist_peak_time_v[ch_index_for_view_list[3]]->Draw();
 	}
 
 	if (draw_var.find("peak_amp") != std::string::npos)
@@ -291,13 +334,13 @@ int main(int argc, char *argv[])
 		TCanvas *c6 = new TCanvas("c6", "peak_amp");
 		c6->Divide(2, 2, 0.01, 0.01);
 		c6->cd(1);
-		hist_peak_amp_v[0]->Draw();
+		hist_peak_amp_v[ch_index_for_view_list[0]]->Draw();
 		c6->cd(2);
-		hist_peak_amp_v[1]->Draw();
+		hist_peak_amp_v[ch_index_for_view_list[1]]->Draw();
 		c6->cd(3);
-		hist_peak_amp_v[2]->Draw();
+		hist_peak_amp_v[ch_index_for_view_list[2]]->Draw();
 		c6->cd(4);
-		hist_peak_amp_v[3]->Draw();
+		hist_peak_amp_v[ch_index_for_view_list[3]]->Draw();
 	}
 
 	if (draw_var.find("peak_area") != std::string::npos)
@@ -305,13 +348,13 @@ int main(int argc, char *argv[])
 		TCanvas *c7 = new TCanvas("c7", "peak_area");
 		c7->Divide(2, 2, 0.01, 0.01);
 		c7->cd(1);
-		hist_peak_area_v[0]->Draw();
+		hist_peak_area_v[ch_index_for_view_list[0]]->Draw();
 		c7->cd(2);
-		hist_peak_area_v[1]->Draw();
+		hist_peak_area_v[ch_index_for_view_list[1]]->Draw();
 		c7->cd(3);
-		hist_peak_area_v[2]->Draw();
+		hist_peak_area_v[ch_index_for_view_list[2]]->Draw();
 		c7->cd(4);
-		hist_peak_area_v[3]->Draw();
+		hist_peak_area_v[ch_index_for_view_list[3]]->Draw();
 	}
 
 	if (draw_var.find("n_peaks") != std::string::npos)
@@ -319,13 +362,13 @@ int main(int argc, char *argv[])
 		TCanvas *c8 = new TCanvas("c8", "n_peaks");
 		c8->Divide(2, 2, 0.01, 0.01);
 		c8->cd(1);
-		hist_n_peaks_v[0]->Draw();
+		hist_n_peaks_v[ch_index_for_view_list[0]]->Draw();
 		c8->cd(2);
-		hist_n_peaks_v[1]->Draw();
+		hist_n_peaks_v[ch_index_for_view_list[1]]->Draw();
 		c8->cd(3);
-		hist_n_peaks_v[2]->Draw();
+		hist_n_peaks_v[ch_index_for_view_list[2]]->Draw();
 		c8->cd(4);
-		hist_n_peaks_v[3]->Draw();
+		hist_n_peaks_v[ch_index_for_view_list[3]]->Draw();
 	}
 
 	if (draw_var.find("peak_amp_vs_peak_area") != std::string::npos)
@@ -333,19 +376,21 @@ int main(int argc, char *argv[])
 		TCanvas *c9 = new TCanvas("c9", "peak_amp_vs_peak_area");
 		vector<TGraph*> gr_peak_amp_peak_area(ch_list.size());
 		c9->Divide(2, 2, 0.01, 0.01);
-		c9->cd(1);
-		gr_peak_amp_peak_area[0] = new TGraph(peak_amp_v[0].size(), &peak_amp_v[0][0], &peak_area_v[0][0]);
-		gr_peak_amp_peak_area[0]->Draw("AP");
-		gr_peak_amp_peak_area[0]->SetMarkerStyle(20);
+		c9->cd(1);				
+		gr_peak_amp_peak_area[ch_index_for_view_list[0]] = new TGraph(peak_amp_v[0].size(), &peak_amp_v[0][0], &peak_area_v[0][0]);
+		gr_peak_amp_peak_area[ch_index_for_view_list[0]]->Draw("AP");
+		//gr_peak_amp_peak_area[ch_index_for_view_list[0]]->SetMarkerStyle(20);
+		//gr_peak_amp_peak_area[ch_index_for_view_list[0]]->GetXaxis()->SetRangeUser(hist_peak_amp_xmin, hist_peak_amp_xmax);
+		//gr_peak_amp_peak_area[ch_index_for_view_list[0]]->GetYaxis()->SetRangeUser(hist_peak_area_xmin, hist_peak_area_xmax);
 		c9->cd(2);
-		gr_peak_amp_peak_area[1] = new TGraph(peak_amp_v[1].size(), &peak_amp_v[1][0], &peak_area_v[1][0]);
-		gr_peak_amp_peak_area[1]->Draw("AP");
+		gr_peak_amp_peak_area[ch_index_for_view_list[1]] = new TGraph(peak_amp_v[1].size(), &peak_amp_v[1][0], &peak_area_v[1][0]);
+		gr_peak_amp_peak_area[ch_index_for_view_list[1]]->Draw("AP");
 		c9->cd(3);
-		gr_peak_amp_peak_area[2] = new TGraph(peak_amp_v[2].size(), &peak_amp_v[2][0], &peak_area_v[2][0]);
-		gr_peak_amp_peak_area[2]->Draw("AP");
+		gr_peak_amp_peak_area[ch_index_for_view_list[2]] = new TGraph(peak_amp_v[2].size(), &peak_amp_v[2][0], &peak_area_v[2][0]);
+		gr_peak_amp_peak_area[ch_index_for_view_list[2]]->Draw("AP");
 		c9->cd(4);
-		gr_peak_amp_peak_area[3] = new TGraph(peak_amp_v[3].size(), &peak_amp_v[3][0], &peak_area_v[3][0]);
-		gr_peak_amp_peak_area[3]->Draw("AP");
+		gr_peak_amp_peak_area[ch_index_for_view_list[3]] = new TGraph(peak_amp_v[3].size(), &peak_amp_v[3][0], &peak_area_v[3][0]);
+		gr_peak_amp_peak_area[ch_index_for_view_list[3]]->Draw("AP");
 	}
 	
 

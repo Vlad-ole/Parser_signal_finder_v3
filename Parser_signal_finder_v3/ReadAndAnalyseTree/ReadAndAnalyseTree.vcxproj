@@ -91,12 +91,18 @@
     <ClCompile Include="..\EventMainCh.cpp" />
     <ClCompile Include="..\mainDic.cpp" />
     <ClCompile Include="..\Peaks.cpp" />
+    <ClCompile Include="..\ReadDAQInfo.cpp" />
+    <ClCompile Include="..\ReadInfo.cpp" />
+    <ClCompile Include="ChMapping.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\EventMainCh.h" />
     <ClInclude Include="..\mainDic.h" />
     <ClInclude Include="..\Peaks.h" />
+    <ClInclude Include="..\ReadDAQInfo.h" />
+    <ClInclude Include="..\ReadInfo.h" />
+    <ClInclude Include="ChMapping.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

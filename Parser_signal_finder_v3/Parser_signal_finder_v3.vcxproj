@@ -96,8 +96,10 @@
     <ClCompile Include="mainDic.cpp" />
     <ClCompile Include="PeakFinder.cpp" />
     <ClCompile Include="Peaks.cpp" />
+    <ClCompile Include="ReadDAQInfo.cpp" />
     <ClCompile Include="ReadData.cpp" />
     <ClCompile Include="ReadData_CAEN.cpp" />
+    <ClCompile Include="ReadInfo.cpp" />
     <ClCompile Include="RunDescription.cpp" />
     <ClCompile Include="EventMainCh.cpp" />
     <ClCompile Include="TypeConvertion.cpp" />
@@ -108,8 +110,10 @@
     <ClInclude Include="mainDic.h" />
     <ClInclude Include="PeakFinder.h" />
     <ClInclude Include="Peaks.h" />
+    <ClInclude Include="ReadDAQInfo.h" />
     <ClInclude Include="ReadData.h" />
     <ClInclude Include="ReadData_CAEN.h" />
+    <ClInclude Include="ReadInfo.h" />
     <ClInclude Include="RunDescription.h" />
     <ClInclude Include="EventMainCh.h" />
     <ClInclude Include="TypeConvertion.h" />

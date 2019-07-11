@@ -23,6 +23,8 @@
 //my
 #include "ReadData_CAEN.h"
 #include "Calc.h"
+#include "ReadInfo.h"
+#include "ReadDaqInfo.h"
 
 
 using namespace std;
@@ -37,21 +39,28 @@ int main(int argc, char *argv[])
 	if (is_batch_mode)
 		gROOT->SetBatch(kTRUE);
 
-	string date = "190606";
-	string subfolder_name = "f1";
+	string date = "190704";
+	string subfolder_name = "f2";
 	string output_folder = "E:\\" + date + "\\" + date + "_caen_raw\\analysis\\";
 	ofstream file_detailed_info_output(output_folder + subfolder_name + "_detailed_info.txt");
 	string file_name_output = output_folder + subfolder_name + ".root";
+	string file_name_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
+	string file_name_daq_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
 	
+	ReadDAQInfo rd_daq_inf(file_name_daq_info);
+	rd_daq_inf.Read();
+	//rd_daq_inf.Show();
+	//system("pause");
+	//exit(1);
+	unsigned int ns_per_point = /*4*//*16*/rd_daq_inf.GetNsPerPoint();
+	unsigned int points_per_event_per_ch = /*40000*//*9999*/rd_daq_inf.GetPointsPerEventPerCh();
+	unsigned int N_events_per_file = /*50*/rd_daq_inf.GetNEventsPerFileOutput();
+	ReadInfo rd_inf(file_name_info);
+	rd_inf.Read();
+	//rd_inf.Show();
 
-	unsigned int ns_per_point = 4/*16*/;
-	unsigned int points_per_event_per_ch = 40000/*9999*/;
-	unsigned int N_events_per_file = 100;
-	vector<unsigned short> ch_list = { 1, 2, 3, 4 };
-	vector<bool> is_positive_polarity_type_list = { true, true, true, true };
-
-	string file_name_raw = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod" + "\\000000__000099.dat";
-	ReadData_CAEN rdt(file_name_raw, N_events_per_file, ch_list.size(), points_per_event_per_ch);
+	string file_name_raw = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod" + "\\000000__000049.dat";
+	ReadData_CAEN rdt(file_name_raw, N_events_per_file, rd_inf.GetChList().size(), points_per_event_per_ch);
 
 	vector<double> yv_filtered(points_per_event_per_ch);
 	vector<double> xv(points_per_event_per_ch);
@@ -78,21 +87,21 @@ int main(int argc, char *argv[])
 
 		file_detailed_info_output << "ev = " << ev << endl;
 
-		for (int ch = 0; ch < ch_list.size(); ch++)
+		for (int ch = 0; ch < rd_inf.GetChList().size(); ch++)
 		{
 			//test
 			/*ev = 1;
 			ch = 1;*/
 			
-			file_detailed_info_output << "\t" << "ch = " << ch_list[ch] << endl;
+			file_detailed_info_output << "\t" << "ch = " << rd_inf.GetChList()[ch] << endl;
 			//cout << "\t" << "ch = " << ch_list[ch] << endl;
-			Calc calc(rdt.GetDataDouble()[ev][ch], ns_per_point, is_positive_polarity_type_list[ch]);
+			Calc calc(rdt.GetDataDouble()[ev][ch], ns_per_point, rd_inf.GetIsPositivePolarityTypeList()[ch]);
 			calc.CalcBaselineMeanSigma(0, 30000);
 			calc.SubtractBaseline();
 			yv_filtered = calc.GetFilteredWaveformGolay(/*21*/ 21, 0);
 
 			PeakFinder peak_finder(yv_filtered, ns_per_point);
-			peak_finder.FindPeaksByAmp(30/*mV*/);
+			peak_finder.FindPeaksByAmp(/*30*//*mV*/ rd_inf.GetThList()[ch]);
 			vector< pair<int, int> > pair_vec = peak_finder.GetPeakPositions();
 			vector<double> local_baseline = peak_finder.GetLocalBaselineV();
 			vector<double> avr_peak_time = peak_finder.GetAvrPeakTime();
@@ -116,13 +125,13 @@ int main(int argc, char *argv[])
 			//cout << "\t \t sigma = " << calc.GetBaselineSigma() << endl;
 
 			ostringstream canv_name;
-			canv_name << "event = " << ev << ", channel = " << ch_list[ch];
+			canv_name << "event = " << ev << ", channel = " << rd_inf.GetChList()[ch];
 			canv = new TCanvas( canv_name.str().c_str(), canv_name.str().c_str() );
 			
 			//draw raw values
 			TGraph* gr = new TGraph(points_per_event_per_ch, &xv[0], &rdt.GetDataDouble()[ev][ch][0]);
 			ostringstream gr_name;
-			gr_name << "event = " << ev << ", channel = " << ch_list[ch];
+			gr_name << "event = " << ev << ", channel = " << rd_inf.GetChList()[ch];
 			gr->SetTitle( gr_name.str().c_str() );
 			gr->Draw();
 
