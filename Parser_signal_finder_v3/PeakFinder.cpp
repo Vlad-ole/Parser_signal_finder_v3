@@ -8,8 +8,8 @@
 
 using namespace std;
 
-PeakFinder::PeakFinder(std::vector<double>& yv_data, unsigned int ns_per_point):
-yv_data(yv_data), ns_per_point(ns_per_point)
+PeakFinder::PeakFinder(std::vector<double>& yv_raw, std::vector<double>& yv_filtered, const unsigned int ns_per_point) :
+yv_raw(yv_raw), yv_filtered(yv_filtered), ns_per_point(ns_per_point)
 {
 }
 
@@ -60,14 +60,17 @@ void PeakFinder::FindPeaksByAmp(const double th)
 	const double local_baseline_window = 350; //ns
 	const double local_baseline_window_shift = 50; //ns
 	const double check_overlapping_window = /*500*/100; //ns
+	//shrinking of left tail for raw signal relative to filtered signal
+	const double shrinking_of_left_tail = 64;  //ns
 
 	const int half_window_p = window / ns_per_point;
 	const int local_baseline_window_p = local_baseline_window / ns_per_point;
 	const int local_baseline_window_shift_p = local_baseline_window_shift / ns_per_point;
 	const int check_overlapping_window_p = check_overlapping_window / ns_per_point;
+	const int shrinking_of_left_tail_p = shrinking_of_left_tail / ns_per_point;
 
 	//th by amp
-	for (int i = 0; i < yv_data.size(); i++)
+	for (int i = 0; i < yv_filtered.size(); i++)
 	{
 		//cout << yv_der[i] << endl;
 
@@ -77,23 +80,34 @@ void PeakFinder::FindPeaksByAmp(const double th)
 		}*/
 
 
-		if ((yv_data[i] > th) && is_search)
+		if ((yv_filtered[i] > th) && is_search)
 		{
 			is_search = false;
 			position_tmp = i;
 
-			const double j_from = (i - local_baseline_window_shift_p - local_baseline_window_p) > 0 ? i - local_baseline_window_shift_p - local_baseline_window_p : 0;
-
+			const int j_from = (i - local_baseline_window_shift_p - local_baseline_window_p) > 0 ? i - local_baseline_window_shift_p - local_baseline_window_p : 0;
+			const int j_from_raw = j_from + shrinking_of_left_tail_p;
+			
 			//v1 trivial local_baseline
-			local_baseline = 0;
+			//local_baseline = 0;
 			
 			//v2 calculation of local_baseline
 			/*local_baseline = 0;
 			for (int j = j_from; j < i - local_baseline_window_shift_p; j++)
 			{
-				local_baseline += yv_data[j];
+				local_baseline += yv_filtered[j];
 			}
 			local_baseline /= (i - local_baseline_window_shift_p - j_from);*/
+
+			//v3 calculation of local_baseline
+			local_baseline = 0;
+			for (int j = j_from_raw; j < (i - local_baseline_window_shift_p + shrinking_of_left_tail_p); j++)
+			{
+				local_baseline += yv_raw[j];
+			}
+			local_baseline /= (i - local_baseline_window_shift_p - j_from);
+
+
 
 			local_baseline_v.push_back(local_baseline);
 			//cout << "local_baseline = " << local_baseline << endl;
@@ -103,28 +117,29 @@ void PeakFinder::FindPeaksByAmp(const double th)
 			//pair_var.first = *min_element(yv_data.begin(), yv_data.begin());
 			
 			//v2 (as minimun on the interval) or (as intersection with baseline)
-			pair_var.first = distance(yv_data.begin(), min_element(yv_data.begin() + j_from, yv_data.begin() + i));
+			pair_var.first = distance(yv_filtered.begin(), min_element(yv_filtered.begin() + j_from, yv_filtered.begin() + i));
 			for (int j = i; j > j_from; j--)
 			{
-				if (yv_data[j] < local_baseline)
+				if (yv_filtered[j] < local_baseline)
 				{
 					pair_var.first = j;
 					break;
 				}
 			}
+			pair_var.first += shrinking_of_left_tail_p;
 
 		}
 
-		if (!is_search && (i > position_tmp) && (yv_data[i] < th))
+		if (!is_search && (i > (position_tmp + shrinking_of_left_tail_p)) && (yv_filtered[i] < th))
 		{
-			if (yv_data[i] < local_baseline)
+			if (yv_filtered[i] < local_baseline)
 			{
 				bool is_overlapped = false;
-				if ((i + check_overlapping_window_p) < yv_data.size())//can be error
+				if ((i + check_overlapping_window_p) < yv_filtered.size())//can be error
 				{
 					for (int j = i; j < i + check_overlapping_window_p; j++)
 					{
-						if (yv_data[j] > th)//error?
+						if (yv_filtered[j] > th)//error?
 						{
 							is_overlapped = true;
 							break;
@@ -142,13 +157,18 @@ void PeakFinder::FindPeaksByAmp(const double th)
 					double peak_area_tmp = 0;					
 					for (int j = pair_var.first; j < pair_var.second; j++)
 					{
-						peak_area_tmp += yv_data[j] - local_baseline;
+						peak_area_tmp += yv_raw[j] - local_baseline;
 					}
 					peak_area.push_back(peak_area_tmp * ns_per_point);
 
-					vector<double>::iterator it_max = max_element(yv_data.begin() + pair_var.first, yv_data.begin() + pair_var.second);
+					if (pair_var.first >= pair_var.second)
+					{
+						cout << "err: pair_var.first >= pair_var.second" << endl;
+						system("pause");
+					}
+					vector<double>::iterator it_max = max_element(yv_raw.begin() + pair_var.first, yv_raw.begin() + pair_var.second);
 					peak_amp.push_back(*it_max);
-					peak_time.push_back( distance(yv_data.begin(), it_max) * ns_per_point );
+					peak_time.push_back(distance(yv_raw.begin(), it_max) * ns_per_point);
 
 					//cout << pair_var.first << "\t" << pair_var.second << endl;
 				}

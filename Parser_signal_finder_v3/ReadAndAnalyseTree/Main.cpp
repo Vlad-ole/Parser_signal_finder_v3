@@ -40,8 +40,8 @@ int main(int argc, char *argv[])
 {
 	TApplication theApp("theApp", &argc, argv);//let's add some magic! https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=22972
 	
-	//string draw_var = "ymin ymax baseline_mean baseline_sigma peak_time peak_amp peak_area n_peaks peak_amp_vs_peak_area";
-	string draw_var = "peak_amp peak_amp_vs_peak_area";
+	string draw_var = "ymin ymax baseline_mean baseline_sigma peak_time peak_amp peak_area n_peaks peak_amp_vs_peak_area";
+	//string draw_var = "peak_amp peak_amp_vs_peak_area";
 	vector<int> ch_list_to_view = {32, 33, 34, 35};
 
 	/*int hist_peak_area_nbins = 1000;
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 	ChMapping ch_map(ch_list, ch_list_to_view);
 	vector<int> ch_index_for_view_list = ch_map.GetChIndexList();
 	
-	string file_name_tree = "E:\\" + date + "\\" + date + "_caen_trees\\" + subfolder_name + ".root";
+	string file_name_tree = "E:\\" + date + "\\" + date + "_caen_trees\\" + subfolder_name + "_th5mV.root";
 	TFile *f = new TFile(file_name_tree.c_str());
 	if (!(f->IsOpen()))
 	{
@@ -169,6 +169,12 @@ int main(int argc, char *argv[])
 
 		//cout << "ev = " << ev << endl;
 
+		if (ch_list.size() != 35)
+		{
+			cout << "err" << endl;
+			system("pause");
+		}
+
 		//ch loop
 		for (unsigned int ch = 0; ch < ch_list.size(); ch++)
 		{
@@ -181,6 +187,8 @@ int main(int argc, char *argv[])
 			hist_baseline_mean_v[ch]->Fill(event->baseline_mean[ch]);
 			hist_baseline_sigma_v[ch]->Fill(event->baseline_sigma[ch]);
 			hist_n_peaks_v[ch]->Fill(event->peaks[ch]->peak_time.size());
+
+			
 			
 			//if (ev == 0)//cuts
 			{
@@ -363,12 +371,16 @@ int main(int argc, char *argv[])
 		c8->Divide(2, 2, 0.01, 0.01);
 		c8->cd(1);
 		hist_n_peaks_v[ch_index_for_view_list[0]]->Draw();
+		gPad->SetLogy();
 		c8->cd(2);
 		hist_n_peaks_v[ch_index_for_view_list[1]]->Draw();
+		gPad->SetLogy();
 		c8->cd(3);
 		hist_n_peaks_v[ch_index_for_view_list[2]]->Draw();
+		gPad->SetLogy();
 		c8->cd(4);
 		hist_n_peaks_v[ch_index_for_view_list[3]]->Draw();
+		gPad->SetLogy();
 	}
 
 	if (draw_var.find("peak_amp_vs_peak_area") != std::string::npos)

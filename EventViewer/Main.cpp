@@ -19,6 +19,7 @@
 #include "TGraph.h"
 #include "TCanvas.h"
 #include "TGraphErrors.h"
+#include "TMarker.h"
 
 //my
 #include "ReadData_CAEN.h"
@@ -87,6 +88,8 @@ int main(int argc, char *argv[])
 
 		file_detailed_info_output << "ev = " << ev << endl;
 
+
+
 		for (int ch = 0; ch < rd_inf.GetChList().size(); ch++)
 		{
 			//test
@@ -100,7 +103,7 @@ int main(int argc, char *argv[])
 			calc.SubtractBaseline();
 			yv_filtered = calc.GetFilteredWaveformGolay(/*21*/ 21, 0);
 
-			PeakFinder peak_finder(yv_filtered, ns_per_point);
+			PeakFinder peak_finder(rdt.GetDataDouble()[ev][ch], yv_filtered, ns_per_point);
 			peak_finder.FindPeaksByAmp(/*30*//*mV*/ rd_inf.GetThList()[ch]);
 			vector< pair<int, int> > pair_vec = peak_finder.GetPeakPositions();
 			vector<double> local_baseline = peak_finder.GetLocalBaselineV();
@@ -149,9 +152,15 @@ int main(int argc, char *argv[])
 				for (int k = pair_vec[j].first; k < pair_vec[j].second; k++)
 				{
 					signals_x_values.push_back(k * ns_per_point);
-					signals_y_values.push_back(yv_filtered[k]);
+					//signals_y_values.push_back(yv_filtered[k]);
+					signals_y_values.push_back(rdt.GetDataDouble()[ev][ch][k]);
 					local_baseline_y_values.push_back(local_baseline[j]);
 				}
+
+				TMarker *mrk = new TMarker(peak_time[j], rdt.GetDataDouble()[ev][ch][peak_time[j]/ns_per_point], 20);
+				mrk->Draw();
+				mrk->SetMarkerColor(kMagenta+2);
+				mrk->SetMarkerSize(2);
 			}				
 			if (signals_x_values.size() > 0)
 			{

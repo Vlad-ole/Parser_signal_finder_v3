@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 		//file_name_raw = "E:\\190521\\190521_caen_raw\\f1_mod\\000000__000099.dat";		
 	}	
 	cout << endl;
-	cout << "peak_finder_th = " << peak_finder_th << endl;
+	//cout << "peak_finder_th = " << peak_finder_th << endl;
 
 	//cout << "Press any key to confirm the execution." << endl;
 	//system("pause");
@@ -86,6 +86,12 @@ int main(int argc, char **argv)
 	unsigned int N_events_per_file = /*100*/rd_daq_inf.GetNEventsPerFileOutput();
 	ReadInfo rd_inf(file_name_info);
 	rd_inf.Read();
+	if (rd_inf.GetChList().size() != 35)
+	{
+		cout << "err" << endl;
+		system("pause");
+	}
+	cout << "peak_finder_th for ch 32 = " << rd_inf.GetThList()[10] << " mV" << endl;
 	//vector<unsigned short> ch_list = {1, 2, 3, 4};
 	//vector<bool> is_positive_polarity_type_list = { true, true, true, true };
 
@@ -95,7 +101,7 @@ int main(int argc, char **argv)
 
 	//create tree
 	ostringstream file_for_tree_name;
-	file_for_tree_name << "E:\\" << date << "\\" << date << "_caen_trees\\" << subfolder_name  /* << "_th" << peak_finder_th << "mV.root" */;
+	file_for_tree_name << "E:\\" << date << "\\" << date << "_caen_trees\\" << subfolder_name << "_th" << rd_inf.GetThList()[10] << "mV.root";
 	TFile file_for_tree(file_for_tree_name.str().c_str(), "RECREATE");
 	TTree tree_main("TreeMain", "TreeMain");
 	EventMainCh *event = new EventMainCh();
@@ -147,7 +153,7 @@ int main(int argc, char **argv)
 
 				TStopwatch timer_find_peaks;
 				timer_find_peaks.Start();
-				PeakFinder peak_finder(yv_filtered, ns_per_point);
+				PeakFinder peak_finder(rdt.GetDataDouble()[ev][ch], yv_filtered, ns_per_point);
 				peak_finder.FindPeaksByAmp(rd_inf.GetThList()[ch]/*peak_finder_th*//*mV*/);
 				timer_find_peaks.Stop();
 				time_find_peaks += timer_find_peaks.RealTime();

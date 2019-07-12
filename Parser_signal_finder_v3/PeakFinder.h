@@ -5,7 +5,7 @@
 class PeakFinder
 {
 public:
-	PeakFinder(std::vector<double>& yv_data, const unsigned int ns_per_point);
+	PeakFinder(std::vector<double>& yv_raw, std::vector<double>& yv_filtered, const unsigned int ns_per_point);
 	~PeakFinder();
 
 	std::vector<double> GetAvrPeakTime();
@@ -19,7 +19,9 @@ public:
 	void FindPeaksByAmp(const double th);
 
 private:
-	std::vector<double>& yv_data;
+	std::vector<double>& yv_raw;
+	std::vector<double>& yv_filtered;
+
 	const unsigned int ns_per_point;
 	std::vector<std::pair<int, int>> pair_v;
 	std::vector<double> avr_peak_time;
