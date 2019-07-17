@@ -8,27 +8,39 @@
 
 //my
 #include "ReadData_CAEN_v2.h"
+#include "ReadDAQInfo.h"
+#include "ReadInfo.h"
 
 using namespace std;
 
 int main(int argc, char **argv)
 {
+	string date = "181220";
+	string subfolder_name = "f4";
+	string file_name_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
+	string file_name_daq_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
+	ReadDAQInfo rd_daq_inf(file_name_daq_info);
+	rd_daq_inf.Read();
 	
 	//Read DAQ_info.txt
-	const unsigned short ns_per_point = /*4*/16;
-	const unsigned int points_per_event = /*40000*/9999;
-	const unsigned short N_events_per_file_input = 1000;
-	const unsigned short N_events_per_file_output = 50;
+	const unsigned short ns_per_point = /*4*//*16*/ rd_daq_inf.GetNsPerPoint();
+	const unsigned int points_per_event = /*40000*//*9999*/ rd_daq_inf.GetPointsPerEventPerCh();
+	const unsigned short N_events_per_file_input = /*1000*/ rd_daq_inf.GetNEventsPerFileInput();
+	const unsigned short N_events_per_file_output = /*50*/ rd_daq_inf.GetNEventsPerFileOutput();
 	//vector<unsigned short> ch_list= {0,1,2,3,4,5,6,7,32,33,34,35,36,37,38,39,40,41,42,43,44,48,49,50,51,52,53,54,55,56,57,58,59};
 	//vector<unsigned short> ch_list = {0, 1, 2, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59};
 	//vector<unsigned short> ch_list = { 1, 2, 3, 4};
-	vector<unsigned short> ch_list = {0, 1, 2, 3, 4, 5, 8, 9, 10, 11, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59};
-	
-	unsigned int start_run_number = 22;
-	unsigned int stop_run_number = 31;
+	//vector<unsigned short> ch_list = {0, 1, 2, 3, 4, 5, 8, 9, 10, 11, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59};
+	ReadInfo rd_inf(file_name_info);
+	rd_inf.Read();
+	vector<int> ch_list = rd_inf.GetChList();
 
-	string date = "190704";
-	string subfolder_name = "f2";
+	rd_daq_inf.Show();
+	rd_inf.Show();
+	system("pause");
+
+	unsigned int start_run_number = 13;
+	unsigned int stop_run_number = 23;
 
 	string common_path_input = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "\\";
 	string common_path_out = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod\\";
