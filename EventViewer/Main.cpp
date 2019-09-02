@@ -40,8 +40,8 @@ int main(int argc, char *argv[])
 	if (is_batch_mode)
 		gROOT->SetBatch(kTRUE);
 
-	string date = "181220";
-	string subfolder_name = "f4";
+	string date = "190718";
+	string subfolder_name = "f1";
 	string output_folder = "E:\\" + date + "\\" + date + "_caen_raw\\analysis\\";
 	ofstream file_detailed_info_output(output_folder + subfolder_name + "_detailed_info.txt");
 	string file_name_output = output_folder + subfolder_name + ".root";
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 	rd_inf.Read();
 	//rd_inf.Show();
 
-	string file_name_raw = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod" + "\\000000__000009.dat";
+	string file_name_raw = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod" + "\\000000__000099.dat";
 	ReadData_CAEN rdt(file_name_raw, N_events_per_file, rd_inf.GetChList().size(), points_per_event_per_ch);
 
 	vector<double> yv_filtered(points_per_event_per_ch);

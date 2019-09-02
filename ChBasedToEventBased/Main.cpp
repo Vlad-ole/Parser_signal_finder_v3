@@ -15,8 +15,8 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-	string date = "181220";
-	string subfolder_name = "f4";
+	string date = "190718";
+	string subfolder_name = "f1";
 	string file_name_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
 	string file_name_daq_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
 	ReadDAQInfo rd_daq_inf(file_name_daq_info);
@@ -39,8 +39,8 @@ int main(int argc, char **argv)
 	rd_inf.Show();
 	system("pause");
 
-	unsigned int start_run_number = 13;
-	unsigned int stop_run_number = 23;
+	unsigned int start_run_number = 1;
+	unsigned int stop_run_number = 20;
 
 	string common_path_input = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "\\";
 	string common_path_out = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod\\";

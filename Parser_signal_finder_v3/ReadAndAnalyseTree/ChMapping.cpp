@@ -21,6 +21,11 @@ std::vector<int> &ChMapping::GetChIndexList()
 	return ch_index_list;
 }
 
+std::vector<int> &ChMapping::GetChOrderedNumberList()
+{
+	return ch_ordered_number_list;
+}
+
 
 ChMapping::~ChMapping()
 {

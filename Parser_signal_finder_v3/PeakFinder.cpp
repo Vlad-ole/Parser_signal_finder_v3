@@ -56,12 +56,12 @@ void PeakFinder::FindPeaksByAmp(const double th)
 	double local_baseline;
 	pair<int, int> pair_var;
 	
-	const double window = 200; //ns
-	const double local_baseline_window = 350; //ns
-	const double local_baseline_window_shift = 50; //ns
-	const double check_overlapping_window = /*500*//*100 used for 46V and folder2 190704*/250; //ns
-	//shrinking of left tail for raw signal relative to filtered signal
-	const double shrinking_of_left_tail = 64;  //ns
+	//const double window = 200; //ns
+	//const double local_baseline_window = 350; //ns
+	//const double local_baseline_window_shift = 50; //ns
+	//const double check_overlapping_window = /*500*//*100 used for 46V and folder2 190704*/250; //ns
+	////shrinking of left tail for raw signal relative to filtered signal
+	//const double shrinking_of_left_tail = 64;  //ns
 
 	const int half_window_p = window / ns_per_point;
 	const int local_baseline_window_p = local_baseline_window / ns_per_point;

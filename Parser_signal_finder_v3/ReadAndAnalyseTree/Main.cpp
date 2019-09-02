@@ -45,8 +45,8 @@ int main(int argc, char *argv[])
 	TApplication theApp("theApp", &argc, argv);//let's add some magic! https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=22972
 	
 	//string draw_var = "ymin ymax baseline_mean baseline_sigma peak_time peak_amp peak_area n_peaks peak_amp_vs_peak_area "; //view 4 ch
-	//string draw_var = "peak_time_good_SiPMs n_peaks_map"; //view good_SiPMs
-	string draw_var = "peak_time peak_amp peak_area n_peaks";
+	string draw_var = "n_peaks_map"; //view good_SiPMs
+	//string draw_var = "peak_time peak_amp peak_area n_peaks";
 	//vector<int> ch_list_to_view = { 32, 33, 34, 35 };
 	vector<int> ch_list_to_view = {36, 37, 38, 39};
 	//vector<int> ch_list_to_view = { 40, 41, 42, 43 };
@@ -88,8 +88,8 @@ int main(int argc, char *argv[])
 
 	
 	//in
-	string date = "181220";
-	string subfolder_name = "f4";
+	string date = "190704";
+	string subfolder_name = "f1";
 	string file_name_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
 	string file_name_daq_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
 
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
 
 		//cout << "ev = " << ev << endl;
 
-		if (ch_list.size() != 33)
+		if (ch_list.size() != 35)
 		{
 			cout << "err" << endl;
 			system("pause");
@@ -470,46 +470,46 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	//if (draw_var.find("n_peaks_map") != std::string::npos)
-	//{
-	//	TCanvas *c11 = new TCanvas("c11", "n_peaks_map");
+	if (draw_var.find("n_peaks_map") != std::string::npos)
+	{
+		TCanvas *c11 = new TCanvas("c11", "n_peaks_map");
 
-	//	const Int_t NRGBs = 6;
-	//	const Int_t NCont = 999;
+		const Int_t NRGBs = 6;
+		const Int_t NCont = 999;
 
-	//	Double_t stops[NRGBs] = { 0.00, 0.2, 0.4, 0.6, 0.8, 1.00 };
-	//	Double_t red[NRGBs] = { 0.99, 0.44, 0.00, 0.87, 1.00, 0.51 };
-	//	Double_t green[NRGBs] = { 0.00, 0.66, 0.81, 1.00, 0.20, 0.00 };
-	//	Double_t blue[NRGBs] = { 0.99, 0.72, 1.00, 0.12, 0.00, 0.00 };
+		Double_t stops[NRGBs] = { 0.00, 0.2, 0.4, 0.6, 0.8, 1.00 };
+		Double_t red[NRGBs] = { 0.99, 0.44, 0.00, 0.87, 1.00, 0.51 };
+		Double_t green[NRGBs] = { 0.00, 0.66, 0.81, 1.00, 0.20, 0.00 };
+		Double_t blue[NRGBs] = { 0.99, 0.72, 1.00, 0.12, 0.00, 0.00 };
 
-	//	TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
-	//	gStyle->SetNumberContours(NCont);
-	//	gStyle->SetOptStat(0);
+		TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+		gStyle->SetNumberContours(NCont);
+		gStyle->SetOptStat(0);
 
-	//	const Double_t min = 0.65;
-	//	const Double_t max = 1.3;
+		const Double_t min = 0.65;
+		const Double_t max = 1.3;
 
-	//	const Int_t nLevels = 999;
-	//	Double_t levels[nLevels];
+		const Int_t nLevels = 999;
+		Double_t levels[nLevels];
 
-	//	for (int i = 1; i < nLevels; i++) 
-	//	{
-	//		levels[i] = min + (max - min) / (nLevels - 1) * (i);
-	//	}
-	//	levels[0] = 0.01;
+		for (int i = 1; i < nLevels; i++) 
+		{
+			levels[i] = min + (max - min) / (nLevels - 1) * (i);
+		}
+		levels[0] = 0.01;
 
-	//	h2_n_peaks->SetContour((sizeof(levels) / sizeof(Double_t)), levels);
+		h2_n_peaks->SetContour((sizeof(levels) / sizeof(Double_t)), levels);
 
-	//	int n_events = 0;
-	//	for (int i = 0; i < 25; i++)
-	//	{
-	//		int xi = i % 4 + 1;
-	//		int yi = i / 4 + 1;
-	//		h2_n_peaks->SetBinContent(xi, yi, yv[i]);
-	//		cout << i << "\t" << xi << "\t" << yi << "\t" << h2_S2_total_rel->GetBinContent(xi, yi) << endl;
-	//		n_events++;
-	//	}
-	//}
+		int n_events = 0;
+		//for (int i = 0; i < 25; i++)
+		//{
+		//	int xi = i % 4 + 1;
+		//	int yi = i / 4 + 1;
+		//	h2_n_peaks->SetBinContent(xi, yi, yv[i]);
+		//	cout << i << "\t" << xi << "\t" << yi << "\t" << h2_S2_total_rel->GetBinContent(xi, yi) << endl;
+		//	n_events++;
+		//}
+	}
 
 
 	

@@ -29,5 +29,12 @@ private:
 	std::vector<double> peak_amp;
 	std::vector<double> local_baseline_v;
 	std::vector<double> peak_area;
+
+	const double window; //ns
+	const double local_baseline_window; //ns
+	const double local_baseline_window_shift; //ns
+	const double check_overlapping_window; /*500*//*100 used for 46V and folder2 190704*/ /*optimum for SiPM = 250 ns*/; //ns
+	//shrinking of left tail for raw signal relative to filtered signal
+	const double shrinking_of_left_tail;  //ns
 };
 
