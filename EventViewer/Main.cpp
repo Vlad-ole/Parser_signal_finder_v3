@@ -101,9 +101,11 @@ int main(int argc, char *argv[])
 			Calc calc(rdt.GetDataDouble()[ev][ch], ns_per_point, rd_inf.GetIsPositivePolarityTypeList()[ch]);
 			calc.CalcBaselineMeanSigma(0, 30000);
 			calc.SubtractBaseline();
-			yv_filtered = calc.GetFilteredWaveformGolay(/*21*/ 21, 0);
+			yv_filtered = calc.GetFilteredWaveformGolay(/*21*/ rd_inf.GetFilteringWindowList()[ch], 0);
 
-			PeakFinder peak_finder(rdt.GetDataDouble()[ev][ch], yv_filtered, ns_per_point);
+			PeakFinder peak_finder(rdt.GetDataDouble()[ev][ch], yv_filtered, ns_per_point, 
+				rd_inf.GetWindowList()[ch], rd_inf.GetLocalBaselineWindowList()[ch], rd_inf.GetLocalBaselineWindowShiftList()[ch],
+				rd_inf.GetCheckOverlappingWindowList()[ch], rd_inf.GetShrinkingOfLeftTailList()[ch]);
 			peak_finder.FindPeaksByAmp(/*30*//*mV*/ rd_inf.GetThList()[ch]);
 			vector< pair<int, int> > pair_vec = peak_finder.GetPeakPositions();
 			vector<double> local_baseline = peak_finder.GetLocalBaselineV();

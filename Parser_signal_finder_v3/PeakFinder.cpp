@@ -8,8 +8,11 @@
 
 using namespace std;
 
-PeakFinder::PeakFinder(std::vector<double>& yv_raw, std::vector<double>& yv_filtered, const unsigned int ns_per_point) :
-yv_raw(yv_raw), yv_filtered(yv_filtered), ns_per_point(ns_per_point)
+PeakFinder::PeakFinder(std::vector<double>& yv_raw, std::vector<double>& yv_filtered, const unsigned int ns_per_point, 
+	const double window, const double local_baseline_window, const double local_baseline_window_shift, 
+	const double check_overlapping_window, const double shrinking_of_left_tail):
+yv_raw(yv_raw), yv_filtered(yv_filtered), ns_per_point(ns_per_point), window(window), local_baseline_window(local_baseline_window), 
+local_baseline_window_shift(local_baseline_window_shift), check_overlapping_window(check_overlapping_window), shrinking_of_left_tail(shrinking_of_left_tail)
 {
 }
 

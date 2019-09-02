@@ -5,7 +5,9 @@
 class PeakFinder
 {
 public:
-	PeakFinder(std::vector<double>& yv_raw, std::vector<double>& yv_filtered, const unsigned int ns_per_point);
+	PeakFinder(std::vector<double>& yv_raw, std::vector<double>& yv_filtered, const unsigned int ns_per_point,
+		const double window, const double local_baseline_window, const double local_baseline_window_shift,
+		const double check_overlapping_window, const double shrinking_of_left_tail);
 	~PeakFinder();
 
 	std::vector<double> GetAvrPeakTime();
