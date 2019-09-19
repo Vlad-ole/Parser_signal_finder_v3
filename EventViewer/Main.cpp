@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 		gROOT->SetBatch(kTRUE);
 
 	string date = "190718";
-	string subfolder_name = "f1";
+	string subfolder_name = "f2";
 	string output_folder = "E:\\" + date + "\\" + date + "_caen_raw\\analysis\\";
 	ofstream file_detailed_info_output(output_folder + subfolder_name + "_detailed_info.txt");
 	string file_name_output = output_folder + subfolder_name + ".root";
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 	rd_inf.Read();
 	//rd_inf.Show();
 
-	string file_name_raw = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod" + "\\000000__000099.dat";
+	string file_name_raw = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod" + "\\000000__000009.dat";
 	ReadData_CAEN rdt(file_name_raw, N_events_per_file, rd_inf.GetChList().size(), points_per_event_per_ch);
 
 	vector<double> yv_filtered(points_per_event_per_ch);
@@ -79,11 +79,11 @@ int main(int argc, char *argv[])
 	//TGraph* gr;                 // create a pointer to a TGraph
 	TCanvas* canv;
 	//const unsigned int n_events = N_events_per_file;
-	const unsigned int n_events = 5;
+	const unsigned int n_events = 7;
 	cout << endl;
 	for (int ev = 0; ev < n_events; ev++)
 	{
-		if (ev % 10 == 0)
+		//if (ev % 10 == 0)
 			cout << "ev = " << ev << endl;
 
 		file_detailed_info_output << "ev = " << ev << endl;
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 			ch = 1;*/
 			
 			file_detailed_info_output << "\t" << "ch = " << rd_inf.GetChList()[ch] << endl;
-			//cout << "\t" << "ch = " << ch_list[ch] << endl;
+			cout << "\t" << "ch = " << rd_inf.GetChList()[ch] << endl;
 			Calc calc(rdt.GetDataDouble()[ev][ch], ns_per_point, rd_inf.GetIsPositivePolarityTypeList()[ch]);
 			calc.CalcBaselineMeanSigma(0, 30000);
 			calc.SubtractBaseline();
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 
 			PeakFinder peak_finder(rdt.GetDataDouble()[ev][ch], yv_filtered, ns_per_point, 
 				rd_inf.GetWindowList()[ch], rd_inf.GetLocalBaselineWindowList()[ch], rd_inf.GetLocalBaselineWindowShiftList()[ch],
-				rd_inf.GetCheckOverlappingWindowList()[ch], rd_inf.GetShrinkingOfLeftTailList()[ch]);
+				rd_inf.GetCheckOverlappingWindowList()[ch], rd_inf.GetShrinkingOfLeftTailList()[ch], rd_inf.GetShrinkingOfRightTailList()[ch]);
 			peak_finder.FindPeaksByAmp(/*30*//*mV*/ rd_inf.GetThList()[ch]);
 			vector< pair<int, int> > pair_vec = peak_finder.GetPeakPositions();
 			vector<double> local_baseline = peak_finder.GetLocalBaselineV();

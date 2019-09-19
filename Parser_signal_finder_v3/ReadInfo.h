@@ -26,6 +26,7 @@ public:
 	std::vector<double> &GetLocalBaselineWindowShiftList();
 	std::vector<double> &GetCheckOverlappingWindowList();
 	std::vector<double> &GetShrinkingOfLeftTailList();
+	std::vector<double> &GetShrinkingOfRightTailList();
 	std::vector<double> &GetFilteringWindowList();
 
 private:
@@ -40,6 +41,7 @@ private:
 	std::vector<double> local_baseline_window_shift_list;
 	std::vector<double> check_overlapping_window_list;
 	std::vector<double> shrinking_of_left_tail_list;
+	std::vector<double> shrinking_of_right_tail_list;
 	std::vector<double> filtering_window_list;
 };
 

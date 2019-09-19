@@ -10,9 +10,10 @@ using namespace std;
 
 PeakFinder::PeakFinder(std::vector<double>& yv_raw, std::vector<double>& yv_filtered, const unsigned int ns_per_point, 
 	const double window, const double local_baseline_window, const double local_baseline_window_shift, 
-	const double check_overlapping_window, const double shrinking_of_left_tail):
+	const double check_overlapping_window, const double shrinking_of_left_tail, const double shrinking_of_right_tail) :
 yv_raw(yv_raw), yv_filtered(yv_filtered), ns_per_point(ns_per_point), window(window), local_baseline_window(local_baseline_window), 
-local_baseline_window_shift(local_baseline_window_shift), check_overlapping_window(check_overlapping_window), shrinking_of_left_tail(shrinking_of_left_tail)
+local_baseline_window_shift(local_baseline_window_shift), check_overlapping_window(check_overlapping_window),
+shrinking_of_left_tail(shrinking_of_left_tail), shrinking_of_right_tail(shrinking_of_right_tail)
 {
 }
 
@@ -71,6 +72,7 @@ void PeakFinder::FindPeaksByAmp(const double th)
 	const int local_baseline_window_shift_p = local_baseline_window_shift / ns_per_point;
 	const int check_overlapping_window_p = check_overlapping_window / ns_per_point;
 	const int shrinking_of_left_tail_p = shrinking_of_left_tail / ns_per_point;
+	const int shrinking_of_right_tail_p = shrinking_of_right_tail / ns_per_point;
 
 	//th by amp
 	for (int i = 0; i < yv_filtered.size(); i++)
@@ -153,7 +155,12 @@ void PeakFinder::FindPeaksByAmp(const double th)
 				if (!is_overlapped)
 				{
 					is_search = true;
-					pair_var.second = i;
+					pair_var.second = i - shrinking_of_right_tail_p ;//check this
+					//to avoid pair_var.first >= pair_var.second due to fasle indentification because of noise 
+					if ((pair_var.second - pair_var.first) <= 3)
+						pair_var.second += (4 - (pair_var.second - pair_var.first)); 
+
+
 					pair_v.push_back(pair_var);
 					avr_peak_time.push_back((pair_var.first + pair_var.second) / 2.0 * ns_per_point);
 
@@ -168,6 +175,7 @@ void PeakFinder::FindPeaksByAmp(const double th)
 					{
 						cout << "err: pair_var.first >= pair_var.second" << endl;
 						system("pause");
+						exit(1);
 					}
 					vector<double>::iterator it_max = max_element(yv_raw.begin() + pair_var.first, yv_raw.begin() + pair_var.second);
 					peak_amp.push_back(*it_max);

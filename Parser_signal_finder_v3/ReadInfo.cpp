@@ -33,10 +33,12 @@ void ReadInfo::Read()
 			double local_baseline_window_shift;
 			double check_overlapping_window;
 			double shrinking_of_left_tail;
+			double shrinking_of_right_tail;
 			double filtering_window;
 
 			iss >> ch >> is_positive_polarity_type >> th >> window >> local_baseline_window >>
-				local_baseline_window_shift >> check_overlapping_window >> shrinking_of_left_tail >> filtering_window;
+				local_baseline_window_shift >> check_overlapping_window >>
+				shrinking_of_left_tail >> shrinking_of_right_tail >> filtering_window;
 			
 			ch_list.push_back(ch);
 			is_positive_polarity_type_list.push_back(is_positive_polarity_type);
@@ -46,6 +48,7 @@ void ReadInfo::Read()
 			local_baseline_window_shift_list.push_back(local_baseline_window_shift);
 			check_overlapping_window_list.push_back(check_overlapping_window);
 			shrinking_of_left_tail_list.push_back(shrinking_of_left_tail);
+			shrinking_of_right_tail_list.push_back(shrinking_of_right_tail);
 			filtering_window_list.push_back(filtering_window);
 		}		
 	}
@@ -102,6 +105,11 @@ std::vector<double> &ReadInfo::GetCheckOverlappingWindowList()
 std::vector<double> &ReadInfo::GetShrinkingOfLeftTailList()
 {
 	return shrinking_of_left_tail_list;
+}
+
+std::vector<double> &ReadInfo::GetShrinkingOfRightTailList()
+{
+	return shrinking_of_right_tail_list;
 }
 
 std::vector<double> &ReadInfo::GetFilteringWindowList()

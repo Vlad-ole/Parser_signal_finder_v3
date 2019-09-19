@@ -7,7 +7,7 @@ class PeakFinder
 public:
 	PeakFinder(std::vector<double>& yv_raw, std::vector<double>& yv_filtered, const unsigned int ns_per_point,
 		const double window, const double local_baseline_window, const double local_baseline_window_shift,
-		const double check_overlapping_window, const double shrinking_of_left_tail);
+		const double check_overlapping_window, const double shrinking_of_left_tail, const double shrinking_of_right_tail);
 	~PeakFinder();
 
 	std::vector<double> GetAvrPeakTime();
@@ -38,5 +38,6 @@ private:
 	const double check_overlapping_window; /*500*//*100 used for 46V and folder2 190704*/ /*optimum for SiPM = 250 ns*/; //ns
 	//shrinking of left tail for raw signal relative to filtered signal
 	const double shrinking_of_left_tail;  //ns
+	const double shrinking_of_right_tail;  //ns
 };
 

@@ -43,42 +43,44 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	TApplication theApp("theApp", &argc, argv);//let's add some magic! https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=22972
-	
-	//string draw_var = "ymin ymax baseline_mean baseline_sigma peak_time peak_amp peak_area n_peaks peak_amp_vs_peak_area "; //view 4 ch
-	string draw_var = "n_peaks_map"; //view good_SiPMs
-	//string draw_var = "peak_time peak_amp peak_area n_peaks";
+
+	string draw_var = "ymin ymax baseline_mean baseline_sigma peak_time peak_amp peak_area n_peaks peak_amp_vs_peak_area"; //view 4 ch
+	//string draw_var = "n_peaks_map"; //view good_SiPMs
+	//string draw_var = "peak_time peak_amp peak_area n_peaks n_peaks_ch1_ch2";
 	//vector<int> ch_list_to_view = { 32, 33, 34, 35 };
-	vector<int> ch_list_to_view = {36, 37, 38, 39};
+	//vector<int> ch_list_to_view = {36, 37, 38, 39};
 	//vector<int> ch_list_to_view = { 40, 41, 42, 43 };
 	//vector<int> ch_list_to_view = { 44, 48, 49, 50 };
 	//vector<int> ch_list_to_view = { 51, 52, 53, 54 };
 	//vector<int> ch_list_to_view = { 55, 56, 57, 58 };
 	//vector<int> ch_list_to_view = { 38, 43, 44, 59 };
-	vector<int> ch_list_good_SiPMs = { 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59 };
+	//vector<int> ch_list_good_SiPMs = { 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59 };
+	vector<int> ch_list_good_SiPMs = { 1, 2, 3, 4 };
+	vector<int> ch_list_to_view = { 1, 2, 3, 4 };
 
 	/*int hist_peak_area_nbins = 1000;
 	int hist_peak_area_xmin = -5000;
 	int hist_peak_area_xmax = 500000;*/
 
 	int hist_peak_area_nbins = 800;
-	int hist_peak_area_xmin = -500;
-	int hist_peak_area_xmax = 35000;
+	int hist_peak_area_xmin = -100;
+	int hist_peak_area_xmax = /*35000*/ 2000;
 
 	int hist_baseline_sigma_xmax = 50;
 
 	int hist_peak_amp_nbins = 300;
 	int hist_peak_amp_xmin = 0;
-	int hist_peak_amp_xmax = 200;
+	int hist_peak_amp_xmax = /*200*/400;
 
-	int hist_n_peaks_nbins = 30;
-	int hist_n_peaks_xmax = 30;
+	int hist_n_peaks_nbins = 40;
+	int hist_n_peaks_xmax = 40;
 
 	//vector<unsigned short> ch_list = { 1, 2, 3, 4 };
 	//const double ns_per_point = 4;
 	//map <unsigned short, unsigned short> ;
 
 	gSystem->Load("libTree");// (to fix: no dictionary for class ttree is available) https://root.cern.ch/root/roottalk/roottalk04/1580.html
-	
+
 	//double peak_finder_th = 80;
 	//string date = "190704";
 	////string subfolder_name = "f1_th80mV";
@@ -86,10 +88,10 @@ int main(int argc, char *argv[])
 	////subfolder_name << "f6_th" << peak_finder_th << "mV";
 	//subfolder_name << "f2" ;
 
-	
+
 	//in
-	string date = "190704";
-	string subfolder_name = "f1";
+	string date = "190718";
+	string subfolder_name = "f2";
 	string file_name_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
 	string file_name_daq_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
 
@@ -101,8 +103,8 @@ int main(int argc, char *argv[])
 	double ns_per_point = rd_daq_inf.GetNsPerPoint();
 	ChMapping ch_map(ch_list, ch_list_to_view);
 	vector<int> ch_index_for_view_list = ch_map.GetChIndexList();
-	
-	string file_name_tree = "E:\\" + date + "\\" + date + "_caen_trees\\" + subfolder_name + "_th5mV.root";
+
+	string file_name_tree = "E:\\" + date + "\\" + date + "_caen_trees\\" + subfolder_name + "_info_v1.root";
 	TFile *f = new TFile(file_name_tree.c_str());
 	if (!(f->IsOpen()))
 	{
@@ -118,7 +120,7 @@ int main(int argc, char *argv[])
 	//out
 	string f_out_name = "E:\\" + date + "\\" + date + "_caen_trees\\" + subfolder_name + "_out.txt";
 	ofstream f_out(f_out_name);
-	
+
 
 
 	TTree *tree = (TTree*)f->Get("TreeMain");
@@ -139,7 +141,7 @@ int main(int argc, char *argv[])
 	vector<TH1F*> hist_ymax_v(ch_list.size(), NULL);
 	vector<TH1F*> hist_baseline_mean_v(ch_list.size(), NULL);
 	vector<TH1F*> hist_baseline_sigma_v(ch_list.size(), NULL);
-	vector<TH1F*> hist_n_peaks_v(ch_list.size(), NULL);	
+	vector<TH1F*> hist_n_peaks_v(ch_list.size(), NULL);
 	vector<TH1F*> hist_peak_time_v(ch_list.size(), NULL);
 	vector<TH1F*> hist_peak_amp_v(ch_list.size(), NULL);
 	vector<TH1F*> hist_peak_area_v(ch_list.size(), NULL);
@@ -154,7 +156,7 @@ int main(int argc, char *argv[])
 		ostringstream hist_peak_amp_name;
 		ostringstream hist_peak_area_name;
 		//ostringstream gr_time_spectrum_name;
-		
+
 		hist_ymin_name << "hist_ymin_ch_" << ch_list[ch];
 		hist_ymax_name << "hist_ymax_ch_" << ch_list[ch];
 		hist_baseline_mean_name << "hist_baseline_mean_ch_" << ch_list[ch];
@@ -173,7 +175,7 @@ int main(int argc, char *argv[])
 		hist_peak_time_v[ch] = new TH1F(hist_peak_time_name.str().c_str(), hist_peak_time_name.str().c_str(), 160, 0, 160000);
 		hist_peak_amp_v[ch] = new TH1F(hist_peak_amp_name.str().c_str(), hist_peak_amp_name.str().c_str(), hist_peak_amp_nbins, hist_peak_amp_xmin, hist_peak_amp_xmax);
 		hist_peak_area_v[ch] = new TH1F(hist_peak_area_name.str().c_str(), hist_peak_area_name.str().c_str(), hist_peak_area_nbins, hist_peak_area_xmin, hist_peak_area_xmax);
-		
+
 	}
 
 	//define graphs
@@ -183,14 +185,18 @@ int main(int argc, char *argv[])
 	vector< vector<double> > peak_area_v(ch_list.size());
 	//vector<double> peak_time_SiPM_good;
 
-	COUT( tree->GetEntries() )
+	COUT(tree->GetEntries());
+
+
+	int n_ev_after_cuts = 0;
+
 	//ev loop
 	for (unsigned int ev = 0; ev < tree->GetEntries()/*300*/; ev++)
 	{
 		//read branch "EventMainCh"only
 		if (ev % 1000 == 0)
 			cout << "ev = " << ev << endl;
-		
+
 		branch->GetEntry(ev);
 
 		vector<Peaks*> peaks = event->peaks;
@@ -198,29 +204,40 @@ int main(int argc, char *argv[])
 
 		//cout << "ev = " << ev << endl;
 
-		if (ch_list.size() != 35)
+		/*if (ch_list.size() != 35)
 		{
-			cout << "err" << endl;
-			system("pause");
-		}
+		cout << "err" << endl;
+		system("pause");
+		}*/
 
-		//ch loop
-		for (unsigned int ch = 0; ch < ch_list.size(); ch++)
+		bool cut_1 = event->peaks[1]->peak_time.size() > 0 && event->peaks[2]->peak_time.size() > 0 &&
+			event->peaks[3]->peak_time.size() > 0 && event->peaks[4]->peak_time.size() > 0;
+
+		bool cut_2 = event->peaks[1]->peak_time.size() > 0 || event->peaks[2]->peak_time.size() > 0 ||
+			event->peaks[3]->peak_time.size() > 0 || event->peaks[4]->peak_time.size() > 0;
+
+		if (cut_2)//cuts
 		{
-			//cout << "\t" << "ch_id = " << ch_list[ch] << endl;
-			//cout << "\t" << "ch = " << ch_list[ch] << endl;
-			//cout << "\t \t" << "ymin = " << event->ymin[ch] << endl;
-
-			hist_ymin_v[ch]->Fill(event->ymin[ch]);
-			hist_ymax_v[ch]->Fill(event->ymax[ch]);
-			hist_baseline_mean_v[ch]->Fill(event->baseline_mean[ch]);
-			hist_baseline_sigma_v[ch]->Fill(event->baseline_sigma[ch]);
-			hist_n_peaks_v[ch]->Fill(event->peaks[ch]->peak_time.size());
-
-			
-			
-			//if (ev == 0)//cuts
+			n_ev_after_cuts++;
+			//ch loop
+			for (unsigned int ch = 0; ch < ch_list.size(); ch++)
 			{
+				//cout << "\t" << "ch_id = " << ch_list[ch] << endl;
+				//cout << "\t" << "ch = " << ch_list[ch] << endl;
+				//cout << "\t \t" << "ymin = " << event->ymin[ch] << endl;
+
+
+
+				hist_ymin_v[ch]->Fill(event->ymin[ch]);
+				hist_ymax_v[ch]->Fill(event->ymax[ch]);
+				hist_baseline_mean_v[ch]->Fill(event->baseline_mean[ch]);
+				hist_baseline_sigma_v[ch]->Fill(event->baseline_sigma[ch]);
+				hist_n_peaks_v[ch]->Fill(event->peaks[ch]->peak_time.size());
+
+
+
+
+
 				for (unsigned int peak_id = 0; peak_id < event->peaks[ch]->peak_time.size(); peak_id++)
 				{
 					//	peak_time_v[ch].push_back( event->peaks[ch]->peak_time[peak_id] );
@@ -245,60 +262,63 @@ int main(int argc, char *argv[])
 						{
 							hist_peak_time_good_SiPMs->Fill(event->peaks[ch]->peak_time[peak_id]);
 							vec_peak_time_good_SiPMs.push_back(event->peaks[ch]->peak_time[peak_id]);
+							f_out << (event->peaks[ch]->peak_time[peak_id]) / 1000.0 << endl;
 							//cout << "ch = " << ch_list[ch]  << endl;
 						}
-							
+
 
 						//cout << "ev = " << ev << "; ch = " << ch_list[ch] << "; peak_id = " << peak_id << "; peak_area = " << event->peaks[ch]->peak_area[peak_id] << endl;
 					}
 
+
 				}
+
+				//gr_time_spectrum_v[ch] = new TGraph();
+
+				//test
+				//vector< pair<int, int> > pair_vec = peaks[ch]->peak_start_stop_poits;
+				//vector<double> local_baseline = peaks[ch]->local_baseline_v;
+				//vector<double> avr_peak_time = peaks[ch]->avr_peak_time;
+				//vector<double> peak_time = peaks[ch]->peak_time;
+				//vector<double> peak_area = peaks[ch]->peak_area;
+				////cout peak characterictics
+				//cout << "\t " << "N_peaks = " << pair_vec.size() << endl;
+				////cout << "\t " << "N_peaks = " << pair_vec.size() << endl;
+				//for (int j = 0; j < pair_vec.size(); j++)
+				//{
+				//	cout << "\t \t" << "peak number = " << j << endl;
+				//	cout << "\t \t" << "local_baseline = " << local_baseline[j] << endl;
+				//	cout << "\t \t" << "avr_peak_time = " << avr_peak_time[j] << endl;
+				//	cout << "\t \t" << "peak_time = " << peak_time[j] << endl;
+				//	cout << "\t \t" << "peak_area = " << peak_area[j] << endl;
+				//	cout << endl;
+				//}
+
+
+				//if (ch_list[ch] == 1)//chose channel "1"
+				//{
+				//	//hist_ymin->Fill(event->ymin[ch]);
+				//	//hist_ymax->Fill(event->ymax[ch]);
+				//	//hist_baseline_mean->Fill(event->baseline[ch]);
+
+				//	////cout << "ev = " << ev << "; event->baseline[" << ch << "] = " << event->baseline[ch] << endl;
+				//}
+
+				//
+				//if (ev == 0 && peaks.size() > 0)
+				//{
+
+				//}
+
 			}
-			
-			//gr_time_spectrum_v[ch] = new TGraph();
-			
-			//test
-			//vector< pair<int, int> > pair_vec = peaks[ch]->peak_start_stop_poits;
-			//vector<double> local_baseline = peaks[ch]->local_baseline_v;
-			//vector<double> avr_peak_time = peaks[ch]->avr_peak_time;
-			//vector<double> peak_time = peaks[ch]->peak_time;
-			//vector<double> peak_area = peaks[ch]->peak_area;
-			////cout peak characterictics
-			//cout << "\t " << "N_peaks = " << pair_vec.size() << endl;
-			////cout << "\t " << "N_peaks = " << pair_vec.size() << endl;
-			//for (int j = 0; j < pair_vec.size(); j++)
-			//{
-			//	cout << "\t \t" << "peak number = " << j << endl;
-			//	cout << "\t \t" << "local_baseline = " << local_baseline[j] << endl;
-			//	cout << "\t \t" << "avr_peak_time = " << avr_peak_time[j] << endl;
-			//	cout << "\t \t" << "peak_time = " << peak_time[j] << endl;
-			//	cout << "\t \t" << "peak_area = " << peak_area[j] << endl;
-			//	cout << endl;
-			//}
 
 
-			//if (ch_list[ch] == 1)//chose channel "1"
-			//{
-			//	//hist_ymin->Fill(event->ymin[ch]);
-			//	//hist_ymax->Fill(event->ymax[ch]);
-			//	//hist_baseline_mean->Fill(event->baseline[ch]);
-
-			//	////cout << "ev = " << ev << "; event->baseline[" << ch << "] = " << event->baseline[ch] << endl;
-			//}
-
-			//
-			//if (ev == 0 && peaks.size() > 0)
-			//{
-
-			//}
-			
 		}
-		
-
 		event->Clear();
+
 	}
 
-
+	cout << endl << "n_ev_after_cuts = " << n_ev_after_cuts << endl;
 
 	//draw
 	if (draw_var.find("ymin") != std::string::npos)
@@ -356,7 +376,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (draw_var.find("baseline_sigma") != std::string::npos)
-	{ 
+	{
 		TCanvas *c4 = new TCanvas("c4", "baseline_sigma");
 		c4->Divide(2, 2, 0.01, 0.01);
 		c4->cd(1);
@@ -442,7 +462,7 @@ int main(int argc, char *argv[])
 		TCanvas *c9 = new TCanvas("c9", "peak_amp_vs_peak_area");
 		vector<TGraph*> gr_peak_amp_peak_area(ch_list.size());
 		c9->Divide(2, 2, 0.01, 0.01);
-		c9->cd(1);				
+		c9->cd(1);
 		gr_peak_amp_peak_area[ch_index_for_view_list[0]] = new TGraph(peak_amp_v[ch_index_for_view_list[0]].size(), &peak_amp_v[ch_index_for_view_list[0]][0], &peak_area_v[ch_index_for_view_list[0]][0]);
 		gr_peak_amp_peak_area[ch_index_for_view_list[0]]->Draw("AP");
 		//gr_peak_amp_peak_area[ch_index_for_view_list[0]]->SetMarkerStyle(20);
@@ -492,7 +512,7 @@ int main(int argc, char *argv[])
 		const Int_t nLevels = 999;
 		Double_t levels[nLevels];
 
-		for (int i = 1; i < nLevels; i++) 
+		for (int i = 1; i < nLevels; i++)
 		{
 			levels[i] = min + (max - min) / (nLevels - 1) * (i);
 		}
@@ -511,12 +531,15 @@ int main(int argc, char *argv[])
 		//}
 	}
 
-
+	if (draw_var.find("n_peaks_chi_vs_chj") != std::string::npos)
+	{
 	
+	}
+
 
 	cout << endl;
 	cout << "all is ok" << endl;
 	theApp.Run();
-	system("pause");	
+	system("pause");
 	return 0;
 }
