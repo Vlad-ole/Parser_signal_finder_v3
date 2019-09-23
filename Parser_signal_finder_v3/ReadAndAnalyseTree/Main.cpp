@@ -48,15 +48,15 @@ int main(int argc, char *argv[])
 	//string draw_var = "n_peaks_map"; //view good_SiPMs
 	//string draw_var = "peak_time peak_amp peak_area n_peaks n_peaks_ch1_ch2";
 	//vector<int> ch_list_to_view = { 32, 33, 34, 35 };
-	//vector<int> ch_list_to_view = {36, 37, 38, 39};
+	vector<int> ch_list_to_view = {36, 37, 38, 39};
 	//vector<int> ch_list_to_view = { 40, 41, 42, 43 };
 	//vector<int> ch_list_to_view = { 44, 48, 49, 50 };
 	//vector<int> ch_list_to_view = { 51, 52, 53, 54 };
 	//vector<int> ch_list_to_view = { 55, 56, 57, 58 };
 	//vector<int> ch_list_to_view = { 38, 43, 44, 59 };
-	//vector<int> ch_list_good_SiPMs = { 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59 };
-	vector<int> ch_list_good_SiPMs = { 1, 2, 3, 4 };
-	vector<int> ch_list_to_view = { 1, 2, 3, 4 };
+	vector<int> ch_list_good_SiPMs = { 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59 };
+	//vector<int> ch_list_good_SiPMs = { 1, 2, 3, 4 };
+	//vector<int> ch_list_to_view = { 1, 2, 3, 4 };
 
 	/*int hist_peak_area_nbins = 1000;
 	int hist_peak_area_xmin = -5000;
@@ -90,8 +90,8 @@ int main(int argc, char *argv[])
 
 
 	//in
-	string date = "190718";
-	string subfolder_name = "f2";
+	string date = "190919";
+	string subfolder_name = "f1";
 	string file_name_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
 	string file_name_daq_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
 
@@ -216,7 +216,7 @@ int main(int argc, char *argv[])
 		bool cut_2 = event->peaks[1]->peak_time.size() > 0 || event->peaks[2]->peak_time.size() > 0 ||
 			event->peaks[3]->peak_time.size() > 0 || event->peaks[4]->peak_time.size() > 0;
 
-		if (cut_2)//cuts
+		if (true)//cuts
 		{
 			n_ev_after_cuts++;
 			//ch loop

@@ -40,8 +40,8 @@ int main(int argc, char *argv[])
 	if (is_batch_mode)
 		gROOT->SetBatch(kTRUE);
 
-	string date = "190718";
-	string subfolder_name = "f2";
+	string date = "190919";
+	string subfolder_name = "f1";
 	string output_folder = "E:\\" + date + "\\" + date + "_caen_raw\\analysis\\";
 	ofstream file_detailed_info_output(output_folder + subfolder_name + "_detailed_info.txt");
 	string file_name_output = output_folder + subfolder_name + ".root";
