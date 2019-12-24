@@ -73,10 +73,11 @@ int main(int argc, char **argv)
 	TApplication theApp("theApp", &argc, argv);//let's add some magic! https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=22972
 	gROOT->SetBatch(kTRUE);
 
-	string date = "190919";
+	string date = "191219";
+	string year = "20" + date.substr(0, 2);
 	string subfolder_name = "f1";
-	string file_name_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
-	string file_name_daq_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
+	string file_name_info = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
+	string file_name_daq_info = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
 	
 	ReadDAQInfo rd_daq_inf(file_name_daq_info);
 	rd_daq_inf.Read();
@@ -96,13 +97,13 @@ int main(int argc, char **argv)
 	//vector<bool> is_positive_polarity_type_list = { true, true, true, true };
 
 	//const unsigned int n_event_to_process = 2;
-	const unsigned int number_of_input_files = 237;
-	string path_to_folder = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod\\";
+	const unsigned int number_of_input_files = 439;
+	string path_to_folder = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod\\";
 
 	//create tree
 	ostringstream file_for_tree_name;
 	//file_for_tree_name << "E:\\" << date << "\\" << date << "_caen_trees\\" << subfolder_name << "_th" << rd_inf.GetThList()[10] << "mV.root";
-	file_for_tree_name << "E:\\" << date << "\\" << date << "_caen_trees\\" << subfolder_name << "_info_v1.root";
+	file_for_tree_name << "E:\\" << year << "\\" << date << "\\" << date << "_caen_trees\\" << subfolder_name << "_info_v1.root";
 	TFile file_for_tree(file_for_tree_name.str().c_str(), "RECREATE");
 	TTree tree_main("TreeMain", "TreeMain");
 	EventMainCh *event = new EventMainCh();
@@ -157,7 +158,8 @@ int main(int argc, char **argv)
 				//PeakFinder peak_finder(rdt.GetDataDouble()[ev][ch], yv_filtered, ns_per_point);
 				PeakFinder peak_finder(rdt.GetDataDouble()[ev][ch], yv_filtered, ns_per_point,
 					rd_inf.GetWindowList()[ch], rd_inf.GetLocalBaselineWindowList()[ch], rd_inf.GetLocalBaselineWindowShiftList()[ch],
-					rd_inf.GetCheckOverlappingWindowList()[ch], rd_inf.GetShrinkingOfLeftTailList()[ch], rd_inf.GetShrinkingOfRightTailList()[ch]);
+					rd_inf.GetCheckOverlappingWindowList()[ch], rd_inf.GetShrinkingOfLeftTailList()[ch],
+					rd_inf.GetShrinkingOfRightTailList()[ch], rd_inf.GetIsLocalBaselineList()[ch]);
 				peak_finder.FindPeaksByAmp(rd_inf.GetThList()[ch]/*peak_finder_th*//*mV*/);
 				timer_find_peaks.Stop();
 				time_find_peaks += timer_find_peaks.RealTime();

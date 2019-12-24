@@ -40,13 +40,14 @@ int main(int argc, char *argv[])
 	if (is_batch_mode)
 		gROOT->SetBatch(kTRUE);
 
-	string date = "190919";
+	string date = "191219";
+	string year = "20" + date.substr(0, 2);
 	string subfolder_name = "f1";
-	string output_folder = "E:\\" + date + "\\" + date + "_caen_raw\\analysis\\";
+	string output_folder = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\analysis\\";
 	ofstream file_detailed_info_output(output_folder + subfolder_name + "_detailed_info.txt");
 	string file_name_output = output_folder + subfolder_name + ".root";
-	string file_name_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
-	string file_name_daq_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
+	string file_name_info = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
+	string file_name_daq_info = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
 	
 	ReadDAQInfo rd_daq_inf(file_name_daq_info);
 	rd_daq_inf.Read();
@@ -60,7 +61,7 @@ int main(int argc, char *argv[])
 	rd_inf.Read();
 	//rd_inf.Show();
 
-	string file_name_raw = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod" + "\\000000__000009.dat";
+	string file_name_raw = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod" + "\\000000__000009.dat";
 	ReadData_CAEN rdt(file_name_raw, N_events_per_file, rd_inf.GetChList().size(), points_per_event_per_ch);
 
 	vector<double> yv_filtered(points_per_event_per_ch);
@@ -79,7 +80,7 @@ int main(int argc, char *argv[])
 	//TGraph* gr;                 // create a pointer to a TGraph
 	TCanvas* canv;
 	//const unsigned int n_events = N_events_per_file;
-	const unsigned int n_events = 7;
+	const unsigned int n_events = 10;
 	cout << endl;
 	for (int ev = 0; ev < n_events; ev++)
 	{
@@ -87,8 +88,6 @@ int main(int argc, char *argv[])
 			cout << "ev = " << ev << endl;
 
 		file_detailed_info_output << "ev = " << ev << endl;
-
-
 
 		for (int ch = 0; ch < rd_inf.GetChList().size(); ch++)
 		{
@@ -105,7 +104,8 @@ int main(int argc, char *argv[])
 
 			PeakFinder peak_finder(rdt.GetDataDouble()[ev][ch], yv_filtered, ns_per_point, 
 				rd_inf.GetWindowList()[ch], rd_inf.GetLocalBaselineWindowList()[ch], rd_inf.GetLocalBaselineWindowShiftList()[ch],
-				rd_inf.GetCheckOverlappingWindowList()[ch], rd_inf.GetShrinkingOfLeftTailList()[ch], rd_inf.GetShrinkingOfRightTailList()[ch]);
+				rd_inf.GetCheckOverlappingWindowList()[ch], rd_inf.GetShrinkingOfLeftTailList()[ch], 
+				rd_inf.GetShrinkingOfRightTailList()[ch], rd_inf.GetIsLocalBaselineList()[ch]);
 			peak_finder.FindPeaksByAmp(/*30*//*mV*/ rd_inf.GetThList()[ch]);
 			vector< pair<int, int> > pair_vec = peak_finder.GetPeakPositions();
 			vector<double> local_baseline = peak_finder.GetLocalBaselineV();
@@ -130,14 +130,14 @@ int main(int argc, char *argv[])
 			//cout << "\t \t sigma = " << calc.GetBaselineSigma() << endl;
 
 			ostringstream canv_name;
-			canv_name << "event = " << ev << ", channel = " << rd_inf.GetChList()[ch];
+			canv_name << "ev " << ev << ", ch " << rd_inf.GetChList()[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
 			canv = new TCanvas( canv_name.str().c_str(), canv_name.str().c_str() );
 			
 			//draw raw values
 			TGraph* gr = new TGraph(points_per_event_per_ch, &xv[0], &rdt.GetDataDouble()[ev][ch][0]);
-			ostringstream gr_name;
-			gr_name << "event = " << ev << ", channel = " << rd_inf.GetChList()[ch];
-			gr->SetTitle( gr_name.str().c_str() );
+			//ostringstream gr_name;
+			//gr_name << "ev " << ev << ", ch " << rd_inf.GetChList()[ch];
+			gr->SetTitle(canv_name.str().c_str());
 			gr->Draw();
 
 			//draw filtered values

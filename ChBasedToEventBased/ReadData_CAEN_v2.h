@@ -11,7 +11,7 @@ public:
 	~ReadData_CAEN_v2();
 
 	std::vector< std::vector<short int> >& GetDataEvPoint();
-	void Read();
+	void Read(bool is_binary);
 
 	std::vector< std::vector<short int> > data_ev_point;
 	std::string file_name_raw;

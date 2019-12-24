@@ -16,9 +16,13 @@ file_name_raw(file_name_raw), N_events_per_file(N_events_per_file), points_per_e
 	data_tmp.resize(run_size);
 }
 
-void ReadData_CAEN_v2::Read()
+void ReadData_CAEN_v2::Read(bool is_binary)
 {
-	FILE *f = fopen(file_name_raw.c_str(), "rb");
+	FILE *f;
+	if (is_binary)	
+		f = fopen(file_name_raw.c_str(), "rb");
+	else
+		f = fopen(file_name_raw.c_str(), "r");
 
 	if (f == NULL)
 	{
@@ -28,7 +32,20 @@ void ReadData_CAEN_v2::Read()
 		exit(1);
 	}
 
-	fread(&data_tmp[0], sizeof(vector<short int>::value_type), run_size, f);
+	if (is_binary)
+		fread(&data_tmp[0], sizeof(vector<short int>::value_type), run_size, f);
+	else
+	{
+		int val = 0;
+		int i = 0;
+		for (int i = 0; i < N_events_per_file*points_per_event; i++)
+		{				
+			fscanf(f, "%d", &val);
+			data_tmp[i] = val;
+		}
+
+	}
+
 	fclose(f);
 
 

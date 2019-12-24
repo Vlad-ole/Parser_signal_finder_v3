@@ -10,10 +10,10 @@ using namespace std;
 
 PeakFinder::PeakFinder(std::vector<double>& yv_raw, std::vector<double>& yv_filtered, const unsigned int ns_per_point, 
 	const double window, const double local_baseline_window, const double local_baseline_window_shift, 
-	const double check_overlapping_window, const double shrinking_of_left_tail, const double shrinking_of_right_tail) :
+	const double check_overlapping_window, const double shrinking_of_left_tail, const double shrinking_of_right_tail, const bool is_local_baseline) :
 yv_raw(yv_raw), yv_filtered(yv_filtered), ns_per_point(ns_per_point), window(window), local_baseline_window(local_baseline_window), 
 local_baseline_window_shift(local_baseline_window_shift), check_overlapping_window(check_overlapping_window),
-shrinking_of_left_tail(shrinking_of_left_tail), shrinking_of_right_tail(shrinking_of_right_tail)
+shrinking_of_left_tail(shrinking_of_left_tail), shrinking_of_right_tail(shrinking_of_right_tail), is_local_baseline(is_local_baseline)
 {
 }
 
@@ -106,13 +106,15 @@ void PeakFinder::FindPeaksByAmp(const double th)
 
 			//v3 calculation of local_baseline
 			local_baseline = 0;
-			for (int j = j_from_raw; j < (i - local_baseline_window_shift_p + shrinking_of_left_tail_p); j++)
+
+			if (is_local_baseline)
 			{
-				local_baseline += yv_raw[j];
+				for (int j = j_from_raw; j < (i - local_baseline_window_shift_p + shrinking_of_left_tail_p); j++)
+				{
+					local_baseline += yv_raw[j];
+				}
+				local_baseline /= (i - local_baseline_window_shift_p - j_from);
 			}
-			local_baseline /= (i - local_baseline_window_shift_p - j_from);
-
-
 
 			local_baseline_v.push_back(local_baseline);
 			//cout << "local_baseline = " << local_baseline << endl;

@@ -15,12 +15,15 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-	string date = "190919";
+	bool is_binary = true;
+	string date = "191219";
+	string year = "20" + date.substr(0, 2);
 	string subfolder_name = "f1";
-	string file_name_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
-	string file_name_daq_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
+	string file_name_info = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
+	string file_name_daq_info = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
 	ReadDAQInfo rd_daq_inf(file_name_daq_info);
 	rd_daq_inf.Read();
+	string data_file_ending = is_binary ? ".dat" :".txt";
 	
 	//Read DAQ_info.txt
 	const unsigned short ns_per_point = /*4*//*16*/ rd_daq_inf.GetNsPerPoint();
@@ -40,10 +43,10 @@ int main(int argc, char **argv)
 	system("pause");
 
 	unsigned int start_run_number = 1;
-	unsigned int stop_run_number = 237;
+	unsigned int stop_run_number = 439;
 
-	string common_path_input = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "\\";
-	string common_path_out = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod\\";
+	string common_path_input = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "\\";
+	string common_path_out = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod\\";
 
 	
 	unsigned int file_counter = 0;
@@ -63,11 +66,11 @@ int main(int argc, char **argv)
 			
 			
 			ostringstream file_name_raw_in_osst;
-			file_name_raw_in_osst << common_path_input << "run_" << run_number << "__ch_" << ch_list[ch] << ".dat";
+			file_name_raw_in_osst << common_path_input << "run_" << run_number << "__ch_" << ch_list[ch] << data_file_ending;
 			string file_name_raw_in = file_name_raw_in_osst.str();
 
 			ReadData_CAEN_v2 rdt(file_name_raw_in, N_events_per_file_input, points_per_event);
-			rdt.Read();
+			rdt.Read(is_binary);
 
 			std::vector< std::vector<short int> > data_ev_point = rdt.GetDataEvPoint();
 

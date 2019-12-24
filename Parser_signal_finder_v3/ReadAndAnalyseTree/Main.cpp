@@ -44,11 +44,17 @@ int main(int argc, char *argv[])
 {
 	TApplication theApp("theApp", &argc, argv);//let's add some magic! https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=22972
 
-	string draw_var = "ymin ymax baseline_mean baseline_sigma peak_time peak_amp peak_area n_peaks peak_amp_vs_peak_area"; //view 4 ch
+	//string draw_var = "ymin ymax baseline_mean baseline_sigma peak_time peak_amp peak_area n_peaks peak_amp_vs_peak_area"; //view 4 ch
 	//string draw_var = "n_peaks_map"; //view good_SiPMs
 	//string draw_var = "peak_time peak_amp peak_area n_peaks n_peaks_ch1_ch2";
+	string draw_var = "peak_amp";
+	
+	vector<int> ch_list_to_view = {0, 9, 11, 12};
+	//vector<int> ch_list_to_view = {1, 2, 3, 4};
+	//vector<int> ch_list_to_view = {5, 6, 7, 8};
+	
 	//vector<int> ch_list_to_view = { 32, 33, 34, 35 };
-	vector<int> ch_list_to_view = {36, 37, 38, 39};
+	//vector<int> ch_list_to_view = {36, 37, 38, 39};
 	//vector<int> ch_list_to_view = { 40, 41, 42, 43 };
 	//vector<int> ch_list_to_view = { 44, 48, 49, 50 };
 	//vector<int> ch_list_to_view = { 51, 52, 53, 54 };
@@ -62,18 +68,19 @@ int main(int argc, char *argv[])
 	int hist_peak_area_xmin = -5000;
 	int hist_peak_area_xmax = 500000;*/
 
-	int hist_peak_area_nbins = 800;
-	int hist_peak_area_xmin = -100;
-	int hist_peak_area_xmax = /*35000*/ 2000;
+	//int hist_peak_amp_nbins = 300;
+	//int hist_peak_amp_xmin = 0;
+	//int hist_peak_amp_xmax = 200;
+
+	//int hist_peak_area_nbins = 200;
+	//int hist_peak_area_xmin = -100;
+	//int hist_peak_area_xmax = 6000;
 
 	int hist_baseline_sigma_xmax = 50;
-
-	int hist_peak_amp_nbins = 300;
-	int hist_peak_amp_xmin = 0;
-	int hist_peak_amp_xmax = /*200*/400;
-
-	int hist_n_peaks_nbins = 40;
-	int hist_n_peaks_xmax = 40;
+	
+	//int hist_n_peaks_nbins = 25;
+	//int hist_n_peaks_xmin = 0;
+	//int hist_n_peaks_xmax = 25;
 
 	//vector<unsigned short> ch_list = { 1, 2, 3, 4 };
 	//const double ns_per_point = 4;
@@ -90,10 +97,11 @@ int main(int argc, char *argv[])
 
 
 	//in
-	string date = "190919";
+	string date = "191219";
+	string year = "20" + date.substr(0, 2);
 	string subfolder_name = "f1";
-	string file_name_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
-	string file_name_daq_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
+	string file_name_info = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
+	string file_name_daq_info = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
 
 	ReadDAQInfo rd_daq_inf(file_name_daq_info);
 	rd_daq_inf.Read();
@@ -104,7 +112,7 @@ int main(int argc, char *argv[])
 	ChMapping ch_map(ch_list, ch_list_to_view);
 	vector<int> ch_index_for_view_list = ch_map.GetChIndexList();
 
-	string file_name_tree = "E:\\" + date + "\\" + date + "_caen_trees\\" + subfolder_name + "_info_v1.root";
+	string file_name_tree = "E:\\" + year + "\\" + date + "\\" + date + "_caen_trees\\" + subfolder_name + "_info_v1.root";
 	TFile *f = new TFile(file_name_tree.c_str());
 	if (!(f->IsOpen()))
 	{
@@ -118,7 +126,7 @@ int main(int argc, char *argv[])
 	}
 
 	//out
-	string f_out_name = "E:\\" + date + "\\" + date + "_caen_trees\\" + subfolder_name + "_out.txt";
+	string f_out_name = "E:\\" + year + "\\" + date + "\\" + date + "_caen_trees\\" + subfolder_name + "_out.txt";
 	ofstream f_out(f_out_name);
 
 
@@ -157,25 +165,24 @@ int main(int argc, char *argv[])
 		ostringstream hist_peak_area_name;
 		//ostringstream gr_time_spectrum_name;
 
-		hist_ymin_name << "hist_ymin_ch_" << ch_list[ch];
-		hist_ymax_name << "hist_ymax_ch_" << ch_list[ch];
-		hist_baseline_mean_name << "hist_baseline_mean_ch_" << ch_list[ch];
-		hist_baseline_sigma_name << "hist_baseline_sigma_ch_" << ch_list[ch];
-		hist_n_peaks_name << "hist_n_peaks_ch_" << ch_list[ch];
-		hist_peak_time_name << "hist_peak_time_ch_" << ch_list[ch];
-		hist_peak_amp_name << "hist_peak_amp_ch_" << ch_list[ch];
-		hist_peak_area_name << "hist_peak_area_ch_" << ch_list[ch];
+		hist_ymin_name << "hist_ymin_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+		hist_ymax_name << "hist_ymax_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+		hist_baseline_mean_name << "hist_baseline_mean_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+		hist_baseline_sigma_name << "hist_baseline_sigma_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+		hist_n_peaks_name << "hist_n_peaks_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+		hist_peak_time_name << "hist_peak_time_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+		hist_peak_amp_name << "hist_peak_amp_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+		hist_peak_area_name << "hist_peak_area_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
 		//gr_time_spectrum_name << "gr_time_spectrum_ch_" << ch_list[ch];
 
 		hist_ymin_v[ch] = new TH1F(hist_ymin_name.str().c_str(), hist_ymin_name.str().c_str(), 1000, -1100, 1100);
 		hist_ymax_v[ch] = new TH1F(hist_ymax_name.str().c_str(), hist_ymax_name.str().c_str(), 1000, -1100, 1100);
 		hist_baseline_mean_v[ch] = new TH1F(hist_baseline_mean_name.str().c_str(), hist_baseline_mean_name.str().c_str(), 1000, -1100, 1100);
 		hist_baseline_sigma_v[ch] = new TH1F(hist_baseline_sigma_name.str().c_str(), hist_baseline_sigma_name.str().c_str(), 1000, 0, hist_baseline_sigma_xmax);
-		hist_n_peaks_v[ch] = new TH1F(hist_n_peaks_name.str().c_str(), hist_n_peaks_name.str().c_str(), hist_n_peaks_nbins, 0, hist_n_peaks_xmax);
+		hist_n_peaks_v[ch] = new TH1F(hist_n_peaks_name.str().c_str(), hist_n_peaks_name.str().c_str(), rd_inf.GetHistNpeaksNbinsList()[ch], rd_inf.GetHistNpeaksXminList()[ch], rd_inf.GetHistNpeaksXmaxList()[ch]);
 		hist_peak_time_v[ch] = new TH1F(hist_peak_time_name.str().c_str(), hist_peak_time_name.str().c_str(), 160, 0, 160000);
-		hist_peak_amp_v[ch] = new TH1F(hist_peak_amp_name.str().c_str(), hist_peak_amp_name.str().c_str(), hist_peak_amp_nbins, hist_peak_amp_xmin, hist_peak_amp_xmax);
-		hist_peak_area_v[ch] = new TH1F(hist_peak_area_name.str().c_str(), hist_peak_area_name.str().c_str(), hist_peak_area_nbins, hist_peak_area_xmin, hist_peak_area_xmax);
-
+		hist_peak_amp_v[ch] = new TH1F(hist_peak_amp_name.str().c_str(), hist_peak_amp_name.str().c_str(), rd_inf.GetHistPeakAmpNbinsList()[ch], rd_inf.GetHistPeakAmpXminList()[ch], rd_inf.GetHistPeakAmpXmaxList()[ch]);
+		hist_peak_area_v[ch] = new TH1F(hist_peak_area_name.str().c_str(), hist_peak_area_name.str().c_str(), rd_inf.GetHistPeakAreaNbinsList()[ch], rd_inf.GetHistPeakAreaXminList()[ch], rd_inf.GetHistPeakAreaXmaxList()[ch]);
 	}
 
 	//define graphs
@@ -215,6 +222,12 @@ int main(int argc, char *argv[])
 
 		bool cut_2 = event->peaks[1]->peak_time.size() > 0 || event->peaks[2]->peak_time.size() > 0 ||
 			event->peaks[3]->peak_time.size() > 0 || event->peaks[4]->peak_time.size() > 0;
+
+		bool cut_3 = true;
+		//for (unsigned int ch = 0; ch < ch_list.size(); ch++)
+		//{
+		//	cut_3 = ( cut_3 && (event->ymax[ch] < 500) );
+		//}
 
 		if (true)//cuts
 		{

@@ -12,6 +12,7 @@ ReadDAQInfo::ReadDAQInfo(std::string file_name_info)
 	else
 	{
 		cout << "Can't open this file: " << file_name_info.c_str() << endl;
+		system("pause");
 		exit(1);
 	}
 }
