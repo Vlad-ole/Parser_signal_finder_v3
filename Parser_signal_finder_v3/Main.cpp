@@ -73,11 +73,12 @@ int main(int argc, char **argv)
 	TApplication theApp("theApp", &argc, argv);//let's add some magic! https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=22972
 	gROOT->SetBatch(kTRUE);
 
-	string date = "191219";
+	string date = "190919";
 	string year = "20" + date.substr(0, 2);
+	string first_part_of_path = "E:\\" + year + "\\" + date + "\\" + date;
 	string subfolder_name = "f1";
-	string file_name_info = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
-	string file_name_daq_info = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
+	string file_name_info = first_part_of_path + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
+	string file_name_daq_info = first_part_of_path + "_caen_raw\\info\\daq_info.txt";
 	
 	ReadDAQInfo rd_daq_inf(file_name_daq_info);
 	rd_daq_inf.Read();
@@ -97,14 +98,16 @@ int main(int argc, char **argv)
 	//vector<bool> is_positive_polarity_type_list = { true, true, true, true };
 
 	//const unsigned int n_event_to_process = 2;
-	const unsigned int number_of_input_files = 439;
-	string path_to_folder = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod\\";
+	const unsigned int number_of_input_files = 237;
+	string path_to_folder = first_part_of_path + "_caen_raw\\" + subfolder_name + "_mod\\";
 
 	//create tree
-	ostringstream file_for_tree_name;
+	//ostringstream file_for_tree_name;
+	string file_for_tree_name;
 	//file_for_tree_name << "E:\\" << date << "\\" << date << "_caen_trees\\" << subfolder_name << "_th" << rd_inf.GetThList()[10] << "mV.root";
-	file_for_tree_name << "E:\\" << year << "\\" << date << "\\" << date << "_caen_trees\\" << subfolder_name << "_info_v1.root";
-	TFile file_for_tree(file_for_tree_name.str().c_str(), "RECREATE");
+	//file_for_tree_name << "E:\\" << year << "\\" << date << "\\" << date << "_caen_trees\\" << subfolder_name << "_info_v1.root";
+	file_for_tree_name = first_part_of_path + "_caen_trees\\" + subfolder_name + "_info_v1.root";
+	TFile file_for_tree(file_for_tree_name.c_str(), "RECREATE");
 	TTree tree_main("TreeMain", "TreeMain");
 	EventMainCh *event = new EventMainCh();
 	tree_main.Branch("EventMainCh", &event, 16000, 0);
@@ -183,7 +186,7 @@ int main(int argc, char **argv)
 
 	}
 
-	cout << endl << "Write tree:" << file_for_tree_name.str().c_str() << endl;
+	cout << endl << "Write tree:" << file_for_tree_name.c_str() << endl;
 	TStopwatch timer_write_and_close;
 	timer_write_and_close.Start();
 	file_for_tree.Write();

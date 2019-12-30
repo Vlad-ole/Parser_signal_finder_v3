@@ -44,12 +44,14 @@ int main(int argc, char *argv[])
 {
 	TApplication theApp("theApp", &argc, argv);//let's add some magic! https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=22972
 
-	//string draw_var = "ymin ymax baseline_mean baseline_sigma peak_time peak_amp peak_area n_peaks peak_amp_vs_peak_area"; //view 4 ch
+	string draw_var = "ymin ymax baseline_mean baseline_sigma peak_time peak_amp peak_area n_peaks peak_amp_vs_peak_area peak_time_all_SiPMs_PMTs_slow_PMTs_fast"; //view 4 ch
 	//string draw_var = "n_peaks_map"; //view good_SiPMs
 	//string draw_var = "peak_time peak_amp peak_area n_peaks n_peaks_ch1_ch2";
-	string draw_var = "peak_amp";
+	//string draw_var = "peak_amp";
 	
-	vector<int> ch_list_to_view = {0, 9, 11, 12};
+	vector<int> ch_list_to_view = { 1, 2, 5, 6 };
+	
+	//vector<int> ch_list_to_view = {0, 9, 11, 12};
 	//vector<int> ch_list_to_view = {1, 2, 3, 4};
 	//vector<int> ch_list_to_view = {5, 6, 7, 8};
 	
@@ -97,11 +99,12 @@ int main(int argc, char *argv[])
 
 
 	//in
-	string date = "191219";
+	string date = "190919";
 	string year = "20" + date.substr(0, 2);
 	string subfolder_name = "f1";
-	string file_name_info = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
-	string file_name_daq_info = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
+	string first_part_of_path = "E:\\" + year + "\\" + date + "\\" + date;
+	string file_name_info = first_part_of_path + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
+	string file_name_daq_info = first_part_of_path + "_caen_raw\\info\\daq_info.txt";
 
 	ReadDAQInfo rd_daq_inf(file_name_daq_info);
 	rd_daq_inf.Read();
@@ -112,7 +115,7 @@ int main(int argc, char *argv[])
 	ChMapping ch_map(ch_list, ch_list_to_view);
 	vector<int> ch_index_for_view_list = ch_map.GetChIndexList();
 
-	string file_name_tree = "E:\\" + year + "\\" + date + "\\" + date + "_caen_trees\\" + subfolder_name + "_info_v1.root";
+	string file_name_tree = first_part_of_path + "_caen_trees\\" + subfolder_name + "_info_v1.root";
 	TFile *f = new TFile(file_name_tree.c_str());
 	if (!(f->IsOpen()))
 	{
@@ -126,10 +129,20 @@ int main(int argc, char *argv[])
 	}
 
 	//out
-	string f_out_name = "E:\\" + year + "\\" + date + "\\" + date + "_caen_trees\\" + subfolder_name + "_out.txt";
-	ofstream f_out(f_out_name);
+	string f_out_allSiPM_time_spectrum_name = first_part_of_path + "_caen_trees\\" + subfolder_name + "_allSiPM_time_specrtrum.txt";
+	ofstream f_out_allSiPM_time_spectrum(f_out_allSiPM_time_spectrum_name);
+	
+	string f_out_allPMTs_slow_time_spectrum_name = first_part_of_path + "_caen_trees\\" + subfolder_name + "_allPMTs_slow_time_specrtrum.txt";
+	ofstream f_out_allPMTs_slow_time_spectrum(f_out_allPMTs_slow_time_spectrum_name);
 
+	string f_out_allPMTs_fast_time_spectrum_name = first_part_of_path + "_caen_trees\\" + subfolder_name + "_allPMTs_fast_time_specrtrum.txt";
+	ofstream f_out_allPMTs_fast_time_spectrum(f_out_allPMTs_fast_time_spectrum_name);
 
+	string f_out_3PMTs_slow_time_spectrum_name = first_part_of_path + "_caen_trees\\" + subfolder_name + "_3PMTs_slow_time_spectrum.txt";
+	ofstream f_out_3PMTs_slow_time_spectrum(f_out_3PMTs_slow_time_spectrum_name);
+
+	string f_out_1PMT_slow_time_spectrum_name = first_part_of_path + "_caen_trees\\" + subfolder_name + "_1PMT_slow_time_spectrum.txt";
+	ofstream f_out_1PMT_slow_time_spectrum(f_out_1PMT_slow_time_spectrum_name);
 
 	TTree *tree = (TTree*)f->Get("TreeMain");
 
@@ -139,7 +152,11 @@ int main(int argc, char *argv[])
 	//tree->SetBranchAddress("EventMainCh", &event);
 
 	//define hists (joined ch)
-	TH1F* hist_peak_time_good_SiPMs = new TH1F("peak_time_good_SiPMs", "peak_time_good_SiPMs", 4000, 0, 160E3);
+	TH1F* hist_peak_time_all_SiPMs = new TH1F("hist_peak_time_all_SiPMs", "hist_peak_time_all_SiPMs", 160, 0, 160E3);
+	TH1F* hist_peak_time_all_PMTs_slow = new TH1F("hist_peak_time_all_PMTs_slow", "hist_peak_time_all_PMTs_slow", 160, 0, 160E3);
+	TH1F* hist_peak_time_all_PMTs_fast = new TH1F("hist_peak_time_all_PMTs_fast", "hist_peak_time_all_PMTs_fast", 160, 0, 160E3);
+	TH1F* hist_peak_time_3PMTs_slow = new TH1F("hist_peak_time_3PMTs_slow", "hist_peak_time_3PMTs_slow", 160, 0, 160E3);
+	TH1F* hist_peak_time_1PMT_slow = new TH1F("hist_peak_time_1PMT_slow", "hist_peak_time_1PMT_slow", 160, 0, 160E3);
 	vector<double> vec_peak_time_good_SiPMs;
 	//TH2F *hist2_peak_time_SiPM_good = new TH2F("hist2_peak_time_SiPM_good", "hist2_peak_time_SiPM_good", /*4000*/4000, 0, 160E3, 1000, 0, 50000);
 	TH2F* h2_n_peaks = new TH2F("h2_n_peaks", "h2_n_peaks", 5, -23, 23, 5, -23, 23);
@@ -180,7 +197,7 @@ int main(int argc, char *argv[])
 		hist_baseline_mean_v[ch] = new TH1F(hist_baseline_mean_name.str().c_str(), hist_baseline_mean_name.str().c_str(), 1000, -1100, 1100);
 		hist_baseline_sigma_v[ch] = new TH1F(hist_baseline_sigma_name.str().c_str(), hist_baseline_sigma_name.str().c_str(), 1000, 0, hist_baseline_sigma_xmax);
 		hist_n_peaks_v[ch] = new TH1F(hist_n_peaks_name.str().c_str(), hist_n_peaks_name.str().c_str(), rd_inf.GetHistNpeaksNbinsList()[ch], rd_inf.GetHistNpeaksXminList()[ch], rd_inf.GetHistNpeaksXmaxList()[ch]);
-		hist_peak_time_v[ch] = new TH1F(hist_peak_time_name.str().c_str(), hist_peak_time_name.str().c_str(), 160, 0, 160000);
+		hist_peak_time_v[ch] = new TH1F(hist_peak_time_name.str().c_str(), hist_peak_time_name.str().c_str(), rd_inf.GetHistPeakTimeNbinsList()[ch], rd_inf.GetHistPeakTimeXminList()[ch], rd_inf.GetHistPeakTimeXmaxList()[ch]);
 		hist_peak_amp_v[ch] = new TH1F(hist_peak_amp_name.str().c_str(), hist_peak_amp_name.str().c_str(), rd_inf.GetHistPeakAmpNbinsList()[ch], rd_inf.GetHistPeakAmpXminList()[ch], rd_inf.GetHistPeakAmpXmaxList()[ch]);
 		hist_peak_area_v[ch] = new TH1F(hist_peak_area_name.str().c_str(), hist_peak_area_name.str().c_str(), rd_inf.GetHistPeakAreaNbinsList()[ch], rd_inf.GetHistPeakAreaXminList()[ch], rd_inf.GetHistPeakAreaXmaxList()[ch]);
 	}
@@ -190,7 +207,9 @@ int main(int argc, char *argv[])
 	//vector< vector<double> > peak_time_v(ch_list.size());
 	vector< vector<double> > peak_amp_v(ch_list.size());
 	vector< vector<double> > peak_area_v(ch_list.size());
-	//vector<double> peak_time_SiPM_good;
+	vector<double> peak_time_sum_SiPM;
+	vector<double> peak_time_sum_PMTslow;
+	vector<double> peak_time_sum_PMTfast;
 
 	COUT(tree->GetEntries());
 
@@ -229,27 +248,85 @@ int main(int argc, char *argv[])
 		//	cut_3 = ( cut_3 && (event->ymax[ch] < 500) );
 		//}
 
-		if (true)//cuts
+		int ch_top_counter = 5;
+		int ch_bot_counter = 6;
+		bool is_narrow_top_counter_peak_time = false;
+		bool is_narrow_bot_counter_peak_time = false;
+		double peak_time_min = 31800;
+		double peak_time_max = 32000;
+		for (int peak_id = 0; peak_id < event->peaks[ch_top_counter]->peak_time.size(); peak_id++)
+		{			
+			if (event->peaks[ch_top_counter]->peak_time[peak_id] > peak_time_min &&
+				event->peaks[ch_top_counter]->peak_time[peak_id] < peak_time_max)
+			{
+				is_narrow_top_counter_peak_time = true;
+			}
+			else
+			{				
+				is_narrow_top_counter_peak_time = false;
+				break;
+			}
+		}
+
+		
+		
+		for (int peak_id = 0; peak_id < event->peaks[ch_bot_counter]->peak_time.size(); peak_id++)
+		{
+			if (event->peaks[ch_bot_counter]->peak_time[peak_id] > peak_time_min &&
+				event->peaks[ch_bot_counter]->peak_time[peak_id] < peak_time_max)
+			{
+				is_narrow_bot_counter_peak_time = true;
+			}
+			else
+			{
+				is_narrow_bot_counter_peak_time = false;
+				break;
+			}
+		}
+
+		bool is_narrow_top_counter_peak_amp = false;
+		for (int peak_id = 0; peak_id < event->peaks[ch_top_counter]->peak_amp.size(); peak_id++)
+		{
+			if (event->peaks[ch_top_counter]->peak_amp[peak_id] > 100 &&
+				event->peaks[ch_top_counter]->peak_amp[peak_id] < 300)
+			{
+				is_narrow_top_counter_peak_amp = true;
+			}
+			else
+			{
+				is_narrow_top_counter_peak_amp = false;
+				break;
+			}
+		}
+
+		bool is_narrow_bot_counter_peak_amp = false;
+		for (int peak_id = 0; peak_id < event->peaks[ch_bot_counter]->peak_amp.size(); peak_id++)
+		{
+			if (event->peaks[ch_bot_counter]->peak_amp[peak_id] > 20 &&
+				event->peaks[ch_bot_counter]->peak_amp[peak_id] < 45)
+			{
+				is_narrow_bot_counter_peak_amp = true;
+			}
+			else
+			{
+				is_narrow_bot_counter_peak_amp = false;
+				break;
+			}
+		}
+
+		if (is_narrow_top_counter_peak_time && is_narrow_bot_counter_peak_time 
+			&& is_narrow_top_counter_peak_amp && is_narrow_bot_counter_peak_amp /*true*/)//cuts
 		{
 			n_ev_after_cuts++;
 			//ch loop
 			for (unsigned int ch = 0; ch < ch_list.size(); ch++)
 			{
-				//cout << "\t" << "ch_id = " << ch_list[ch] << endl;
-				//cout << "\t" << "ch = " << ch_list[ch] << endl;
-				//cout << "\t \t" << "ymin = " << event->ymin[ch] << endl;
-
-
 
 				hist_ymin_v[ch]->Fill(event->ymin[ch]);
 				hist_ymax_v[ch]->Fill(event->ymax[ch]);
 				hist_baseline_mean_v[ch]->Fill(event->baseline_mean[ch]);
 				hist_baseline_sigma_v[ch]->Fill(event->baseline_sigma[ch]);
 				hist_n_peaks_v[ch]->Fill(event->peaks[ch]->peak_time.size());
-
-
-
-
 
 				for (unsigned int peak_id = 0; peak_id < event->peaks[ch]->peak_time.size(); peak_id++)
 				{
@@ -262,6 +339,7 @@ int main(int argc, char *argv[])
 					bool is_in_70_100_us = event->peaks[ch]->peak_time[peak_id] > 70000 && event->peaks[ch]->peak_time[peak_id] < 100000;
 					bool is_in_110_155_us = event->peaks[ch]->peak_time[peak_id] > 110000 && event->peaks[ch]->peak_time[peak_id] < 155000;
 					bool is_in_60_155_us = event->peaks[ch]->peak_time[peak_id] > 60000 && event->peaks[ch]->peak_time[peak_id] < 155000;
+
 					if (/*!is_noise && is_in_110_155_us*/ /*is_in_60_155_us*/ true)
 					{
 						hist_peak_time_v[ch]->Fill(event->peaks[ch]->peak_time[peak_id]);
@@ -273,15 +351,42 @@ int main(int argc, char *argv[])
 
 						if (find(ch_list_good_SiPMs.begin(), ch_list_good_SiPMs.end(), ch_list[ch]) != ch_list_good_SiPMs.end())
 						{
-							hist_peak_time_good_SiPMs->Fill(event->peaks[ch]->peak_time[peak_id]);
+							hist_peak_time_all_SiPMs->Fill(event->peaks[ch]->peak_time[peak_id]);
 							vec_peak_time_good_SiPMs.push_back(event->peaks[ch]->peak_time[peak_id]);
-							f_out << (event->peaks[ch]->peak_time[peak_id]) / 1000.0 << endl;
+							f_out_allSiPM_time_spectrum << (event->peaks[ch]->peak_time[peak_id]) / 1000.0 << endl;
 							//cout << "ch = " << ch_list[ch]  << endl;
+						}
+
+						if (rd_inf.GetChNameList()[ch] == "PMT1_slow" || rd_inf.GetChNameList()[ch] == "PMT2_slow" || 
+							rd_inf.GetChNameList()[ch] == "PMT3_slow" || rd_inf.GetChNameList()[ch] == "PMT4_slow")
+						{
+							hist_peak_time_all_PMTs_slow->Fill(event->peaks[ch]->peak_time[peak_id]);
+							f_out_allPMTs_slow_time_spectrum << (event->peaks[ch]->peak_time[peak_id]) / 1000.0 << endl;
+						}
+
+						if (rd_inf.GetChNameList()[ch] == "PMT1_fast" || rd_inf.GetChNameList()[ch] == "PMT2_fast" ||
+							rd_inf.GetChNameList()[ch] == "PMT3_fast" || rd_inf.GetChNameList()[ch] == "PMT4_fast")
+						{
+							hist_peak_time_all_PMTs_fast->Fill(event->peaks[ch]->peak_time[peak_id]);
+							f_out_allPMTs_fast_time_spectrum << (event->peaks[ch]->peak_time[peak_id]) / 1000.0 << endl;
+						}
+
+						if (rd_inf.GetChNameList()[ch] == "PMT2_slow" ||
+							rd_inf.GetChNameList()[ch] == "PMT3_slow" || rd_inf.GetChNameList()[ch] == "PMT4_slow")
+						{
+							hist_peak_time_3PMTs_slow->Fill(event->peaks[ch]->peak_time[peak_id]);
+							f_out_3PMTs_slow_time_spectrum << (event->peaks[ch]->peak_time[peak_id]) / 1000.0 << endl;
+						}
+
+						if (rd_inf.GetChNameList()[ch] == "PMT1_slow")
+						{
+							hist_peak_time_1PMT_slow->Fill(event->peaks[ch]->peak_time[peak_id]);
+							f_out_1PMT_slow_time_spectrum << (event->peaks[ch]->peak_time[peak_id]) / 1000.0 << endl;
 						}
 
 
 						//cout << "ev = " << ev << "; ch = " << ch_list[ch] << "; peak_id = " << peak_id << "; peak_area = " << event->peaks[ch]->peak_area[peak_id] << endl;
-					}
+					}					
 
 
 				}
@@ -475,31 +580,36 @@ int main(int argc, char *argv[])
 		TCanvas *c9 = new TCanvas("c9", "peak_amp_vs_peak_area");
 		vector<TGraph*> gr_peak_amp_peak_area(ch_list.size());
 		c9->Divide(2, 2, 0.01, 0.01);
-		c9->cd(1);
-		gr_peak_amp_peak_area[ch_index_for_view_list[0]] = new TGraph(peak_amp_v[ch_index_for_view_list[0]].size(), &peak_amp_v[ch_index_for_view_list[0]][0], &peak_area_v[ch_index_for_view_list[0]][0]);
-		gr_peak_amp_peak_area[ch_index_for_view_list[0]]->Draw("AP");
-		//gr_peak_amp_peak_area[ch_index_for_view_list[0]]->SetMarkerStyle(20);
-		//gr_peak_amp_peak_area[ch_index_for_view_list[0]]->GetXaxis()->SetRangeUser(hist_peak_amp_xmin, hist_peak_amp_xmax);
-		//gr_peak_amp_peak_area[ch_index_for_view_list[0]]->GetYaxis()->SetRangeUser(hist_peak_area_xmin, hist_peak_area_xmax);
-		c9->cd(2);
-		gr_peak_amp_peak_area[ch_index_for_view_list[1]] = new TGraph(peak_amp_v[ch_index_for_view_list[1]].size(), &peak_amp_v[ch_index_for_view_list[1]][0], &peak_area_v[ch_index_for_view_list[1]][0]);
-		gr_peak_amp_peak_area[ch_index_for_view_list[1]]->Draw("AP");
-		c9->cd(3);
-		gr_peak_amp_peak_area[ch_index_for_view_list[2]] = new TGraph(peak_amp_v[ch_index_for_view_list[2]].size(), &peak_amp_v[ch_index_for_view_list[2]][0], &peak_area_v[ch_index_for_view_list[2]][0]);
-		gr_peak_amp_peak_area[ch_index_for_view_list[2]]->Draw("AP");
-		c9->cd(4);
-		gr_peak_amp_peak_area[ch_index_for_view_list[3]] = new TGraph(peak_amp_v[ch_index_for_view_list[3]].size(), &peak_amp_v[ch_index_for_view_list[3]][0], &peak_area_v[ch_index_for_view_list[3]][0]);
-		gr_peak_amp_peak_area[ch_index_for_view_list[3]]->Draw("AP");
+		for (int i = 0; i < 4; i++)
+		{
+			c9->cd(i+1);
+			int ch = ch_index_for_view_list[i];
+			ostringstream gr_peak_amp_peak_area_name;
+			gr_peak_amp_peak_area_name << "graph_peak_amp_peak_area_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+			gr_peak_amp_peak_area[ch] = new TGraph(peak_amp_v[ch].size(), &peak_amp_v[ch][0], &peak_area_v[ch][0]);
+			gr_peak_amp_peak_area[ch]->SetTitle(gr_peak_amp_peak_area_name.str().c_str());
+			gr_peak_amp_peak_area[ch]->Draw("AP");
+			gr_peak_amp_peak_area[ch]->GetXaxis()->SetTitle("Peak Amp");
+			gr_peak_amp_peak_area[ch]->GetYaxis()->SetTitle("Peak Area");
+			gr_peak_amp_peak_area[ch]->GetXaxis()->SetRangeUser(rd_inf.GetHistPeakAmpXminList()[ch], rd_inf.GetHistPeakAmpXmaxList()[ch]);
+			gr_peak_amp_peak_area[ch]->GetYaxis()->SetRangeUser(rd_inf.GetHistPeakAreaXminList()[ch], rd_inf.GetHistPeakAreaXmaxList()[ch]);
+		}		
 	}
 
-	if (draw_var.find("peak_time_good_SiPMs") != std::string::npos)
+	if (draw_var.find("peak_time_all_SiPMs_PMTs_slow_PMTs_fast") != std::string::npos)
 	{
-		TCanvas *c10 = new TCanvas("c10", "peak_time_good_SiPMs");
-		hist_peak_time_good_SiPMs->Draw();
-
-		for (int i = 0; i < vec_peak_time_good_SiPMs.size(); i++)
+		TCanvas *c10 = new TCanvas("c10", "peak_time_spectra");
+		//vector<TH1F*> hist_vector{hist_peak_time_all_SiPMs, hist_peak_time_all_PMTs_slow, hist_peak_time_all_PMTs_fast};
+		vector<TH1F*> hist_vector{ hist_peak_time_all_SiPMs, hist_peak_time_3PMTs_slow, hist_peak_time_1PMT_slow };
+		c10->Divide(2, 2, 0.01, 0.01);
+		for (int i = 0; i < 3; i++)
 		{
-			f_out << vec_peak_time_good_SiPMs[i] / 1000.0 << endl; //us
+			c10->cd(i + 1);
+			gPad->SetLogy();
+			hist_vector[i]->Draw();
+			hist_vector[i]->GetXaxis()->SetTitle("Time [us]");
+			hist_vector[i]->GetYaxis()->SetTitle("Counts");
+			hist_vector[i]->GetXaxis()->SetRangeUser(0, 160E3);
 		}
 	}
 

@@ -40,14 +40,15 @@ int main(int argc, char *argv[])
 	if (is_batch_mode)
 		gROOT->SetBatch(kTRUE);
 
-	string date = "191219";
+	string date = "190919";
 	string year = "20" + date.substr(0, 2);
 	string subfolder_name = "f1";
-	string output_folder = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\analysis\\";
+	string first_part_of_path = "E:\\" + year + "\\" + date + "\\" + date;
+	string output_folder = first_part_of_path + "_caen_raw\\analysis\\";
 	ofstream file_detailed_info_output(output_folder + subfolder_name + "_detailed_info.txt");
 	string file_name_output = output_folder + subfolder_name + ".root";
-	string file_name_info = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
-	string file_name_daq_info = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
+	string file_name_info = first_part_of_path + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
+	string file_name_daq_info = first_part_of_path + "_caen_raw\\info\\daq_info.txt";
 	
 	ReadDAQInfo rd_daq_inf(file_name_daq_info);
 	rd_daq_inf.Read();
@@ -61,7 +62,7 @@ int main(int argc, char *argv[])
 	rd_inf.Read();
 	//rd_inf.Show();
 
-	string file_name_raw = "E:\\" + year + "\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod" + "\\000000__000009.dat";
+	string file_name_raw = first_part_of_path + "_caen_raw\\" + subfolder_name + "_mod" + "\\000000__000009.dat";
 	ReadData_CAEN rdt(file_name_raw, N_events_per_file, rd_inf.GetChList().size(), points_per_event_per_ch);
 
 	vector<double> yv_filtered(points_per_event_per_ch);

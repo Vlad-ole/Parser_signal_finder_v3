@@ -43,6 +43,9 @@ public:
 	std::vector<double> &GetHistNpeaksXminList();
 	std::vector<double> &GetHistNpeaksXmaxList();
 
+	std::vector<int> &GetHistPeakTimeNbinsList();
+	std::vector<double> &GetHistPeakTimeXminList();
+	std::vector<double> &GetHistPeakTimeXmaxList();
 
 private:
 	std::ifstream file_input;
@@ -72,5 +75,10 @@ private:
 	std::vector<int> hist_n_peaks_nbins_list;
 	std::vector<double> hist_n_peaks_xmin_list;
 	std::vector<double> hist_n_peaks_xmax_list;
+
+	std::vector<int> hist_peak_time_nbins_list;
+	std::vector<double> hist_peak_time_xmin_list;
+	std::vector<double> hist_peak_time_xmax_list;
+
 };
 
