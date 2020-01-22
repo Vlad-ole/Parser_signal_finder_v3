@@ -47,6 +47,10 @@ public:
 	std::vector<double> &GetHistPeakTimeXminList();
 	std::vector<double> &GetHistPeakTimeXmaxList();
 
+	std::vector<int> &GetHistPeakAreaEvNbinsList();
+	std::vector<double> &GetHistPeakAreaEvXminList();
+	std::vector<double> &GetHistPeakAreaEvXmaxList();
+
 private:
 	std::ifstream file_input;
 	std::string file_name_info;
@@ -80,5 +84,8 @@ private:
 	std::vector<double> hist_peak_time_xmin_list;
 	std::vector<double> hist_peak_time_xmax_list;
 
+	std::vector<int> hist_peak_area_ev_nbins_list;
+	std::vector<double> hist_peak_area_ev_xmin_list;
+	std::vector<double> hist_peak_area_ev_xmax_list;
 };
 

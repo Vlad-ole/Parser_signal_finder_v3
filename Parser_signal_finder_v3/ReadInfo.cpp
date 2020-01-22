@@ -54,13 +54,18 @@ void ReadInfo::Read()
 			double hist_peak_time_xmin;
 			double hist_peak_time_xmax;
 
+			int hist_peak_area_ev_nbins;
+			double hist_peak_area_ev_xmin;
+			double hist_peak_area_ev_xmax;
+
 			iss >> ch_name >> ch >> is_positive_polarity_type >> th >> is_local_baseline >> window >> local_baseline_window >>
 				local_baseline_window_shift >> check_overlapping_window >>
 				shrinking_of_left_tail >> shrinking_of_right_tail >> filtering_window >>
 				hist_peak_amp_nbins >> hist_peak_amp_xmin >> hist_peak_amp_xmax >>
 				hist_peak_area_nbins >> hist_peak_area_xmin >> hist_peak_area_xmax >>
 				hist_n_peaks_nbins >> hist_n_peaks_xmin >> hist_n_peaks_xmax >> 
-				hist_peak_time_nbins >> hist_peak_time_xmin >> hist_peak_time_xmax;
+				hist_peak_time_nbins >> hist_peak_time_xmin >> hist_peak_time_xmax >>
+				hist_peak_area_ev_nbins >> hist_peak_area_ev_xmin >> hist_peak_area_ev_xmax;
 			
 			ch_name_list.push_back(ch_name);
 			ch_list.push_back(ch);
@@ -91,6 +96,9 @@ void ReadInfo::Read()
 			hist_peak_time_xmin_list.push_back(hist_peak_time_xmin);
 			hist_peak_time_xmax_list.push_back(hist_peak_time_xmax);
 
+			hist_peak_area_ev_nbins_list.push_back(hist_peak_area_ev_nbins);
+			hist_peak_area_ev_xmin_list.push_back(hist_peak_area_ev_xmin);
+			hist_peak_area_ev_xmax_list.push_back(hist_peak_area_ev_xmax);
 		}		
 	}
 }
@@ -223,6 +231,21 @@ std::vector<double> &ReadInfo::GetHistPeakTimeXminList()
 std::vector<double> &ReadInfo::GetHistPeakTimeXmaxList()
 {
 	return hist_peak_time_xmax_list;
+}
+
+std::vector<int> &ReadInfo::GetHistPeakAreaEvNbinsList()
+{
+	return hist_peak_area_ev_nbins_list;
+}
+
+std::vector<double> &ReadInfo::GetHistPeakAreaEvXminList()
+{
+	return hist_peak_area_ev_xmin_list;
+}
+
+std::vector<double> &ReadInfo::GetHistPeakAreaEvXmaxList()
+{
+	return hist_peak_area_ev_xmax_list;
 }
 
 ReadInfo::~ReadInfo()

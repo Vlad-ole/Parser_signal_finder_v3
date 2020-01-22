@@ -80,12 +80,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Parser_signal_finder_v3\Path.cpp" />
     <ClCompile Include="..\Parser_signal_finder_v3\ReadDAQInfo.cpp" />
     <ClCompile Include="..\Parser_signal_finder_v3\ReadInfo.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ReadData_CAEN_v2.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Parser_signal_finder_v3\Path.h" />
     <ClInclude Include="..\Parser_signal_finder_v3\ReadDAQInfo.h" />
     <ClInclude Include="..\Parser_signal_finder_v3\ReadInfo.h" />
     <ClInclude Include="ReadData_CAEN_v2.h" />

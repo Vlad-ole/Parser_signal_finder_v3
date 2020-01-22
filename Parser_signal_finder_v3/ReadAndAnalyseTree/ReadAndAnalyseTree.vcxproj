@@ -90,6 +90,7 @@
   <ItemGroup>
     <ClCompile Include="..\EventMainCh.cpp" />
     <ClCompile Include="..\mainDic.cpp" />
+    <ClCompile Include="..\Path.cpp" />
     <ClCompile Include="..\Peaks.cpp" />
     <ClCompile Include="..\ReadDAQInfo.cpp" />
     <ClCompile Include="..\ReadInfo.cpp" />
@@ -99,6 +100,7 @@
   <ItemGroup>
     <ClInclude Include="..\EventMainCh.h" />
     <ClInclude Include="..\mainDic.h" />
+    <ClInclude Include="..\Path.h" />
     <ClInclude Include="..\Peaks.h" />
     <ClInclude Include="..\ReadDAQInfo.h" />
     <ClInclude Include="..\ReadInfo.h" />

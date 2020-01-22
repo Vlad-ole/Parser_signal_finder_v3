@@ -26,6 +26,7 @@
 #include "Calc.h"
 #include "ReadInfo.h"
 #include "ReadDaqInfo.h"
+#include "Path.h"
 
 
 using namespace std;
@@ -36,21 +37,24 @@ int main(int argc, char *argv[])
 {
 	TApplication theApp("theApp", &argc, argv);//let's add some magic! https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=22972
 	
+	Path path;
 	bool is_batch_mode = true;
 	if (is_batch_mode)
 		gROOT->SetBatch(kTRUE);
 
-	string date = "190919";
-	string year = "20" + date.substr(0, 2);
-	string subfolder_name = "f1";
-	string first_part_of_path = "E:\\" + year + "\\" + date + "\\" + date;
+	//string date = "181018";
+	//string year = "20" + date.substr(0, 2);
+	//string subfolder_name = "f5";
+	//string first_part_of_path = "E:\\" + year + "\\" + date + "\\" + date;
+	string subfolder_name = path.GetSubFolderName();
+	string first_part_of_path = path.GetFirstPartOfPath();
 	string output_folder = first_part_of_path + "_caen_raw\\analysis\\";
 	ofstream file_detailed_info_output(output_folder + subfolder_name + "_detailed_info.txt");
 	string file_name_output = output_folder + subfolder_name + ".root";
-	string file_name_info = first_part_of_path + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
-	string file_name_daq_info = first_part_of_path + "_caen_raw\\info\\daq_info.txt";
+	//string file_name_info = first_part_of_path + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
+	//string file_name_daq_info = first_part_of_path + "_caen_raw\\info\\daq_info.txt";
 	
-	ReadDAQInfo rd_daq_inf(file_name_daq_info);
+	ReadDAQInfo rd_daq_inf(path.GetFileNameDAQInfo());
 	rd_daq_inf.Read();
 	//rd_daq_inf.Show();
 	//system("pause");
@@ -58,11 +62,11 @@ int main(int argc, char *argv[])
 	unsigned int ns_per_point = /*4*//*16*/rd_daq_inf.GetNsPerPoint();
 	unsigned int points_per_event_per_ch = /*40000*//*9999*/rd_daq_inf.GetPointsPerEventPerCh();
 	unsigned int N_events_per_file = /*50*/rd_daq_inf.GetNEventsPerFileOutput();
-	ReadInfo rd_inf(file_name_info);
+	ReadInfo rd_inf(path.GetFileNameInfo());
 	rd_inf.Read();
 	//rd_inf.Show();
 
-	string file_name_raw = first_part_of_path + "_caen_raw\\" + subfolder_name + "_mod" + "\\000000__000009.dat";
+	string file_name_raw = first_part_of_path + "_caen_raw\\" + subfolder_name + "_mod" + "\\000000__000099.dat";
 	ReadData_CAEN rdt(file_name_raw, N_events_per_file, rd_inf.GetChList().size(), points_per_event_per_ch);
 
 	vector<double> yv_filtered(points_per_event_per_ch);

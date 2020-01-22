@@ -27,6 +27,9 @@
     <ClCompile Include="..\Parser_signal_finder_v3\ReadInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Parser_signal_finder_v3\Path.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ReadData_CAEN_v2.h">
@@ -36,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Parser_signal_finder_v3\ReadInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parser_signal_finder_v3\Path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -90,6 +90,7 @@
   <ItemGroup>
     <ClCompile Include="..\Parser_signal_finder_v3\Calc.cpp" />
     <ClCompile Include="..\Parser_signal_finder_v3\CalcDer.cpp" />
+    <ClCompile Include="..\Parser_signal_finder_v3\Path.cpp" />
     <ClCompile Include="..\Parser_signal_finder_v3\PeakFinder.cpp" />
     <ClCompile Include="..\Parser_signal_finder_v3\ReadDAQInfo.cpp" />
     <ClCompile Include="..\Parser_signal_finder_v3\ReadData.cpp" />
@@ -101,6 +102,7 @@
   <ItemGroup>
     <ClInclude Include="..\Parser_signal_finder_v3\Calc.h" />
     <ClInclude Include="..\Parser_signal_finder_v3\CalcDer.h" />
+    <ClInclude Include="..\Parser_signal_finder_v3\Path.h" />
     <ClInclude Include="..\Parser_signal_finder_v3\PeakFinder.h" />
     <ClInclude Include="..\Parser_signal_finder_v3\ReadDAQInfo.h" />
     <ClInclude Include="..\Parser_signal_finder_v3\ReadData.h" />

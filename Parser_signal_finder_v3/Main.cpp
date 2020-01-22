@@ -23,6 +23,7 @@
 #include "PeakFinder.h"
 #include "ReadInfo.h"
 #include "ReadDaqInfo.h"
+#include "Path.h"
 //#include "TreeRaw.h"
 //#include "CalcData.h"
 //#include "TreeInfo.h"
@@ -69,24 +70,28 @@ int main(int argc, char **argv)
 
 	//string file_name_raw("D:\\Data_work\\Reco_test\\171123_caen_raw\\x_ray_20kV_PMT550_0dB_coll_2mm\\run_323__ch_0.dat");
 
+	Path path;
+
 	//some code for proper root cern operation
 	TApplication theApp("theApp", &argc, argv);//let's add some magic! https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=22972
 	gROOT->SetBatch(kTRUE);
 
-	string date = "190919";
-	string year = "20" + date.substr(0, 2);
-	string first_part_of_path = "E:\\" + year + "\\" + date + "\\" + date;
-	string subfolder_name = "f1";
-	string file_name_info = first_part_of_path + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
-	string file_name_daq_info = first_part_of_path + "_caen_raw\\info\\daq_info.txt";
+	//string date = "181018";
+	//string year = "20" + date.substr(0, 2);
+	//string first_part_of_path = "E:\\" + year + "\\" + date + "\\" + date;
+	//string subfolder_name = "f5";
+	//string file_name_info = first_part_of_path + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
+	//string file_name_daq_info = first_part_of_path + "_caen_raw\\info\\daq_info.txt";
+	string first_part_of_path = path.GetFirstPartOfPath();
+	string subfolder_name = path.GetSubFolderName();
 	
-	ReadDAQInfo rd_daq_inf(file_name_daq_info);
+	ReadDAQInfo rd_daq_inf(path.GetFileNameDAQInfo());
 	rd_daq_inf.Read();
 	//Read DAQ_info.txt
 	unsigned int ns_per_point = /*4*//*16*/rd_daq_inf.GetNsPerPoint();
 	unsigned int points_per_event_per_ch = /*40000*//*9999*/rd_daq_inf.GetPointsPerEventPerCh();
 	unsigned int N_events_per_file = /*100*/rd_daq_inf.GetNEventsPerFileOutput();
-	ReadInfo rd_inf(file_name_info);
+	ReadInfo rd_inf(path.GetFileNameInfo());
 	rd_inf.Read();
 	//if (rd_inf.GetChList().size() != 33)
 	//{
@@ -98,7 +103,7 @@ int main(int argc, char **argv)
 	//vector<bool> is_positive_polarity_type_list = { true, true, true, true };
 
 	//const unsigned int n_event_to_process = 2;
-	const unsigned int number_of_input_files = 237;
+	const unsigned int number_of_input_files = 230;
 	string path_to_folder = first_part_of_path + "_caen_raw\\" + subfolder_name + "_mod\\";
 
 	//create tree
