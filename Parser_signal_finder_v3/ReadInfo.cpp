@@ -29,7 +29,9 @@ void ReadInfo::Read()
 			int ch;
 			bool is_positive_polarity_type;
 			bool is_local_baseline;
-			double th;
+			double th_raw;
+			double th_filtered;
+			unsigned int peak_finder_version;
 			double window;
 			double local_baseline_window;
 			double local_baseline_window_shift;
@@ -58,7 +60,7 @@ void ReadInfo::Read()
 			double hist_peak_area_ev_xmin;
 			double hist_peak_area_ev_xmax;
 
-			iss >> ch_name >> ch >> is_positive_polarity_type >> th >> is_local_baseline >> window >> local_baseline_window >>
+			iss >> ch_name >> ch >> is_positive_polarity_type >> th_raw >> th_filtered >> peak_finder_version >> is_local_baseline >> window >> local_baseline_window >>
 				local_baseline_window_shift >> check_overlapping_window >>
 				shrinking_of_left_tail >> shrinking_of_right_tail >> filtering_window >>
 				hist_peak_amp_nbins >> hist_peak_amp_xmin >> hist_peak_amp_xmax >>
@@ -70,7 +72,9 @@ void ReadInfo::Read()
 			ch_name_list.push_back(ch_name);
 			ch_list.push_back(ch);
 			is_positive_polarity_type_list.push_back(is_positive_polarity_type);
-			th_list.push_back(th);
+			th_raw_list.push_back(th_raw);
+			th_filtered_list.push_back(th_filtered);
+			peak_finder_version_list.push_back(peak_finder_version);
 			is_local_baseline_list.push_back(is_local_baseline);
 			window_list.push_back(window);
 			local_baseline_window_list.push_back(local_baseline_window);
@@ -107,13 +111,16 @@ void ReadInfo::Show()
 {
 	cout << "ch_list.size() = " << ch_list.size() << endl;
 	cout << "is_positive_polarity_type_list.size() = " << is_positive_polarity_type_list.size() << endl;
-	cout << "th_list.size() = " << th_list.size() << endl;
+	cout << "th_raw_list.size() = " << th_raw_list.size() << endl;
 	
-	cout << "i \t ch \t is_positive_polarity_type \t th" << endl;
+	cout << "i \t ch \t pol. \t th_raw \t th_fil \t ver." << endl;
 	for (int i = 0; i < ch_list.size(); i++)
 	{
-		cout << i << "\t" << ch_list[i] << "\t" << is_positive_polarity_type_list[i] << "\t" << th_list[i] << endl;
+		cout << i << "\t" << ch_list[i] << "\t" << is_positive_polarity_type_list[i] << "\t" << th_raw_list[i] << "\t" << th_filtered_list[i] <<
+			"\t" << peak_finder_version_list[i] << endl;
 	}
+
+	system("pause");
 }
 
 std::vector<std::string> &ReadInfo::GetChNameList()
@@ -131,9 +138,19 @@ std::vector<bool> &ReadInfo::GetIsPositivePolarityTypeList()
 	return is_positive_polarity_type_list;
 }
 
-std::vector<double> &ReadInfo::GetThList()
+std::vector<double> &ReadInfo::GetThRawList()
 {
-	return th_list;
+	return th_raw_list;
+}
+
+std::vector<double> &ReadInfo::GetThFilteredList()
+{
+	return th_filtered_list;
+}
+
+std::vector<unsigned int> &ReadInfo::GetPeakFinderVersionList()
+{
+	return peak_finder_version_list;
 }
 
 std::vector<bool> &ReadInfo::GetIsLocalBaselineList()

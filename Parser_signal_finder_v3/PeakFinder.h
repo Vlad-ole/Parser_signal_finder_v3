@@ -5,7 +5,7 @@
 class PeakFinder
 {
 public:
-	PeakFinder(std::vector<double>& yv_raw, std::vector<double>& yv_filtered, const unsigned int ns_per_point,
+	PeakFinder(std::vector<double>& yv_raw, std::vector<double>& yv_filtered, const unsigned int ns_per_point, const unsigned int peak_finder_version,
 		const double window, const double local_baseline_window, const double local_baseline_window_shift,
 		const double check_overlapping_window, const double shrinking_of_left_tail, const double shrinking_of_right_tail, const bool is_local_baseline);
 	~PeakFinder();
@@ -18,13 +18,14 @@ public:
 	std::vector<double> GetPeakArea();
 	
 
-	void FindPeaksByAmp(const double th);
+	void FindPeaks(const double th_raw, const double th_filtered);
 
 private:
 	std::vector<double>& yv_raw;
 	std::vector<double>& yv_filtered;
 
 	const unsigned int ns_per_point;
+	const unsigned int peak_finder_version;
 	std::vector<std::pair<int, int>> pair_v;
 	std::vector<double> avr_peak_time;
 	std::vector<double> peak_time;

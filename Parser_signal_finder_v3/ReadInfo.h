@@ -20,7 +20,9 @@ public:
 	std::vector<std::string> &GetChNameList();
 	std::vector<int> &GetChList();
 	std::vector<bool> &GetIsPositivePolarityTypeList();
-	std::vector<double> &GetThList();
+	std::vector<double> &GetThRawList();
+	std::vector<double> &GetThFilteredList();
+	std::vector<unsigned int> &GetPeakFinderVersionList();
 	std::vector<bool> &GetIsLocalBaselineList();
 
 	std::vector<double> &GetWindowList();
@@ -58,7 +60,9 @@ private:
 	std::vector<int> ch_list;
 	std::vector<bool> is_positive_polarity_type_list;
 	std::vector<bool> is_local_baseline_list;
-	std::vector<double> th_list;
+	std::vector<double> th_raw_list;
+	std::vector<double> th_filtered_list;
+	std::vector<unsigned int> peak_finder_version_list;
 
 	std::vector<double> window_list;
 	std::vector<double> local_baseline_window_list;

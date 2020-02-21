@@ -4,10 +4,10 @@ using namespace std;
 
 Path::Path()
 {
-	string date = "181025";
+	string date = "191107";
 	string year = "20" + date.substr(0, 2);
 	first_part_of_path = "E:\\" + year + "\\" + date + "\\" + date;
-	subfolder_name = "f5";
+	subfolder_name = "f11";
 
 	file_name_info = first_part_of_path + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
 	file_name_daq_info = first_part_of_path + "_caen_raw\\info\\daq_info.txt";

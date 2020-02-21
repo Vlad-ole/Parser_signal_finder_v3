@@ -107,11 +107,11 @@ int main(int argc, char *argv[])
 			calc.SubtractBaseline();
 			yv_filtered = calc.GetFilteredWaveformGolay(/*21*/ rd_inf.GetFilteringWindowList()[ch], 0);
 
-			PeakFinder peak_finder(rdt.GetDataDouble()[ev][ch], yv_filtered, ns_per_point, 
+			PeakFinder peak_finder(rdt.GetDataDouble()[ev][ch], yv_filtered, ns_per_point, rd_inf.GetPeakFinderVersionList()[ch],
 				rd_inf.GetWindowList()[ch], rd_inf.GetLocalBaselineWindowList()[ch], rd_inf.GetLocalBaselineWindowShiftList()[ch],
 				rd_inf.GetCheckOverlappingWindowList()[ch], rd_inf.GetShrinkingOfLeftTailList()[ch], 
 				rd_inf.GetShrinkingOfRightTailList()[ch], rd_inf.GetIsLocalBaselineList()[ch]);
-			peak_finder.FindPeaksByAmp(/*30*//*mV*/ rd_inf.GetThList()[ch]);
+			peak_finder.FindPeaks(/*30*//*mV*/ rd_inf.GetThRawList()[ch], rd_inf.GetThFilteredList()[ch]);
 			vector< pair<int, int> > pair_vec = peak_finder.GetPeakPositions();
 			vector<double> local_baseline = peak_finder.GetLocalBaselineV();
 			vector<double> avr_peak_time = peak_finder.GetAvrPeakTime();
