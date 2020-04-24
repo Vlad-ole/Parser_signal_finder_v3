@@ -388,7 +388,7 @@ int main(int argc, char *argv[])
 							f_out_allPMTs_fast_time_spectrum << (event->peaks[ch]->peak_time[peak_id]) / 1000.0 << endl;
 						}
 
-						if (rd_inf.GetChNameList()[ch] == "PMT2_slow" ||
+						if (rd_inf.GetChNameList()[ch] == "PMT2_slow" || /*rd_inf.GetChNameList()[ch] == "Sum_3PMT_slow" ||*/
 							rd_inf.GetChNameList()[ch] == "PMT3_slow" || rd_inf.GetChNameList()[ch] == "PMT4_slow")
 						{
 							hist_peak_time_3PMTs_slow->Fill(event->peaks[ch]->peak_time[peak_id]);

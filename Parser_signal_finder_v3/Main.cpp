@@ -103,7 +103,7 @@ int main(int argc, char **argv)
 	//vector<bool> is_positive_polarity_type_list = { true, true, true, true };
 
 	//const unsigned int n_event_to_process = 2;
-	const unsigned int number_of_input_files = 230;
+	const unsigned int number_of_input_files = 30;
 	string path_to_folder = first_part_of_path + "_caen_raw\\" + subfolder_name + "_mod\\";
 
 	//create tree
@@ -164,11 +164,11 @@ int main(int argc, char **argv)
 				TStopwatch timer_find_peaks;
 				timer_find_peaks.Start();
 				//PeakFinder peak_finder(rdt.GetDataDouble()[ev][ch], yv_filtered, ns_per_point);
-				PeakFinder peak_finder(rdt.GetDataDouble()[ev][ch], yv_filtered, ns_per_point,
+				PeakFinder peak_finder(rdt.GetDataDouble()[ev][ch], yv_filtered, ns_per_point, rd_inf.GetPeakFinderVersionList()[ch],
 					rd_inf.GetWindowList()[ch], rd_inf.GetLocalBaselineWindowList()[ch], rd_inf.GetLocalBaselineWindowShiftList()[ch],
 					rd_inf.GetCheckOverlappingWindowList()[ch], rd_inf.GetShrinkingOfLeftTailList()[ch],
 					rd_inf.GetShrinkingOfRightTailList()[ch], rd_inf.GetIsLocalBaselineList()[ch]);
-				peak_finder.FindPeaksByAmp(rd_inf.GetThList()[ch]/*peak_finder_th*//*mV*/);
+				peak_finder.FindPeaks(rd_inf.GetThRawList()[ch], rd_inf.GetThFilteredList()[ch]);
 				timer_find_peaks.Stop();
 				time_find_peaks += timer_find_peaks.RealTime();
 

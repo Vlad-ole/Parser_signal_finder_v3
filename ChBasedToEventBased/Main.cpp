@@ -45,8 +45,8 @@ int main(int argc, char **argv)
 	rd_inf.Show();
 	system("pause");
 
-	unsigned int start_run_number = 1;
-	unsigned int stop_run_number = 2;
+	unsigned int start_run_number = 14;
+	unsigned int stop_run_number = 16;
 
 	//string common_path_input = first_part_of_path + "_caen_raw\\" + subfolder_name + "\\";
 	//string common_path_out = first_part_of_path + "_caen_raw\\" + subfolder_name + "_mod\\";

@@ -60,7 +60,8 @@ void ReadInfo::Read()
 			double hist_peak_area_ev_xmin;
 			double hist_peak_area_ev_xmax;
 
-			iss >> ch_name >> ch >> is_positive_polarity_type >> th_raw >> th_filtered >> peak_finder_version >> is_local_baseline >> window >> local_baseline_window >>
+			iss >> ch_name >> ch >> is_positive_polarity_type >> th_raw >> th_filtered >> peak_finder_version >>
+				is_local_baseline >> window >> local_baseline_window >>
 				local_baseline_window_shift >> check_overlapping_window >>
 				shrinking_of_left_tail >> shrinking_of_right_tail >> filtering_window >>
 				hist_peak_amp_nbins >> hist_peak_amp_xmin >> hist_peak_amp_xmax >>
