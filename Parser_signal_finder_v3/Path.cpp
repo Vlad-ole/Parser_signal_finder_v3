@@ -4,8 +4,9 @@ using namespace std;
 
 Path::Path()
 {
-	string date = "181025";
-	subfolder_name = "f4";
+	string date = "200910";
+	subfolder_name = "f29";
+	number_of_input_files = 210;
 
 	string year = "20" + date.substr(0, 2);
 	first_part_of_path = "E:\\" + year + "\\" + date + "\\" + date;	
@@ -18,6 +19,11 @@ Path::Path()
 
 Path::~Path()
 {
+}
+
+int Path::GetNumberOfInputFiles()
+{
+	return number_of_input_files;
 }
 
 string Path::GetFileNameInfo()

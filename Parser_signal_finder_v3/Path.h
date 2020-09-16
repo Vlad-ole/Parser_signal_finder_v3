@@ -15,6 +15,7 @@ public:
 	std::string GetPathRawModOutput();
 	std::string GetFirstPartOfPath();
 	std::string GetSubFolderName();
+	int GetNumberOfInputFiles();
 
 private:
 	std::string file_name_info;
@@ -23,5 +24,6 @@ private:
 	std::string path_raw_mod_output;
 	std::string first_part_of_path;
 	std::string subfolder_name;
+	int number_of_input_files;
 };
 

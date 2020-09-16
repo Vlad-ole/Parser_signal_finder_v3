@@ -26,7 +26,7 @@
 #include "Calc.h"
 #include "ReadInfo.h"
 #include "ReadDaqInfo.h"
-#include "Calc.h"
+#include "Path.h"
 
 using namespace std;
 
@@ -35,22 +35,27 @@ int main(int argc, char *argv[])
 	TApplication theApp("theApp", &argc, argv);//let's add some magic! https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=22972
 	gSystem->Load("libTree");// (to fix: no dictionary for class ttree is available) https://root.cern.ch/root/roottalk/roottalk04/1580.html
 	
-	string date = "190704";
-	string subfolder_name = "f2";
-	string output_folder = "E:\\" + date + "\\" + date + "_caen_raw\\analysis\\";	
+	Path path;
+	//string date = "190704";
+	string subfolder_name = path.GetSubFolderName();
+	string output_folder = path.GetFirstPartOfPath() + "_caen_raw\\analysis\\";
 	string file_name_output = output_folder + subfolder_name + "_avr_wf.txt";
-	string file_name_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
-	string file_name_daq_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
+	//string file_name_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\" + subfolder_name + "_info.txt";
+	//string file_name_daq_info = "E:\\" + date + "\\" + date + "_caen_raw\\info\\daq_info.txt";
+
 	
 	ofstream file_output(file_name_output);
 
-	ReadDAQInfo rd_daq_inf(file_name_daq_info);
-	rd_daq_inf.Read();
+	//ReadDAQInfo rd_daq_inf(file_name_daq_info);
+	ReadDAQInfo rd_daq_inf(path.GetFileNameDAQInfo());
+	rd_daq_inf.Read();	
+
 
 	unsigned int ns_per_point = /*4*//*16*/rd_daq_inf.GetNsPerPoint();
 	unsigned int points_per_event_per_ch = /*40000*//*9999*/rd_daq_inf.GetPointsPerEventPerCh();
 	unsigned int N_events_per_file = /*50*/rd_daq_inf.GetNEventsPerFileOutput();
-	ReadInfo rd_inf(file_name_info);
+	//ReadInfo rd_inf(file_name_info);
+	ReadInfo rd_inf(path.GetFileNameInfo());
 	rd_inf.Read();
 
 	vector<double> yv_avr(points_per_event_per_ch);
@@ -58,16 +63,20 @@ int main(int argc, char *argv[])
 	for (int i = 0; i < points_per_event_per_ch; i++)
 		xv[i] = i * ns_per_point / 1000.0;
 
-	vector<int> ch_to_avr_list = { 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59 };
+	vector<int> ch_to_avr_list = { 0 };
+	//vector<int> ch_to_avr_list = { 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59 };
 
-	if (rd_inf.GetChList().size() != 35)
+	if (rd_inf.GetChList().size() != 34)
 	{
-		cout << "err" << endl;
+		cout << "rd_inf.GetChList().size() = " << rd_inf.GetChList().size() << " ;err" << endl;
 		system("pause");
+		exit(1);
 	}
 
-	const unsigned int number_of_input_files = 200;
-	string path_to_folder = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod\\";
+	const unsigned int number_of_input_files = path.GetNumberOfInputFiles();
+	//string path_to_folder = "E:\\" + date + "\\" + date + "_caen_raw\\" + subfolder_name + "_mod\\";
+	string path_to_folder = path.GetFirstPartOfPath() + "_caen_raw\\" + subfolder_name + "_mod\\";
+	
 
 	int absolute_event_counter = 0;
 	for (int file_index = 0; file_index < number_of_input_files; file_index++)
@@ -85,26 +94,38 @@ int main(int argc, char *argv[])
 		{
 			//if (absolute_event_counter % 100 == 0)
 				//cout << "abs_ev = " << absolute_event_counter << "; rel_ev = " << ev << endl;
+			
 
 			for (int ch = 0; ch < rd_inf.GetChList().size(); ch++)
 			{
 				Calc calc(rdt.GetDataDouble()[ev][ch], ns_per_point, rd_inf.GetIsPositivePolarityTypeList()[ch]);
-				calc.CalcBaselineMeanSigma(0, 30000);
+				calc.CalcBaselineMeanSigma(0, 15000);
+				//calc.CalcBaselineMeanSigma(0, 30000);
+				//calc.CalcBaselineMeanSigma(120000, 140000);
+				
 				
 				// (rd_inf.GetChList()[ch] == 0)
 				// (find(ch_to_avr_list.begin(), ch_to_avr_list.end(), rd_inf.GetChList()[ch]) != ch_to_avr_list.end())
 				if (find(ch_to_avr_list.begin(), ch_to_avr_list.end(), rd_inf.GetChList()[ch]) != ch_to_avr_list.end())
 				{
 					//cout << "ch = " << rd_inf.GetChList()[ch] << endl;
+					//cout << calc.GetBaselineMean() << endl;
+
 					for (int p = 0; p < points_per_event_per_ch; p++)
 					{
 						yv_avr[p] += (rdt.GetDataDouble()[ev][ch][p] - calc.GetBaselineMean());
+						//yv_avr[p] += (rdt.GetDataDouble()[ev][ch][p]);
 					}
 				}
 			}
 			absolute_event_counter++;
+
+			
+			//if (ev == 50) goto label;
 		}	
 	}
+
+	//label:
 
 	for (int p = 0; p < points_per_event_per_ch; p++)
 	{

@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 	//TGraph* gr;                 // create a pointer to a TGraph
 	TCanvas* canv;
 	//const unsigned int n_events = N_events_per_file;
-	const unsigned int n_events = 10;
+	const unsigned int n_events = 20;
 	cout << endl;
 	for (int ev = 0; ev < n_events; ev++)
 	{
@@ -99,6 +99,9 @@ int main(int argc, char *argv[])
 			//test
 			/*ev = 1;
 			ch = 1;*/
+
+			//if ( !((ch == 9) /*|| (ch == 8)*/) ) continue;
+			//if ( ch != 9 ) continue;
 			
 			file_detailed_info_output << "\t" << "ch = " << rd_inf.GetChList()[ch] << endl;
 			cout << "\t" << "ch = " << rd_inf.GetChList()[ch] << endl;

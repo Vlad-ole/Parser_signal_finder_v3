@@ -90,6 +90,7 @@
   <ItemGroup>
     <ClCompile Include="..\Calc.cpp" />
     <ClCompile Include="..\CalcDer.cpp" />
+    <ClCompile Include="..\Path.cpp" />
     <ClCompile Include="..\ReadDAQInfo.cpp" />
     <ClCompile Include="..\ReadData.cpp" />
     <ClCompile Include="..\ReadData_CAEN.cpp" />
@@ -100,6 +101,7 @@
   <ItemGroup>
     <ClInclude Include="..\Calc.h" />
     <ClInclude Include="..\CalcDer.h" />
+    <ClInclude Include="..\Path.h" />
     <ClInclude Include="..\ReadDAQInfo.h" />
     <ClInclude Include="..\ReadData.h" />
     <ClInclude Include="..\ReadData_CAEN.h" />

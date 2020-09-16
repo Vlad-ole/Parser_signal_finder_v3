@@ -38,7 +38,7 @@ void Calc::CalcBaselineMeanSigma(double from_ns, double to_ns)
 {
 	const int from_point = from_ns / ns_per_point;
 	const int to_point = to_ns / ns_per_point;
-	const int n_points = to_point - from_point + 1;
+	const int n_points = to_point - from_point/* + 1*/;
 
 	for (int i = from_point; i < to_point; i++)
 	{

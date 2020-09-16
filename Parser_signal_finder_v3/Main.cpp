@@ -103,7 +103,7 @@ int main(int argc, char **argv)
 	//vector<bool> is_positive_polarity_type_list = { true, true, true, true };
 
 	//const unsigned int n_event_to_process = 2;
-	const unsigned int number_of_input_files = 30;
+	const unsigned int number_of_input_files = path.GetNumberOfInputFiles();
 	string path_to_folder = first_part_of_path + "_caen_raw\\" + subfolder_name + "_mod\\";
 
 	//create tree
@@ -148,7 +148,9 @@ int main(int argc, char **argv)
 				event->ymin.push_back(calc.GetYmin());
 				event->ymax.push_back(calc.GetYmax());
 
-				calc.CalcBaselineMeanSigma(0, 30000);
+				//calc.CalcBaselineMeanSigma(0, 30000);
+				calc.CalcBaselineMeanSigma(0, 15000);
+				//calc.CalcBaselineMeanSigma(100000, 140000);
 				event->baseline_mean.push_back(calc.GetBaselineMean());
 				event->baseline_sigma.push_back(calc.GetBaselineSigma());
 
