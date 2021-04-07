@@ -49,20 +49,50 @@ int main(int argc, char *argv[])
 	
 	TApplication theApp("theApp", &argc, argv);//let's add some magic! https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=22972
 
+	//TH1F* hist_test = new TH1F("hist_test", "hist_test", 1330, 0, 160E3);
+
 	string draw_var;
-	draw_var += "ymin ymax baseline_mean baseline_sigma";
+	string what_to_plot;
+	//what_to_plot = "all";
+	what_to_plot = "main";
+
+	bool is_calib = false;
+	double SiPM_axis_area_factor_for_calib = 1;
+	if (is_calib)
+	{
+		SiPM_axis_area_factor_for_calib = 0.3;
+	}
+
+	
+	if (what_to_plot == "all")
+	{
+		draw_var += "ymin ymax baseline_mean baseline_sigma";		
+		draw_var += "peak_amp peak_area n_peaks";		
+		
+
+		draw_var += "n_peaks_map_bkg";
+		draw_var += "n_peaks_map_S1";
+		draw_var += "n_peaks_map_S2";
+
+		draw_var += "peak_area_ev";
+
+		draw_var += "peak_area_ev_vs_evnum_allSiPMs_allPMTs";
+		draw_var += "peak_amp_vs_peak_area_hist2";
+	}
+	
 	draw_var += "peak_time";
-	draw_var += "peak_amp peak_area n_peaks peak_amp_vs_peak_area";	
-	draw_var += " peak_length";
-	draw_var += "peak_time_all_SiPMs_PMTs_slow_PMTs_fast"; 	
+	draw_var += "peak_length";
+	draw_var += "peak_amp_vs_peak_area";	
+	
+	draw_var += "peak_time_all_SiPMs_PMTs_slow_PMTs_fast";
 
 	///draw_var += "peak_area_ev_vs_evnum";
-	draw_var += "peak_area_ev_vs_evnum_allSiPMs_allPMTs";
 	
-	draw_var += "peak_amp_vs_peak_area_hist2";
+	
+	
 
 
-	draw_var += "peak_area_ev";
+	
 	draw_var += "peak_area_bkg";
 	draw_var += "peak_area_S1";
 	draw_var += "peak_area_S2";
@@ -71,11 +101,7 @@ int main(int argc, char *argv[])
 	//draw_var += "n_peaks_S1";
 	//draw_var += "n_peaks_S2";
 
-	draw_var += "PE_SiPM_PMTs_slow_S2";
-
-	draw_var += "n_peaks_map_bkg";
-	draw_var += "n_peaks_map_S1";
-	draw_var += "n_peaks_map_S2";
+	draw_var += "PE_SiPM_PMTs_slow_S2";	
 
 	draw_var += "peaks_area_map_bkg";
 	draw_var += "peaks_area_map_S1";
@@ -88,13 +114,13 @@ int main(int argc, char *argv[])
 	//string draw_var = "peak_time peak_amp peak_area n_peaks n_peaks_ch1_ch2";
 	//string draw_var = "peak_amp";
 	
-	vector<int> ch_list_to_view = { 4, 9, 32, 38};
+	//vector<int> ch_list_to_view = { 4, 9, 32, 38};
 	//vector<int> ch_list_to_view = { 32, 33, 34, 35};
 	//vector<int> ch_list_to_view = { 1, 2, 3, 4 };
 	
 	//vector<int> ch_list_to_view = {32, 34, 38, 39};
 	
-	//vector<int> ch_list_to_view = {0, 9, 11, 12};
+	vector<int> ch_list_to_view = {0, 9, 11, 12};
 	//vector<int> ch_list_to_view = {1, 2, 3, 4};
 	//vector<int> ch_list_to_view = {5, 6, 7, 8};
 
@@ -200,6 +226,7 @@ int main(int argc, char *argv[])
 	ofstream f_out_3PMT_slow_area_ev_spectrum(part_of_path2 + "_3PMT_slow_area_ev_spectrum.txt");
 	ofstream f_out_4PMT_slow_area_ev_spectrum(part_of_path2 + "_4PMT_slow_area_ev_spectrum.txt");
 	ofstream f_out_PE_S1_S2(part_of_path2 + "_PE_S1_S2.txt");
+	ofstream f_out_S2_SiPM_PE_map(part_of_path2 + "_S2_SiPM_PE_map.txt");
 
 	TTree *tree = (TTree*)f->Get("TreeMain");
 
@@ -223,50 +250,77 @@ int main(int argc, char *argv[])
 	//ch_calib[3] = 6327;
 	//ch_calib[4] = 14086;
 
-	//my calib from 191107
+	//my calib from 191107. 850V? 12db?
 	ch_calib[1] = 7262;
 	ch_calib[2] = 15390;
 	ch_calib[3] = 7111;
 	ch_calib[4] = 16160;
 
+	//my calib using 200116 f10 800V 0db
+	/*ch_calib[1] = 25860;
+	ch_calib[2] = 46820;
+	ch_calib[3] = 25790;
+	ch_calib[4] = 40010;*/
+
+	////my calib using 200116 f10 800V 0db and adapt for 800V 12db
+	//ch_calib[1] = 25860 * 0.25;
+	//ch_calib[2] = 46820 * 0.25;
+	//ch_calib[3] = 25790 * 0.25;
+	//ch_calib[4] = 40010 * 0.25;
+
+
 	//for (int i = 11; i <= 33; i++)
 	//{
 	//	ch_calib[i] = 1400;//estimated SPE for SiPMs 46V
 	//}
-	//my calib from 191107
-	ch_calib[11] = 1774; //ch32
-	ch_calib[12] = 1449; //ch33
-	ch_calib[13] = 2000; //ch34
-	ch_calib[14] = 1987; //ch35
-	ch_calib[15] = 2158; //ch36
-	ch_calib[16] = 1656; //ch37
-	ch_calib[17] = 2337; //ch38
-	ch_calib[18] = 1980; //ch39
-	ch_calib[19] = 2052; //ch40
-	ch_calib[20] = 2006; //ch41
-	ch_calib[21] = 1985; //ch42
-	ch_calib[22] = 1942; //ch48
-	ch_calib[23] = 1403; //ch49
-	ch_calib[24] = 1435; //ch50
-	ch_calib[25] = 1780; //ch51
-	ch_calib[26] = 2149; //ch52
-	ch_calib[27] = 2407; //ch53
-	ch_calib[28] = 1750; //ch54
-	ch_calib[29] = 1886; //ch55
-	ch_calib[30] = 2008; //ch56
-	ch_calib[31] = 2077; //ch57
-	ch_calib[32] = 1994; //ch58
-	ch_calib[33] = 2057; //ch59
+	//my calib from 191107 46V
+	ch_calib[11] = 1774; //ch32 (same as 210401_f1)
+	ch_calib[12] = 1449; //ch33 (same as 210401_f1)
+	ch_calib[13] = 2000; //ch34 (same as 210401_f1)
+	ch_calib[14] = 1987; //ch35 (same as 210401_f1)
+	ch_calib[15] = 2158; //ch36 (same as 210401_f1)
+	ch_calib[16] = 1656; //ch37 (same as 210401_f1)
+	ch_calib[17] = 2337; //ch38 (same as 210401_f1)
+	ch_calib[18] = 1980; //ch39 (same as 210401_f1)
+	ch_calib[19] = 2052; //ch40 (same as 210401_f1)
+	ch_calib[20] = 2006; //ch41 (same as 210401_f1)
+	ch_calib[21] = 1985; //ch42 (same as 210401_f1)
+	ch_calib[22] = 1942; //ch48 (same as 210401_f1)
+	ch_calib[23] = 1403; //ch49 (same as 210401_f1)
+	ch_calib[24] = 1435; //ch50 (same as 210401_f1)
+	ch_calib[25] = 1780; //ch51 (same as 210401_f1)
+	ch_calib[26] = 2149; //ch52 (same as 210401_f1)
+	ch_calib[27] = 2407; //ch53 (same as 210401_f1)	
+	ch_calib[28] = 1750; //ch54 (same as 210401_f1)
+	ch_calib[29] = 1886; //ch55 (same as 210401_f1)
+	ch_calib[30] = 2008; //ch56 (same as 210401_f1)
+	ch_calib[31] = 2077; //ch57 (same as 210401_f1)
+	ch_calib[32] = 1994; //ch58 (same as 210401_f1)
+	ch_calib[33] = 2057; //ch59 (same as 210401_f1)
 
-	double S1_start = /*4000*/ 42000;
-	double S1_stop =  /*8000*/ /*S1_start +*/ /*4000*/ 48000;
+	double Bkg_start = 0;
+	double Bkg_stop = /*15000*/ 20000;
+	double Bkg_dt = Bkg_stop - Bkg_start;
+	
+	double S1_start = /*16000*/ 32000 /*4000*/;
+	double S1_stop = /*22000*/ 38000 /*8000*/;
+	double S1_dt = S1_stop - S1_start;
 
-	double S2_start = /*85000*/ /*25000*/ 72000;
-	double S2_stop =  /*110000*/ /*40000*/ S2_start + 15000;
+	double S2_start = 72000/*27000*/;
+	double S2_stop =  87000 /*39000*/;
+	double S2_dt = S2_stop - S2_start;	
 
-	double Bkg_start = 3000;
-	double Bkg_stop = 40000;
+	//useed for alpha-soure only
+	double S2_test_pretrigger_start = 0;
+	double S2_test_pretrigger_stop = /*70000*/23000;
 
+	double S2_min_SiPM = 3;
+	double S2_max_SiPM = 12;
+
+	double S2_test_pretrigger_SiPM_max = 3;
+
+	double S2_trigger_start = 79000/*31000*/;//us
+	double S2_trigger_stop = 83000/*35000*/;//us
 
 	//define hists (joined ch)
 	TH1F* hist_peak_time_all_SiPMs = new TH1F("hist_peak_time_all_SiPMs", "hist_peak_time_all_SiPMs", 1330, 0, 160E3);
@@ -277,11 +331,13 @@ int main(int argc, char *argv[])
 	TH1F* hist_peak_time_PMTtrigg_slow = new TH1F("hist_peak_time_PMTtrigg_slow", "hist_peak_time_PMTtrigg_slow", 1330, 0, 160E3);
 	TH2F* hist_peak_area_ev_vs_evnum_all_SiPMs = new TH2F("hist_peak_area_ev_vs_evnum_all_SiPMs",
 		"hist_peak_area_ev_vs_evnum_all_SiPMs", 110, 0, tree->GetEntries(),
-		200, 0, 1E9);
+		200, 0, 600);
 	
-	TH1F* hist_PE_allPMT_S2 = new TH1F("hist_PE_allPMT_S2", "hist_PE_allPMT_S2", 100, 0, 25);
-	TH1F* hist_PE_allSiPMs_S2 = new TH1F("hist_PE_allSiPMs_S2", "hist_PE_allSiPMs_S2", 50, 0, 25);
-	TH1F* hist_PE_allSiPMs_S2_areabased = new TH1F("hist_PE_allSiPMs_S2_areabased", "hist_PE_allSiPMs_S2_areabased", 100, 0, 25);
+	int x_max_hist_PE = 180;
+	TH1F* hist_PE_allPMT_S2 = new TH1F("hist_PE_allPMT_S2", "hist_PE_allPMT_S2", x_max_hist_PE*2, 0, x_max_hist_PE);
+	TH1F* hist_PE_allSiPMs_S2 = new TH1F("hist_PE_allSiPMs_S2", "hist_PE_allSiPMs_S2", x_max_hist_PE * 2, 0, x_max_hist_PE);
+	TH1F* hist_PE_allSiPMs_S2_areabased = new TH1F("hist_PE_allSiPMs_S2_areabased", "hist_PE_allSiPMs_S2_areabased", x_max_hist_PE * 2, 0, x_max_hist_PE);
+	TH1F* hist_PE_allSiPMs_S2_test_pretrigger_areabased = new TH1F("hist_PE_allSiPMs_S2_test_pretrigger_areabased", "hist_PE_allSiPMs_S2_test_pretrigger_areabased", x_max_hist_PE * 2, 0, x_max_hist_PE);
 
 
 	vector<double> vec_peak_time_good_SiPMs;
@@ -373,7 +429,7 @@ int main(int argc, char *argv[])
 		hist_n_peaks_v[ch] = new TH1F(hist_n_peaks_name.str().c_str(), hist_n_peaks_name.str().c_str(), rd_inf.GetHistNpeaksNbinsList()[ch], rd_inf.GetHistNpeaksXminList()[ch], rd_inf.GetHistNpeaksXmaxList()[ch]);
 		hist_peak_time_v[ch] = new TH1F(hist_peak_time_name.str().c_str(), hist_peak_time_name.str().c_str(), rd_inf.GetHistPeakTimeNbinsList()[ch], rd_inf.GetHistPeakTimeXminList()[ch], rd_inf.GetHistPeakTimeXmaxList()[ch]);
 		hist_peak_amp_v[ch] = new TH1F(hist_peak_amp_name.str().c_str(), hist_peak_amp_name.str().c_str(), rd_inf.GetHistPeakAmpNbinsList()[ch], rd_inf.GetHistPeakAmpXminList()[ch], rd_inf.GetHistPeakAmpXmaxList()[ch]);
-		hist_peak_area_v[ch] = new TH1F(hist_peak_area_name.str().c_str(), hist_peak_area_name.str().c_str(), rd_inf.GetHistPeakAreaNbinsList()[ch], rd_inf.GetHistPeakAreaXminList()[ch], rd_inf.GetHistPeakAreaXmaxList()[ch]);
+		hist_peak_area_v[ch] = new TH1F(hist_peak_area_name.str().c_str(), hist_peak_area_name.str().c_str(), rd_inf.GetHistPeakAreaNbinsList()[ch], rd_inf.GetHistPeakAreaXminList()[ch], rd_inf.GetHistPeakAreaXmaxList()[ch]*SiPM_axis_area_factor_for_calib);
 		hist_peak_amp_peak_area_v[ch] = new TH2F(hist_peak_amp_peak_area_name.str().c_str(), hist_peak_amp_peak_area_name.str().c_str(), 
 			rd_inf.GetHistPeakAmpNbinsList()[ch], rd_inf.GetHistPeakAmpXminList()[ch], rd_inf.GetHistPeakAmpXmaxList()[ch],
 			rd_inf.GetHistPeakAreaNbinsList()[ch], rd_inf.GetHistPeakAreaXminList()[ch], rd_inf.GetHistPeakAreaXmaxList()[ch]);
@@ -390,8 +446,8 @@ int main(int argc, char *argv[])
 			110, 0, tree->GetEntries(), 
 			rd_inf.GetHistPeakAreaEvNbinsList()[ch], rd_inf.GetHistPeakAreaEvXminList()[ch], rd_inf.GetHistPeakAreaEvXmaxList()[ch]);
 		
-		hist_peak_area_bkg_v[ch] = new TH1F(hist_peak_area_bkg_name.str().c_str(), hist_peak_area_bkg_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 10);
-		hist_peak_area_S1_v[ch] = new TH1F(hist_peak_area_S1_name.str().c_str(), hist_peak_area_S1_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 10);
+		hist_peak_area_bkg_v[ch] = new TH1F(hist_peak_area_bkg_name.str().c_str(), hist_peak_area_bkg_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 100);
+		hist_peak_area_S1_v[ch] = new TH1F(hist_peak_area_S1_name.str().c_str(), hist_peak_area_S1_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 100);
 		hist_peak_area_S2_v[ch] = new TH1F(hist_peak_area_S2_name.str().c_str(), hist_peak_area_S2_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 100);
 
 		hist_n_peaks_bkg_v[ch] = new TH1F(hist_n_peaks_bkg_name.str().c_str(), hist_n_peaks_bkg_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 5);
@@ -538,8 +594,8 @@ int main(int argc, char *argv[])
 		int ch_trigger = 9;
 		for (int peak_id = 0; peak_id < event->peaks[ch_trigger]->peak_amp.size(); peak_id++)
 		{
-			if (event->peaks[ch_trigger]->peak_time[peak_id] > /*31000*/ /*95000*/ 79000 &&
-				event->peaks[ch_trigger]->peak_time[peak_id] < /*35000*/ /*100000*/ 83000)
+			if (event->peaks[ch_trigger]->peak_time[peak_id] > /*31000*/ /*95000*/ S2_trigger_start &&
+				event->peaks[ch_trigger]->peak_time[peak_id] < /*35000*/ /*100000*/ S2_trigger_stop)
 			{
 				is_trigger_in = true;
 			}
@@ -573,19 +629,42 @@ int main(int argc, char *argv[])
 		//bool is_peak_in_allSiPM_spectrum = PE_allSiPMs_S2_areabased_cut > 2 && PE_allSiPMs_S2_areabased_cut < 12;// 18kV 191107
 		//bool is_peak_in_allSiPM_spectrum = PE_allSiPMs_S2_areabased_cut > 5 && PE_allSiPMs_S2_areabased_cut < 18;// 20kV 200910
 		//bool is_peak_in_allSiPM_spectrum = PE_allSiPMs_S2_areabased_cut > 4.5 && PE_allSiPMs_S2_areabased_cut < 13.5;// 18kV 200910
-		bool is_peak_in_allSiPM_spectrum = PE_allSiPMs_S2_areabased_cut > 5 && PE_allSiPMs_S2_areabased_cut < 10;// 16kV 200910
+		//bool is_peak_in_allSiPM_spectrum = PE_allSiPMs_S2_areabased_cut > 5 && PE_allSiPMs_S2_areabased_cut < 10;// 16kV 200910
 		//bool is_peak_in_allSiPM_spectrum = PE_allSiPMs_S2_areabased_cut > 4 && PE_allSiPMs_S2_areabased_cut < 8;// 12kV 200910
+		bool is_peak_in_allSiPM_spectrum = PE_allSiPMs_S2_areabased_cut > S2_min_SiPM && PE_allSiPMs_S2_areabased_cut < S2_max_SiPM;
+
+		double PE_allSiPMs_S2_test_pretrigger_areabased_cut = 0;
+		if (no_PMT_saturation  && is_trigger_in)
+		{
+			for (int ch = 0; ch < ch_list.size(); ch++)
+			{
+				if (rd_inf.GetChNameList()[ch] == "SiPM")
+				{
+					for (int peak_id = 0; peak_id < event->peaks[ch]->peak_amp.size(); peak_id++)
+					{
+						if (event->peaks[ch]->peak_time[peak_id] > S2_test_pretrigger_start &&
+							event->peaks[ch]->peak_time[peak_id] < S2_test_pretrigger_stop)
+						{
+							PE_allSiPMs_S2_test_pretrigger_areabased_cut += (event->peaks[ch]->peak_area[peak_id] / ch_calib[ch]);
+						}
+					}
+				}
+			}
+		}
+		bool is_peak_in_allSiPM_S2_test_pretrigger_spectrum = PE_allSiPMs_S2_test_pretrigger_areabased_cut < S2_test_pretrigger_SiPM_max;
 
 	
+		//main_cuts
 		if (/*is_narrow_top_counter_peak_time && is_narrow_bot_counter_peak_time 
 			&& is_narrow_top_counter_peak_amp && is_narrow_bot_counter_peak_amp && */ 
-			no_PMT_saturation && is_trigger_in && is_peak_in_allSiPM_spectrum  /*true*/)//cuts
+			no_PMT_saturation /*&& is_trigger_in*/ /*&& is_peak_in_allSiPM_S2_test_pretrigger_spectrum && is_peak_in_allSiPM_spectrum*/  /*true*/)//cuts
 		{
 			n_ev_after_cuts++;
 			double peak_area_ev_allSiPMs = 0;
 			double PE_allPMT_S2 = 0;
 			double PE_allSiPMs_S2 = 0;
 			double PE_allSiPMs_S2_areabased = 0;
+			double PE_allSiPMs_S2_test_pretrigger_areabased = 0;
 			
 			//ch loop
 			for (unsigned int ch = 0; ch < ch_list.size(); ch++)
@@ -602,6 +681,7 @@ int main(int argc, char *argv[])
 				double peak_area_bkg = 0;
 				double peak_area_S1 = 0;
 				double peak_area_S2 = 0;
+				double peak_area_S2_test_pretrigger = 0;
 
 				double n_peaks_bkg = 0;
 				double n_peaks_S1 = 0;
@@ -639,7 +719,7 @@ int main(int argc, char *argv[])
 
 					bool is_amp = event->peaks[ch]->peak_amp[peak_id] > 15;
 
-					if (event->peaks[ch]->peak_time[peak_id] > 0 && event->peaks[ch]->peak_time[peak_id] < (S1_stop - S1_start))
+					if (event->peaks[ch]->peak_time[peak_id] > Bkg_start && event->peaks[ch]->peak_time[peak_id] < Bkg_stop)
 					{
 						peak_area_bkg += event->peaks[ch]->peak_area[peak_id];
 						n_peaks_bkg++;
@@ -659,10 +739,18 @@ int main(int argc, char *argv[])
 						peak_area_S2 += event->peaks[ch]->peak_area[peak_id];
 						n_peaks_S2++;
 					}
+
+					if (event->peaks[ch]->peak_time[peak_id] > S2_test_pretrigger_start && event->peaks[ch]->peak_time[peak_id] < S2_test_pretrigger_stop)
+					{
+						peak_area_S2_test_pretrigger += event->peaks[ch]->peak_area[peak_id];
+					}
+
 					
-
-
-					if (/*is_in_5_80_us*/ /*is_in_42_44us*/ true /*is_short_peak_ch*/ /*&& is_amp && is_in_60_155_us*/)
+					bool peak_cut = true;
+					if (is_calib) peak_cut = event->peaks[ch]->peak_time[peak_id] > 0 && event->peaks[ch]->peak_time[peak_id] < 30000;
+					//cut_peak usefull for calibrations
+					//bool cut_tmp = event->peaks[ch]->peak_time[peak_id] > 0 && event->peaks[ch]->peak_time[peak_id] < 30000;
+					if (/*cut_tmp*/ /*is_in_42_44us*/ peak_cut /*is_short_peak_ch*/ /*&& is_amp && is_in_60_155_us*/)
 					{
 						peak_area_ev += event->peaks[ch]->peak_area[peak_id];
 						
@@ -683,7 +771,7 @@ int main(int argc, char *argv[])
 							vec_peak_time_good_SiPMs.push_back(event->peaks[ch]->peak_time[peak_id]);
 							f_out_allSiPM_time_spectrum << (event->peaks[ch]->peak_time[peak_id]) / 1000.0 << endl;
 
-							peak_area_ev_allSiPMs += event->peaks[ch]->peak_area[peak_id];							
+							peak_area_ev_allSiPMs += event->peaks[ch]->peak_area[peak_id]/ch_calib[ch];	//test						
 
 							//cout << "ch = " << ch_list[ch]  << endl;
 						}
@@ -769,6 +857,7 @@ int main(int argc, char *argv[])
 				{
 					PE_allSiPMs_S2 += n_peaks_S2;
 					PE_allSiPMs_S2_areabased += (peak_area_S2 / ch_calib[ch]);
+					PE_allSiPMs_S2_test_pretrigger_areabased += (peak_area_S2_test_pretrigger / ch_calib[ch]);
 				}				
 
 				if (rd_inf.GetChNameList()[ch] == "PMT1_slow" || rd_inf.GetChNameList()[ch] == "PMT2_slow" ||
@@ -821,6 +910,7 @@ int main(int argc, char *argv[])
 			hist_PE_allPMT_S2->Fill(PE_allPMT_S2);
 			hist_PE_allSiPMs_S2->Fill(PE_allSiPMs_S2);
 			hist_PE_allSiPMs_S2_areabased->Fill(PE_allSiPMs_S2_areabased);
+			hist_PE_allSiPMs_S2_test_pretrigger_areabased->Fill(PE_allSiPMs_S2_test_pretrigger_areabased);
 			
 		}
 		event->Clear();
@@ -845,16 +935,20 @@ int main(int argc, char *argv[])
 	double PE_all_PMTs_slow_S2 = 0;
 	double PE_all_SiPMs_S1 = 0;
 	double PE_all_SiPMs_S2 = 0;
-	double PE_all_PMTs_slow_bkg = 0;
-	double PE_all_SiPMs_bkg = 0;
+	//double PE_all_PMTs_slow_bkg = 0;
+	double PE_all_PMTs_slow_bkg_S1 = 0;
+	double PE_all_PMTs_slow_bkg_S2 = 0;
+	//double PE_all_SiPMs_bkg = 0;
+	double PE_all_SiPMs_bkg_S1 = 0;
+	double PE_all_SiPMs_bkg_S2 = 0;
 	
 	for (unsigned int ch = 0; ch < ch_list.size(); ch++)
 	{
-		peak_area_bkg_avr[ch] = hist_peak_area_bkg_v[ch]->GetMean();
+		peak_area_bkg_avr[ch] = hist_peak_area_bkg_v[ch]->GetMean() / Bkg_dt; //Bkg per us
 		//f_out_peak_area_bkg_avg << peak_area_bkg_avr[ch] << endl;
 		
-		peak_area_S1_min_bkg_avr[ch] = hist_peak_area_S1_v[ch]->GetMean() - peak_area_bkg_avr[ch];
-		peak_area_S2_min_bkg_avr[ch] = hist_peak_area_S2_v[ch]->GetMean() - peak_area_bkg_avr[ch];
+		peak_area_S1_min_bkg_avr[ch] = hist_peak_area_S1_v[ch]->GetMean() - peak_area_bkg_avr[ch] * S1_dt;
+		peak_area_S2_min_bkg_avr[ch] = hist_peak_area_S2_v[ch]->GetMean() - peak_area_bkg_avr[ch] * S2_dt;
 
 		/*cout << ch << " " << rd_inf.GetChNameList()[ch] << "; " << hist_peak_area_S1_v[ch]->GetMean() <<
 			"; " << hist_peak_area_S2_v[ch]->GetMean() << "; " << peak_area_bkg_avr[ch] << endl;*/
@@ -884,15 +978,17 @@ int main(int argc, char *argv[])
 				//f_out_PE_S1_S2 << ch_name.str() << " S1[PE] = " << peak_area_S1_min_bkg_avr[ch] << "; " << " S2[PE] = " << peak_area_S2_min_bkg_avr[ch] << endl;
 
 				//v2
-				f_out_PE_S1_S2 << ch_name.str() << 
+				f_out_PE_S1_S2 << ch_name.str() <<
 					" S1[PE] (+ bkg) = " << hist_peak_area_S1_v[ch]->GetMean() << "; " <<
-					" S1[PE] (bkg) = " << peak_area_bkg_avr[ch] << "; " <<
-					" S1[PE] (- bkg) = " << peak_area_S1_min_bkg_avr[ch] << "; " << 
-					" S2[PE] = " << peak_area_S2_min_bkg_avr[ch] << endl;
+					" S1[PE] (bkg) = " << peak_area_bkg_avr[ch] * S1_dt << "; " <<
+					" S1[PE] (- bkg) = " << peak_area_S1_min_bkg_avr[ch] << "; " <<
+					" S2[PE] (- bkg) = " << peak_area_S2_min_bkg_avr[ch] << "; " << 
+					" S2[PE] (bkg) = " << peak_area_bkg_avr[ch] * S2_dt << "; " << endl;
 
 				PE_all_PMTs_slow_S1 += peak_area_S1_min_bkg_avr[ch];
 				PE_all_PMTs_slow_S2 += peak_area_S2_min_bkg_avr[ch];
-				PE_all_PMTs_slow_bkg += peak_area_bkg_avr[ch];
+				PE_all_PMTs_slow_bkg_S1 += peak_area_bkg_avr[ch]*S1_dt;
+				PE_all_PMTs_slow_bkg_S2 += peak_area_bkg_avr[ch] * S2_dt;
 			}
 		}
 
@@ -907,7 +1003,8 @@ int main(int argc, char *argv[])
 
 			PE_all_SiPMs_S1 += peak_area_S1_min_bkg_avr[ch];
 			PE_all_SiPMs_S2 += peak_area_S2_min_bkg_avr[ch];
-			PE_all_SiPMs_bkg += peak_area_bkg_avr[ch];
+			PE_all_SiPMs_bkg_S1 += peak_area_bkg_avr[ch]*S1_dt;
+			PE_all_SiPMs_bkg_S2 += peak_area_bkg_avr[ch] * S2_dt;
 		}
 
 
@@ -923,8 +1020,10 @@ int main(int argc, char *argv[])
 	f_out_PE_S1_S2 << "PE_all_PMTs_slow_S2 =" << PE_all_PMTs_slow_S2 << endl;
 	f_out_PE_S1_S2 << "PE_all_SiPMs_S1 =" << PE_all_SiPMs_S1 << endl;
 	f_out_PE_S1_S2 << "PE_all_SiPMs_S2 =" << PE_all_SiPMs_S2 << endl; 
-	f_out_PE_S1_S2 << "PE_all_PMTs_slow_bkg = " << PE_all_PMTs_slow_bkg << endl;
-	f_out_PE_S1_S2 << "PE_all_SiPMs_bkg = " << PE_all_SiPMs_bkg << endl;
+	f_out_PE_S1_S2 << "PE_all_PMTs_slow_bkg_S1 = " << PE_all_PMTs_slow_bkg_S1 << endl;
+	f_out_PE_S1_S2 << "PE_all_PMTs_slow_bkg_S2 = " << PE_all_PMTs_slow_bkg_S2 << endl;
+	f_out_PE_S1_S2 << "PE_all_SiPMs_bkg_S1 = " << PE_all_SiPMs_bkg_S1 << endl;
+	f_out_PE_S1_S2 << "PE_all_SiPMs_bkg_S2 = " << PE_all_SiPMs_bkg_S2 << endl;
 
 
 	//draw
@@ -1104,7 +1203,7 @@ int main(int argc, char *argv[])
 			gPad->SetLogy();
 			int ch = ch_index_for_view_list[i];
 			hist_peak_area_S1_v[ch]->Draw();
-			hist_peak_area_S1_v[ch]->GetXaxis()->SetTitle("S1 area [ns*mV]");
+			hist_peak_area_S1_v[ch]->GetXaxis()->SetTitle("S1 area [PE]");
 			hist_peak_area_S1_v[ch]->GetYaxis()->SetTitle("Counts");
 		}
 	}
@@ -1192,10 +1291,10 @@ int main(int argc, char *argv[])
 	{
 		TCanvas *c25 = new TCanvas("c25", "PE_SiPM_PMTs_slow_S2");
 		c25->Divide(2, 2, 0.01, 0.01);
-		vector<TH1F*> h_vec = { hist_PE_allSiPMs_S2, hist_PE_allPMT_S2 , hist_PE_allSiPMs_S2_areabased };
-		vector<string> name = { "23SiPM [PE] (sig + bkg), peak based", "4PMT [PE] (sig + bkg), area based", "23SiPM [PE] (sig + bkg), area based" };
+		vector<TH1F*> h_vec = { hist_PE_allSiPMs_S2, hist_PE_allPMT_S2, hist_PE_allSiPMs_S2_areabased, hist_PE_allSiPMs_S2_test_pretrigger_areabased };
+		vector<string> name = { "23SiPM [PE] (sig + bkg), peak based", "4PMT [PE] (sig + bkg), area based", "23SiPM [PE] (sig + bkg), area based", "23SiPM [PE] (sig + bkg) S2_test_pretrigger, area based" };
 
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 4; i++)
 		{
 			c25->cd(i + 1);
 			//gPad->SetLogy();
@@ -1408,7 +1507,11 @@ int main(int argc, char *argv[])
 
 			double z = n_peaks_S2_min_bkg_avr[ch_index];
 			h2_n_peaks_S2->SetBinContent(xi, yi, z);
+
 		}
+
+		
+		
 
 		ostringstream h2_n_peaks_S2_name;
 		h2_n_peaks_S2_name << "S2 uniformity (n_peaks based)";
@@ -1427,6 +1530,8 @@ int main(int argc, char *argv[])
 
 		h2_n_peaks_S2->Draw("z same"); // draw the "color palette"
 		gPad->Update();
+
+		
 	}
 
 	if (draw_var.find("n_peaks_map_bkg") != std::string::npos)
@@ -1479,7 +1584,7 @@ int main(int argc, char *argv[])
 	{
 		TCanvas *c26 = new TCanvas("c26", "peaks_area_map_bkg");
 		const Double_t min = 0;
-		const Double_t max = *max_element(peak_area_bkg_avr.begin() + 11, peak_area_bkg_avr.end());
+		const Double_t max = *max_element(peak_area_bkg_avr.begin() + 11, peak_area_bkg_avr.end()) * S1_dt;
 		const Int_t nLevels = 999;
 		Double_t levels[nLevels];
 
@@ -1497,7 +1602,7 @@ int main(int argc, char *argv[])
 			int xi = xybins_good_SiPMs[i].first + 3;
 			int yi = xybins_good_SiPMs[i].second + 3;
 
-			double z = peak_area_bkg_avr[ch_index];
+			double z = peak_area_bkg_avr[ch_index] * S1_dt;
 			h2_peaks_area_bkg->SetBinContent(xi, yi, z);
 		}
 
@@ -1590,6 +1695,21 @@ int main(int argc, char *argv[])
 			double z = peak_area_S2_min_bkg_avr[ch_index];
 			h2_peaks_area_S2->SetBinContent(xi, yi, z);
 		}
+
+		for (int i = 0; i < 20; i++)
+		{			
+			//cout << "i = " << i << endl;
+			
+			if (i == 5 || i == 10 || i == 15 || i == 20) f_out_S2_SiPM_PE_map << endl;						
+			f_out_S2_SiPM_PE_map << peak_area_S2_min_bkg_avr[ch_index_for_good_SiPMs_xy_order[i]] << "\t" ;	
+		}
+		f_out_S2_SiPM_PE_map << endl;
+		f_out_S2_SiPM_PE_map << peak_area_S2_min_bkg_avr[ch_index_for_good_SiPMs_xy_order[20]] << "\t";
+		f_out_S2_SiPM_PE_map << peak_area_S2_min_bkg_avr[ch_index_for_good_SiPMs_xy_order[1]] << "\t";
+		f_out_S2_SiPM_PE_map << peak_area_S2_min_bkg_avr[ch_index_for_good_SiPMs_xy_order[21]] << "\t";
+		f_out_S2_SiPM_PE_map << peak_area_S2_min_bkg_avr[ch_index_for_good_SiPMs_xy_order[22]] << "\t";
+		f_out_S2_SiPM_PE_map << peak_area_S2_min_bkg_avr[ch_index_for_good_SiPMs_xy_order[4]] << "\t";
+		f_out_S2_SiPM_PE_map << endl;
 
 		ostringstream h2_n_peaks_S1_name;
 		h2_n_peaks_S1_name << "S2 uniformity (peak area based)";

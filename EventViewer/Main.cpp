@@ -101,13 +101,13 @@ int main(int argc, char *argv[])
 			ch = 1;*/
 
 			//if ( !((ch == 9) /*|| (ch == 8)*/) ) continue;
-			//if ( ch != 9 ) continue;
+			//if ( ch != 1 ) continue;
 			
 			file_detailed_info_output << "\t" << "ch = " << rd_inf.GetChList()[ch] << endl;
 			cout << "\t" << "ch = " << rd_inf.GetChList()[ch] << endl;
 			Calc calc(rdt.GetDataDouble()[ev][ch], ns_per_point, rd_inf.GetIsPositivePolarityTypeList()[ch]);
-			calc.CalcBaselineMeanSigma(0, 30000);
-			calc.SubtractBaseline();
+			calc.CalcBaselineMeanSigma(0, /*30000*/15000 );
+			calc.SubtractBaseline();//<----------------------------------
 			yv_filtered = calc.GetFilteredWaveformGolay(/*21*/ rd_inf.GetFilteringWindowList()[ch], 0);
 
 			PeakFinder peak_finder(rdt.GetDataDouble()[ev][ch], yv_filtered, ns_per_point, rd_inf.GetPeakFinderVersionList()[ch],
