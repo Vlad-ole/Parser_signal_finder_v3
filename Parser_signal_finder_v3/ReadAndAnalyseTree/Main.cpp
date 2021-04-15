@@ -53,14 +53,14 @@ int main(int argc, char *argv[])
 
 	string draw_var;
 	string what_to_plot;
-	//what_to_plot = "all";
-	what_to_plot = "main";
+	what_to_plot = "all";
+	//what_to_plot = "main";
 
 	bool is_calib = false;
 	double SiPM_axis_area_factor_for_calib = 1;
 	if (is_calib)
 	{
-		SiPM_axis_area_factor_for_calib = 0.3;
+		SiPM_axis_area_factor_for_calib = 1 /*0.3*/;
 	}
 
 	
@@ -120,11 +120,11 @@ int main(int argc, char *argv[])
 	
 	//vector<int> ch_list_to_view = {32, 34, 38, 39};
 	
-	vector<int> ch_list_to_view = {0, 9, 11, 12};
+	//vector<int> ch_list_to_view = {0, 9, 11, 12};
 	//vector<int> ch_list_to_view = {1, 2, 3, 4};
 	//vector<int> ch_list_to_view = {5, 6, 7, 8};
 
-	//vector<int> ch_list_to_view = { 32, 33, 34, 35 };
+	vector<int> ch_list_to_view = { 32, 33, 34, 35 };
 	//vector<int> ch_list_to_view = {36, 37, 38, 39};
 	//vector<int> ch_list_to_view = { 40, 41, 42, 48 };
 	//vector<int> ch_list_to_view = { 49, 50, 51, 52 };
@@ -274,29 +274,54 @@ int main(int argc, char *argv[])
 	//	ch_calib[i] = 1400;//estimated SPE for SiPMs 46V
 	//}
 	//my calib from 191107 46V
-	ch_calib[11] = 1774; //ch32 (same as 210401_f1)
-	ch_calib[12] = 1449; //ch33 (same as 210401_f1)
-	ch_calib[13] = 2000; //ch34 (same as 210401_f1)
-	ch_calib[14] = 1987; //ch35 (same as 210401_f1)
-	ch_calib[15] = 2158; //ch36 (same as 210401_f1)
-	ch_calib[16] = 1656; //ch37 (same as 210401_f1)
-	ch_calib[17] = 2337; //ch38 (same as 210401_f1)
-	ch_calib[18] = 1980; //ch39 (same as 210401_f1)
-	ch_calib[19] = 2052; //ch40 (same as 210401_f1)
-	ch_calib[20] = 2006; //ch41 (same as 210401_f1)
-	ch_calib[21] = 1985; //ch42 (same as 210401_f1)
-	ch_calib[22] = 1942; //ch48 (same as 210401_f1)
-	ch_calib[23] = 1403; //ch49 (same as 210401_f1)
-	ch_calib[24] = 1435; //ch50 (same as 210401_f1)
-	ch_calib[25] = 1780; //ch51 (same as 210401_f1)
-	ch_calib[26] = 2149; //ch52 (same as 210401_f1)
-	ch_calib[27] = 2407; //ch53 (same as 210401_f1)	
-	ch_calib[28] = 1750; //ch54 (same as 210401_f1)
-	ch_calib[29] = 1886; //ch55 (same as 210401_f1)
-	ch_calib[30] = 2008; //ch56 (same as 210401_f1)
-	ch_calib[31] = 2077; //ch57 (same as 210401_f1)
-	ch_calib[32] = 1994; //ch58 (same as 210401_f1)
-	ch_calib[33] = 2057; //ch59 (same as 210401_f1)
+	//ch_calib[11] = 1774; //ch32 (same as 210401_f1)
+	//ch_calib[12] = 1449; //ch33 (same as 210401_f1)
+	//ch_calib[13] = 2000; //ch34 (same as 210401_f1)
+	//ch_calib[14] = 1987; //ch35 (same as 210401_f1)
+	//ch_calib[15] = 2158; //ch36 (same as 210401_f1)
+	//ch_calib[16] = 1656; //ch37 (same as 210401_f1)
+	//ch_calib[17] = 2337; //ch38 (same as 210401_f1)
+	//ch_calib[18] = 1980; //ch39 (same as 210401_f1)
+	//ch_calib[19] = 2052; //ch40 (same as 210401_f1)
+	//ch_calib[20] = 2006; //ch41 (same as 210401_f1)
+	//ch_calib[21] = 1985; //ch42 (same as 210401_f1)
+	//ch_calib[22] = 1942; //ch48 (same as 210401_f1)
+	//ch_calib[23] = 1403; //ch49 (same as 210401_f1)
+	//ch_calib[24] = 1435; //ch50 (same as 210401_f1)
+	//ch_calib[25] = 1780; //ch51 (same as 210401_f1)
+	//ch_calib[26] = 2149; //ch52 (same as 210401_f1)
+	//ch_calib[27] = 2407; //ch53 (same as 210401_f1)	
+	//ch_calib[28] = 1750; //ch54 (same as 210401_f1)
+	//ch_calib[29] = 1886; //ch55 (same as 210401_f1)
+	//ch_calib[30] = 2008; //ch56 (same as 210401_f1)
+	//ch_calib[31] = 2077; //ch57 (same as 210401_f1)
+	//ch_calib[32] = 1994; //ch58 (same as 210401_f1)
+	//ch_calib[33] = 2057; //ch59 (same as 210401_f1)
+
+	//my calib from 180830_f1 49V
+	ch_calib[2] = 6894; //ch32 
+	ch_calib[3] = 4758; //ch33 
+	ch_calib[4] = 8680; //ch34 
+	ch_calib[5] = 8483; //ch35 
+	ch_calib[6] = 8270; //ch36 
+	ch_calib[7] = 5682; //ch37 
+	ch_calib[8] = 10130; //ch38 
+	ch_calib[9] = 8255; //ch39 
+	ch_calib[10] = 10270; //ch40 
+	ch_calib[11] = 9185; //ch41 
+	ch_calib[12] = 10170; //ch42
+	ch_calib[13] = 7755; //ch48 
+	ch_calib[14] = 4465; //ch49 
+	ch_calib[15] = 4622; //ch50 
+	ch_calib[16] = 6617; //ch51 
+	ch_calib[17] = 7781; //ch52 
+	ch_calib[18] = 9828; //ch53 
+	ch_calib[19] = 6727; //ch54 
+	ch_calib[20] = 7755; //ch55 
+	ch_calib[21] = 8697; //ch56 
+	ch_calib[22] = 9734; //ch57 
+	ch_calib[23] = 8549; //ch58 
+	ch_calib[24] = 9630; //ch59
 
 	double Bkg_start = 0;
 	double Bkg_stop = /*15000*/ 20000;
@@ -447,7 +472,7 @@ int main(int argc, char *argv[])
 			rd_inf.GetHistPeakAreaEvNbinsList()[ch], rd_inf.GetHistPeakAreaEvXminList()[ch], rd_inf.GetHistPeakAreaEvXmaxList()[ch]);
 		
 		hist_peak_area_bkg_v[ch] = new TH1F(hist_peak_area_bkg_name.str().c_str(), hist_peak_area_bkg_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 100);
-		hist_peak_area_S1_v[ch] = new TH1F(hist_peak_area_S1_name.str().c_str(), hist_peak_area_S1_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 100);
+		hist_peak_area_S1_v[ch] = new TH1F(hist_peak_area_S1_name.str().c_str(), hist_peak_area_S1_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 50);//test
 		hist_peak_area_S2_v[ch] = new TH1F(hist_peak_area_S2_name.str().c_str(), hist_peak_area_S2_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 100);
 
 		hist_n_peaks_bkg_v[ch] = new TH1F(hist_n_peaks_bkg_name.str().c_str(), hist_n_peaks_bkg_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 5);
