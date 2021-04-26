@@ -4,9 +4,9 @@ using namespace std;
 
 Path::Path()
 {
-	string date = "181025";
-	subfolder_name = "f5";
-	number_of_input_files = 230;
+	string date = "210422";
+	subfolder_name = "f1";
+	number_of_input_files = 100;
 
 	string year = "20" + date.substr(0, 2);
 	first_part_of_path = "E:\\" + year + "\\" + date + "\\" + date;	
