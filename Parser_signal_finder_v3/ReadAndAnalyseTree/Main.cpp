@@ -30,6 +30,7 @@
 #include "ReadDaqInfo.h"
 #include "ChMapping.h"
 #include "Path.h"
+#include "DefineHists.h"
 //#include "TreeRaw.h"
 //#include "CalcData.h"
 //#include "TreeInfo.h"
@@ -57,11 +58,7 @@ int main(int argc, char *argv[])
 	//what_to_plot = "main";
 
 	bool is_calib = false;
-	double SiPM_axis_area_factor_for_calib = 1;
-	if (is_calib)
-	{
-		SiPM_axis_area_factor_for_calib = 1 /*0.3*/;
-	}
+	
 
 	
 	if (what_to_plot == "all")
@@ -167,7 +164,7 @@ int main(int argc, char *argv[])
 
 	
 
-	int hist_baseline_sigma_xmax = 50;
+	/*int hist_baseline_sigma_xmax = 50;*/
 	
 
 
@@ -347,23 +344,10 @@ int main(int argc, char *argv[])
 	double S2_trigger_start = 79000/*31000*/;//us
 	double S2_trigger_stop = 83000/*35000*/;//us
 
-	//define hists (joined ch)
-	TH1F* hist_peak_time_all_SiPMs = new TH1F("hist_peak_time_all_SiPMs", "hist_peak_time_all_SiPMs", 1330, 0, 160E3);
-	TH1F* hist_peak_time_all_PMTs_slow = new TH1F("hist_peak_time_all_PMTs_slow", "hist_peak_time_all_PMTs_slow", 1330, 0, 160E3);
-	TH1F* hist_peak_time_all_PMTs_fast = new TH1F("hist_peak_time_all_PMTs_fast", "hist_peak_time_all_PMTs_fast", 1330, 0, 160E3);
-	TH1F* hist_peak_time_3PMTs_slow = new TH1F("hist_peak_time_3PMTs_slow", "hist_peak_time_3PMTs_slow", 160, 0, 160E3);
-	TH1F* hist_peak_time_1PMT_slow = new TH1F("hist_peak_time_1PMT_slow", "hist_peak_time_1PMT_slow", 160, 0, 160E3);
-	TH1F* hist_peak_time_PMTtrigg_slow = new TH1F("hist_peak_time_PMTtrigg_slow", "hist_peak_time_PMTtrigg_slow", 1330, 0, 160E3);
-	TH2F* hist_peak_area_ev_vs_evnum_all_SiPMs = new TH2F("hist_peak_area_ev_vs_evnum_all_SiPMs",
-		"hist_peak_area_ev_vs_evnum_all_SiPMs", 110, 0, tree->GetEntries(),
-		200, 0, 600);
-	
-	int x_max_hist_PE = 180;
-	TH1F* hist_PE_allPMT_S2 = new TH1F("hist_PE_allPMT_S2", "hist_PE_allPMT_S2", x_max_hist_PE*2, 0, x_max_hist_PE);
-	TH1F* hist_PE_allSiPMs_S2 = new TH1F("hist_PE_allSiPMs_S2", "hist_PE_allSiPMs_S2", x_max_hist_PE * 2, 0, x_max_hist_PE);
-	TH1F* hist_PE_allSiPMs_S2_areabased = new TH1F("hist_PE_allSiPMs_S2_areabased", "hist_PE_allSiPMs_S2_areabased", x_max_hist_PE * 2, 0, x_max_hist_PE);
-	TH1F* hist_PE_allSiPMs_S2_test_pretrigger_areabased = new TH1F("hist_PE_allSiPMs_S2_test_pretrigger_areabased", "hist_PE_allSiPMs_S2_test_pretrigger_areabased", x_max_hist_PE * 2, 0, x_max_hist_PE);
+	const int N_events = 1100/*tree->GetEntries()*/;
+	DefineHists *DefHists = new DefineHists(N_events, ch_list, rd_inf, is_calib);
 
+	//define hists (joined ch)
 
 	vector<double> vec_peak_time_good_SiPMs;
 	//TH2F *hist2_peak_time_SiPM_good = new TH2F("hist2_peak_time_SiPM_good", "hist2_peak_time_SiPM_good", /*4000*/4000, 0, 160E3, 1000, 0, 50000);
@@ -376,8 +360,8 @@ int main(int argc, char *argv[])
 	TH2F* h2_peaks_area_bkg = new TH2F("h2_peaks_area_bkg", "h2_peaks_area_bkg", 5, -23, 23, 5, -23, 23);
 
 	//define hists (individual ch)
-	vector<TH1F*> hist_ymin_v(ch_list.size(), NULL);
-	vector<TH1F*> hist_ymax_v(ch_list.size(), NULL);
+	//vector<TH1F*> hist_ymin_v(ch_list.size(), NULL);
+	/*vector<TH1F*> hist_ymax_v(ch_list.size(), NULL);
 	vector<TH1F*> hist_baseline_mean_v(ch_list.size(), NULL);
 	vector<TH1F*> hist_baseline_sigma_v(ch_list.size(), NULL);
 	vector<TH1F*> hist_n_peaks_v(ch_list.size(), NULL);
@@ -385,26 +369,26 @@ int main(int argc, char *argv[])
 	vector<TH1F*> hist_peak_amp_v(ch_list.size(), NULL);
 	vector<TH1F*> hist_peak_area_v(ch_list.size(), NULL);
 	vector<TH1F*> hist_peak_length_v(ch_list.size(), NULL);
-	vector<TH1F*> hist_peak_area_ev_v(ch_list.size(), NULL);
+	vector<TH1F*> hist_peak_area_ev_v(ch_list.size(), NULL);*/
 
-	vector<TH1F*> hist_peak_area_bkg_v(ch_list.size(), NULL);
+	/*vector<TH1F*> hist_peak_area_bkg_v(ch_list.size(), NULL);
 	vector<TH1F*> hist_peak_area_S1_v(ch_list.size(), NULL);
 	vector<TH1F*> hist_peak_area_S2_v(ch_list.size(), NULL);
 
 	vector<TH1F*> hist_n_peaks_bkg_v(ch_list.size(), NULL);
 	vector<TH1F*> hist_n_peaks_S1_v(ch_list.size(), NULL);
-	vector<TH1F*> hist_n_peaks_S2_v(ch_list.size(), NULL);
+	vector<TH1F*> hist_n_peaks_S2_v(ch_list.size(), NULL);*/
 
-	vector<TH2F*> hist_peak_area_ev_vs_evnum_v(ch_list.size(), NULL);
+	//vector<TH2F*> hist_peak_area_ev_vs_evnum_v(ch_list.size(), NULL);
 	vector<TProfile*> prof_hist_peak_area_ev_vs_evnum_v(ch_list.size(), NULL);
-	vector<TH2F*> hist_peak_amp_peak_area_v(ch_list.size(), NULL);
+	//vector<TH2F*> hist_peak_amp_peak_area_v(ch_list.size(), NULL);
 
 
 
 	for (int ch = 0; ch < ch_list.size(); ch++)
 	{
-		ostringstream hist_ymin_name;
-		ostringstream hist_ymax_name;
+		//ostringstream hist_ymin_name;
+		/*ostringstream hist_ymax_name;
 		ostringstream hist_baseline_mean_name;
 		ostringstream hist_baseline_sigma_name;
 		ostringstream hist_n_peaks_name;
@@ -414,19 +398,19 @@ int main(int argc, char *argv[])
 		ostringstream hist_peak_length_name;
 		ostringstream hist_peak_area_ev_name;
 		ostringstream hist_peak_area_ev_vs_evnum_name;
-		ostringstream hist_peak_amp_peak_area_name;
+		ostringstream hist_peak_amp_peak_area_name;*/
 
-		ostringstream hist_peak_area_bkg_name;
-		ostringstream hist_peak_area_S1_name;
-		ostringstream hist_peak_area_S2_name;
+		//ostringstream hist_peak_area_bkg_name;
+		//ostringstream hist_peak_area_S1_name;
+		//ostringstream hist_peak_area_S2_name;
 
-		ostringstream hist_n_peaks_bkg_name;
-		ostringstream hist_n_peaks_S1_name;
-		ostringstream hist_n_peaks_S2_name;
-		//ostringstream gr_time_spectrum_name;
+		//ostringstream hist_n_peaks_bkg_name;
+		//ostringstream hist_n_peaks_S1_name;
+		//ostringstream hist_n_peaks_S2_name;
+		////ostringstream gr_time_spectrum_name;
 
-		hist_ymin_name << "hist_ymin_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
-		hist_ymax_name << "hist_ymax_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+		//hist_ymin_name << "hist_ymin_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+		/*hist_ymax_name << "hist_ymax_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
 		hist_baseline_mean_name << "hist_baseline_mean_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
 		hist_baseline_sigma_name << "hist_baseline_sigma_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
 		hist_n_peaks_name << "hist_n_peaks_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
@@ -436,48 +420,47 @@ int main(int argc, char *argv[])
 		hist_peak_length_name << "hist_peak_length_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
 		hist_peak_area_ev_name << "hist_peak_area_ev_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
 		hist_peak_area_ev_vs_evnum_name << "hist_peak_area_ev_vs_evnum_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
-		hist_peak_amp_peak_area_name << "hist_peak_amp_peak_area_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+		hist_peak_amp_peak_area_name << "hist_peak_amp_peak_area_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";*/
 		
-		hist_peak_area_bkg_name << "hist_peak_area_bkg_ch" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
-		hist_peak_area_S1_name << "hist_peak_area_S1_ch" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
-		hist_peak_area_S2_name << "hist_peak_area_S2_ch" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+		//hist_peak_area_bkg_name << "hist_peak_area_bkg_ch" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+		//hist_peak_area_S1_name << "hist_peak_area_S1_ch" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+		//hist_peak_area_S2_name << "hist_peak_area_S2_ch" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
 
-		hist_n_peaks_bkg_name << "hist_n_peaks_bkg_ch" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
-		hist_n_peaks_S1_name << "hist_n_peaks_S1_ch" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
-		hist_n_peaks_S2_name << "hist_n_peaks_S2_ch" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+		//hist_n_peaks_bkg_name << "hist_n_peaks_bkg_ch" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+		//hist_n_peaks_S1_name << "hist_n_peaks_S1_ch" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
+		//hist_n_peaks_S2_name << "hist_n_peaks_S2_ch" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
 		//gr_time_spectrum_name << "gr_time_spectrum_ch_" << ch_list[ch];
 
-		hist_ymin_v[ch] = new TH1F(hist_ymin_name.str().c_str(), hist_ymin_name.str().c_str(), 1000, -1100, 1100);
-		hist_ymax_v[ch] = new TH1F(hist_ymax_name.str().c_str(), hist_ymax_name.str().c_str(), 1000, -1100, 1100);
-		hist_baseline_mean_v[ch] = new TH1F(hist_baseline_mean_name.str().c_str(), hist_baseline_mean_name.str().c_str(), 1000, -1100, 1100);
-		hist_baseline_sigma_v[ch] = new TH1F(hist_baseline_sigma_name.str().c_str(), hist_baseline_sigma_name.str().c_str(), 1000, 0, hist_baseline_sigma_xmax);
-		hist_n_peaks_v[ch] = new TH1F(hist_n_peaks_name.str().c_str(), hist_n_peaks_name.str().c_str(), rd_inf.GetHistNpeaksNbinsList()[ch], rd_inf.GetHistNpeaksXminList()[ch], rd_inf.GetHistNpeaksXmaxList()[ch]);
-		hist_peak_time_v[ch] = new TH1F(hist_peak_time_name.str().c_str(), hist_peak_time_name.str().c_str(), rd_inf.GetHistPeakTimeNbinsList()[ch], rd_inf.GetHistPeakTimeXminList()[ch], rd_inf.GetHistPeakTimeXmaxList()[ch]);
-		hist_peak_amp_v[ch] = new TH1F(hist_peak_amp_name.str().c_str(), hist_peak_amp_name.str().c_str(), rd_inf.GetHistPeakAmpNbinsList()[ch], rd_inf.GetHistPeakAmpXminList()[ch], rd_inf.GetHistPeakAmpXmaxList()[ch]);
-		hist_peak_area_v[ch] = new TH1F(hist_peak_area_name.str().c_str(), hist_peak_area_name.str().c_str(), rd_inf.GetHistPeakAreaNbinsList()[ch], rd_inf.GetHistPeakAreaXminList()[ch], rd_inf.GetHistPeakAreaXmaxList()[ch]*SiPM_axis_area_factor_for_calib);
-		hist_peak_amp_peak_area_v[ch] = new TH2F(hist_peak_amp_peak_area_name.str().c_str(), hist_peak_amp_peak_area_name.str().c_str(), 
+		//DefHists->Get_hist_ymin_v()[ch] = new TH1F(hist_ymin_name.str().c_str(), hist_ymin_name.str().c_str(), 1000, -1100, 1100);
+		/*DefHists->Get_hist_ymax_v()[ch] = new TH1F(hist_ymax_name.str().c_str(), hist_ymax_name.str().c_str(), 1000, -1100, 1100);
+		DefHists->Get_hist_baseline_mean_v()[ch] = new TH1F(hist_baseline_mean_name.str().c_str(), hist_baseline_mean_name.str().c_str(), 1000, -1100, 1100);
+		DefHists->Get_hist_baseline_sigma_v()[ch] = new TH1F(hist_baseline_sigma_name.str().c_str(), hist_baseline_sigma_name.str().c_str(), 1000, 0, hist_baseline_sigma_xmax);
+		DefHists->Get_hist_n_peaks_v()[ch] = new TH1F(hist_n_peaks_name.str().c_str(), hist_n_peaks_name.str().c_str(), rd_inf.GetHistNpeaksNbinsList()[ch], rd_inf.GetHistNpeaksXminList()[ch], rd_inf.GetHistNpeaksXmaxList()[ch]);
+		DefHists->Get_hist_peak_time_v()[ch] = new TH1F(hist_peak_time_name.str().c_str(), hist_peak_time_name.str().c_str(), rd_inf.GetHistPeakTimeNbinsList()[ch], rd_inf.GetHistPeakTimeXminList()[ch], rd_inf.GetHistPeakTimeXmaxList()[ch]);
+		DefHists->Get_hist_peak_amp_v()[ch] = new TH1F(hist_peak_amp_name.str().c_str(), hist_peak_amp_name.str().c_str(), rd_inf.GetHistPeakAmpNbinsList()[ch], rd_inf.GetHistPeakAmpXminList()[ch], rd_inf.GetHistPeakAmpXmaxList()[ch]);
+		DefHists->Get_hist_peak_area_v()[ch] = new TH1F(hist_peak_area_name.str().c_str(), hist_peak_area_name.str().c_str(), rd_inf.GetHistPeakAreaNbinsList()[ch], rd_inf.GetHistPeakAreaXminList()[ch], rd_inf.GetHistPeakAreaXmaxList()[ch] * SiPM_axis_area_factor_for_calib);*/
+		/*hist_peak_amp_peak_area_v[ch] = new TH2F(hist_peak_amp_peak_area_name.str().c_str(), hist_peak_amp_peak_area_name.str().c_str(), 
 			rd_inf.GetHistPeakAmpNbinsList()[ch], rd_inf.GetHistPeakAmpXminList()[ch], rd_inf.GetHistPeakAmpXmaxList()[ch],
-			rd_inf.GetHistPeakAreaNbinsList()[ch], rd_inf.GetHistPeakAreaXminList()[ch], rd_inf.GetHistPeakAreaXmaxList()[ch]);
+			rd_inf.GetHistPeakAreaNbinsList()[ch], rd_inf.GetHistPeakAreaXminList()[ch], rd_inf.GetHistPeakAreaXmaxList()[ch]);*/
 
 
-
-		if (ch != 9)
-			hist_peak_length_v[ch] = new TH1F(hist_peak_length_name.str().c_str(), hist_peak_length_name.str().c_str(), 300, 0, 2000);
+		/*if (ch != 9)
+			DefHists->Get_hist_peak_length_v()[ch] = new TH1F(hist_peak_length_name.str().c_str(), hist_peak_length_name.str().c_str(), 300, 0, 2000);
 		else
-			hist_peak_length_v[ch] = new TH1F(hist_peak_length_name.str().c_str(), hist_peak_length_name.str().c_str(), 300, 0, 20000);
+			DefHists->Get_hist_peak_length_v()[ch] = new TH1F(hist_peak_length_name.str().c_str(), hist_peak_length_name.str().c_str(), 300, 0, 20000);*/
 
-		hist_peak_area_ev_v[ch] = new TH1F(hist_peak_area_ev_name.str().c_str(), hist_peak_area_ev_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], rd_inf.GetHistPeakAreaEvXminList()[ch], rd_inf.GetHistPeakAreaEvXmaxList()[ch]);
-		hist_peak_area_ev_vs_evnum_v[ch] = new TH2F(hist_peak_area_ev_vs_evnum_name.str().c_str(), hist_peak_area_ev_vs_evnum_name.str().c_str(),
-			110, 0, tree->GetEntries(), 
-			rd_inf.GetHistPeakAreaEvNbinsList()[ch], rd_inf.GetHistPeakAreaEvXminList()[ch], rd_inf.GetHistPeakAreaEvXmaxList()[ch]);
+		//DefHists->Get_hist_peak_area_ev_v()[ch] = new TH1F(hist_peak_area_ev_name.str().c_str(), hist_peak_area_ev_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], rd_inf.GetHistPeakAreaEvXminList()[ch], rd_inf.GetHistPeakAreaEvXmaxList()[ch]);
+		//hist_peak_area_ev_vs_evnum_v[ch] = new TH2F(hist_peak_area_ev_vs_evnum_name.str().c_str(), hist_peak_area_ev_vs_evnum_name.str().c_str(),
+		//	110, 0, /*tree->GetEntries()*/N_events,
+		//	rd_inf.GetHistPeakAreaEvNbinsList()[ch], rd_inf.GetHistPeakAreaEvXminList()[ch], rd_inf.GetHistPeakAreaEvXmaxList()[ch]);
 		
-		hist_peak_area_bkg_v[ch] = new TH1F(hist_peak_area_bkg_name.str().c_str(), hist_peak_area_bkg_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 100);
-		hist_peak_area_S1_v[ch] = new TH1F(hist_peak_area_S1_name.str().c_str(), hist_peak_area_S1_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 50);//test
-		hist_peak_area_S2_v[ch] = new TH1F(hist_peak_area_S2_name.str().c_str(), hist_peak_area_S2_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 100);
+		//hist_peak_area_bkg_v[ch] = new TH1F(hist_peak_area_bkg_name.str().c_str(), hist_peak_area_bkg_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 100);
+		//hist_peak_area_S1_v[ch] = new TH1F(hist_peak_area_S1_name.str().c_str(), hist_peak_area_S1_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 50);//test
+		//hist_peak_area_S2_v[ch] = new TH1F(hist_peak_area_S2_name.str().c_str(), hist_peak_area_S2_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 100);
 
-		hist_n_peaks_bkg_v[ch] = new TH1F(hist_n_peaks_bkg_name.str().c_str(), hist_n_peaks_bkg_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 5);
-		hist_n_peaks_S1_v[ch] = new TH1F(hist_n_peaks_S1_name.str().c_str(), hist_n_peaks_S1_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 5);
-		hist_n_peaks_S2_v[ch] = new TH1F(hist_n_peaks_S2_name.str().c_str(), hist_n_peaks_S2_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 50);
+		//hist_n_peaks_bkg_v[ch] = new TH1F(hist_n_peaks_bkg_name.str().c_str(), hist_n_peaks_bkg_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 5);
+		//hist_n_peaks_S1_v[ch] = new TH1F(hist_n_peaks_S1_name.str().c_str(), hist_n_peaks_S1_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 5);
+		//hist_n_peaks_S2_v[ch] = new TH1F(hist_n_peaks_S2_name.str().c_str(), hist_n_peaks_S2_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 50);
 
 	}
 
@@ -490,7 +473,8 @@ int main(int argc, char *argv[])
 	vector<double> peak_time_sum_PMTslow;
 	vector<double> peak_time_sum_PMTfast;
 
-	COUT(tree->GetEntries());
+	//COUT(tree->GetEntries());
+	COUT(N_events);
 
 
 	int n_ev_after_cuts = 0;
@@ -516,7 +500,7 @@ int main(int argc, char *argv[])
 
 
 	//ev loop_1
-	for (unsigned int ev = 0; ev < tree->GetEntries() /*6000*/; ev++)
+	for (unsigned int ev = 0; ev < N_events /*6000*/; ev++)
 	{
 		//read branch "EventMainCh"only
 		if (ev % 1000 == 0)
@@ -695,11 +679,11 @@ int main(int argc, char *argv[])
 			for (unsigned int ch = 0; ch < ch_list.size(); ch++)
 			{
 
-				hist_ymin_v[ch]->Fill(event->ymin[ch]);
-				hist_ymax_v[ch]->Fill(event->ymax[ch]);
-				hist_baseline_mean_v[ch]->Fill(event->baseline_mean[ch]);
-				hist_baseline_sigma_v[ch]->Fill(event->baseline_sigma[ch]);
-				hist_n_peaks_v[ch]->Fill(event->peaks[ch]->peak_time.size());
+				DefHists->Get_hist_ymin_v()[ch]->Fill(event->ymin[ch]);
+				DefHists->Get_hist_ymax_v()[ch]->Fill(event->ymax[ch]);
+				DefHists->Get_hist_baseline_mean_v()[ch]->Fill(event->baseline_mean[ch]);
+				DefHists->Get_hist_baseline_sigma_v()[ch]->Fill(event->baseline_sigma[ch]);
+				DefHists->Get_hist_n_peaks_v()[ch]->Fill(event->peaks[ch]->peak_time.size());
 
 				double peak_area_ev = 0;
 
@@ -779,20 +763,20 @@ int main(int argc, char *argv[])
 					{
 						peak_area_ev += event->peaks[ch]->peak_area[peak_id];
 						
-						hist_peak_time_v[ch]->Fill(event->peaks[ch]->peak_time[peak_id]);
-						hist_peak_amp_v[ch]->Fill(event->peaks[ch]->peak_amp[peak_id]);
-						hist_peak_area_v[ch]->Fill(event->peaks[ch]->peak_area[peak_id]);
+						DefHists->Get_hist_peak_time_v()[ch]->Fill(event->peaks[ch]->peak_time[peak_id]);
+						DefHists->Get_hist_peak_amp_v()[ch]->Fill(event->peaks[ch]->peak_amp[peak_id]);
+						DefHists->Get_hist_peak_area_v()[ch]->Fill(event->peaks[ch]->peak_area[peak_id]);
 						double peak_length = (event->peaks[ch]->peak_start_stop_poits[peak_id].second - 
 							event->peaks[ch]->peak_start_stop_poits[peak_id].first) * ns_per_point;
-						hist_peak_length_v[ch]->Fill(peak_length);
-						hist_peak_amp_peak_area_v[ch]->Fill(event->peaks[ch]->peak_amp[peak_id], event->peaks[ch]->peak_area[peak_id]);
+						DefHists->Get_hist_peak_length_v()[ch]->Fill(peak_length);
+						DefHists->Get_hist_peak_amp_peak_area_v()[ch]->Fill(event->peaks[ch]->peak_amp[peak_id], event->peaks[ch]->peak_area[peak_id]);
 
 						peak_amp_v[ch].push_back(event->peaks[ch]->peak_amp[peak_id]);
 						peak_area_v[ch].push_back(event->peaks[ch]->peak_area[peak_id]);
 
 						if (find(ch_list_good_SiPMs.begin(), ch_list_good_SiPMs.end(), ch_list[ch]) != ch_list_good_SiPMs.end())
 						{
-							hist_peak_time_all_SiPMs->Fill(event->peaks[ch]->peak_time[peak_id]);
+							DefHists->Get_hist_peak_time_all_SiPMs()->Fill(event->peaks[ch]->peak_time[peak_id]);
 							vec_peak_time_good_SiPMs.push_back(event->peaks[ch]->peak_time[peak_id]);
 							f_out_allSiPM_time_spectrum << (event->peaks[ch]->peak_time[peak_id]) / 1000.0 << endl;
 
@@ -804,7 +788,7 @@ int main(int argc, char *argv[])
 						if (rd_inf.GetChNameList()[ch] == "PMT1_slow" || rd_inf.GetChNameList()[ch] == "PMT2_slow" || 
 							rd_inf.GetChNameList()[ch] == "PMT3_slow" || rd_inf.GetChNameList()[ch] == "PMT4_slow")
 						{
-							hist_peak_time_all_PMTs_slow->Fill(event->peaks[ch]->peak_time[peak_id]);
+							DefHists->Get_hist_peak_time_all_PMTs_slow()->Fill(event->peaks[ch]->peak_time[peak_id]);
 							f_out_allPMTs_slow_time_spectrum << (event->peaks[ch]->peak_time[peak_id]) / 1000.0 << endl;
 							
 						}
@@ -812,25 +796,25 @@ int main(int argc, char *argv[])
 						if (rd_inf.GetChNameList()[ch] == "PMT1_fast" || rd_inf.GetChNameList()[ch] == "PMT2_fast" ||
 							rd_inf.GetChNameList()[ch] == "PMT3_fast" || rd_inf.GetChNameList()[ch] == "PMT4_fast")
 						{
-							hist_peak_time_all_PMTs_fast->Fill(event->peaks[ch]->peak_time[peak_id]);
+							DefHists->Get_hist_peak_time_all_PMTs_fast()->Fill(event->peaks[ch]->peak_time[peak_id]);
 							f_out_allPMTs_fast_time_spectrum << (event->peaks[ch]->peak_time[peak_id]) / 1000.0 << endl;
 						}
 
 						if (rd_inf.GetChNameList()[ch] == "PMT2_slow" || /*rd_inf.GetChNameList()[ch] == "Sum_3PMT_slow" ||*/
 							rd_inf.GetChNameList()[ch] == "PMT3_slow" || rd_inf.GetChNameList()[ch] == "PMT4_slow")
 						{
-							hist_peak_time_3PMTs_slow->Fill(event->peaks[ch]->peak_time[peak_id]);
+							DefHists->Get_hist_peak_time_3PMTs_slow()->Fill(event->peaks[ch]->peak_time[peak_id]);
 							f_out_3PMTs_slow_time_spectrum << (event->peaks[ch]->peak_time[peak_id]) / 1000.0 << endl;
 						}
 
 						if (rd_inf.GetChNameList()[ch] == "Sum_4PMT_trigg")
 						{
-							hist_peak_time_PMTtrigg_slow->Fill(event->peaks[ch]->peak_time[peak_id]);
+							DefHists->Get_hist_peak_time_PMTtrigg_slow()->Fill(event->peaks[ch]->peak_time[peak_id]);
 						}
 
 						if (rd_inf.GetChNameList()[ch] == "PMT1_slow")
 						{
-							hist_peak_time_1PMT_slow->Fill(event->peaks[ch]->peak_time[peak_id]);
+							DefHists->Get_hist_peak_time_1PMT_slow()->Fill(event->peaks[ch]->peak_time[peak_id]);
 							f_out_1PMT_slow_time_spectrum << (event->peaks[ch]->peak_time[peak_id]) / 1000.0 << endl;
 							PMT1_area_ev += event->peaks[ch]->peak_area[peak_id];
 						}
@@ -862,16 +846,16 @@ int main(int argc, char *argv[])
 					}
 				}//peak loop end
 
-				hist_peak_area_ev_v[ch]->Fill(peak_area_ev);
-				hist_peak_area_ev_vs_evnum_v[ch]->Fill(ev, peak_area_ev);
+				DefHists->Get_hist_peak_area_ev_v()[ch]->Fill(peak_area_ev);
+				DefHists->Get_hist_peak_area_ev_vs_evnum_v()[ch]->Fill(ev, peak_area_ev);
 
-				hist_peak_area_bkg_v[ch]->Fill(peak_area_bkg / ch_calib[ch]);
-				hist_peak_area_S1_v[ch]->Fill(peak_area_S1 / ch_calib[ch]);
-				hist_peak_area_S2_v[ch]->Fill(peak_area_S2 / ch_calib[ch]);
+				DefHists->Get_hist_peak_area_bkg_v()[ch]->Fill(peak_area_bkg / ch_calib[ch]);
+				DefHists->Get_hist_peak_area_S1_v()[ch]->Fill(peak_area_S1 / ch_calib[ch]);
+				DefHists->Get_hist_peak_area_S2_v()[ch]->Fill(peak_area_S2 / ch_calib[ch]);
 
-				hist_n_peaks_bkg_v[ch]->Fill(n_peaks_bkg);
-				hist_n_peaks_S1_v[ch]->Fill(n_peaks_S1);
-				hist_n_peaks_S2_v[ch]->Fill(n_peaks_S2);
+				DefHists->Get_hist_n_peaks_bkg_v()[ch]->Fill(n_peaks_bkg);
+				DefHists->Get_hist_n_peaks_S1_v()[ch]->Fill(n_peaks_S1);
+				DefHists->Get_hist_n_peaks_S2_v()[ch]->Fill(n_peaks_S2);
 
 				f_out_1PMT_slow_area_ev_spectrum << PMT1_area_ev << endl;
 				f_out_2PMT_slow_area_ev_spectrum << PMT2_area_ev << endl;
@@ -931,11 +915,11 @@ int main(int argc, char *argv[])
 
 			}//ch loop end			
 			
-			hist_peak_area_ev_vs_evnum_all_SiPMs->Fill(ev, peak_area_ev_allSiPMs);
-			hist_PE_allPMT_S2->Fill(PE_allPMT_S2);
-			hist_PE_allSiPMs_S2->Fill(PE_allSiPMs_S2);
-			hist_PE_allSiPMs_S2_areabased->Fill(PE_allSiPMs_S2_areabased);
-			hist_PE_allSiPMs_S2_test_pretrigger_areabased->Fill(PE_allSiPMs_S2_test_pretrigger_areabased);
+			DefHists->Get_hist_peak_area_ev_vs_evnum_all_SiPMs()->Fill(ev, peak_area_ev_allSiPMs);
+			DefHists->Get_hist_PE_allPMT_S2()->Fill(PE_allPMT_S2);
+			DefHists->Get_hist_PE_allSiPMs_S2()->Fill(PE_allSiPMs_S2);
+			DefHists->Get_hist_PE_allSiPMs_S2_areabased()->Fill(PE_allSiPMs_S2_areabased);
+			DefHists->Get_hist_PE_allSiPMs_S2_test_pretrigger_areabased()->Fill(PE_allSiPMs_S2_test_pretrigger_areabased);
 			
 		}
 		event->Clear();
@@ -969,18 +953,18 @@ int main(int argc, char *argv[])
 	
 	for (unsigned int ch = 0; ch < ch_list.size(); ch++)
 	{
-		peak_area_bkg_avr[ch] = hist_peak_area_bkg_v[ch]->GetMean() / Bkg_dt; //Bkg per us
+		peak_area_bkg_avr[ch] = DefHists->Get_hist_peak_area_bkg_v()[ch]->GetMean() / Bkg_dt; //Bkg per us
 		//f_out_peak_area_bkg_avg << peak_area_bkg_avr[ch] << endl;
 		
-		peak_area_S1_min_bkg_avr[ch] = hist_peak_area_S1_v[ch]->GetMean() - peak_area_bkg_avr[ch] * S1_dt;
-		peak_area_S2_min_bkg_avr[ch] = hist_peak_area_S2_v[ch]->GetMean() - peak_area_bkg_avr[ch] * S2_dt;
+		peak_area_S1_min_bkg_avr[ch] = DefHists->Get_hist_peak_area_S1_v()[ch]->GetMean() - peak_area_bkg_avr[ch] * S1_dt;
+		peak_area_S2_min_bkg_avr[ch] = DefHists->Get_hist_peak_area_S2_v()[ch]->GetMean() - peak_area_bkg_avr[ch] * S2_dt;
 
 		/*cout << ch << " " << rd_inf.GetChNameList()[ch] << "; " << hist_peak_area_S1_v[ch]->GetMean() <<
 			"; " << hist_peak_area_S2_v[ch]->GetMean() << "; " << peak_area_bkg_avr[ch] << endl;*/
 
-		n_peaks_bkg_avr[ch] = hist_n_peaks_bkg_v[ch]->GetMean();
-		n_peaks_S1_min_bkg_avr[ch] = hist_n_peaks_S1_v[ch]->GetMean() - n_peaks_bkg_avr[ch];
-		n_peaks_S2_min_bkg_avr[ch] = hist_n_peaks_S2_v[ch]->GetMean() - n_peaks_bkg_avr[ch];
+		n_peaks_bkg_avr[ch] = DefHists->Get_hist_n_peaks_bkg_v()[ch]->GetMean();
+		n_peaks_S1_min_bkg_avr[ch] = DefHists->Get_hist_n_peaks_S1_v()[ch]->GetMean() - n_peaks_bkg_avr[ch];
+		n_peaks_S2_min_bkg_avr[ch] = DefHists->Get_hist_n_peaks_S2_v()[ch]->GetMean() - n_peaks_bkg_avr[ch];
 
 		/*cout << ch << " " << rd_inf.GetChNameList()[ch] << "; " << hist_n_peaks_S1_v[ch]->GetMean() <<
 			"; " << hist_n_peaks_S2_v[ch]->GetMean() << "; " << n_peaks_bkg_avr[ch] << endl;*/
@@ -1004,7 +988,7 @@ int main(int argc, char *argv[])
 
 				//v2
 				f_out_PE_S1_S2 << ch_name.str() <<
-					" S1[PE] (+ bkg) = " << hist_peak_area_S1_v[ch]->GetMean() << "; " <<
+					" S1[PE] (+ bkg) = " << DefHists->Get_hist_peak_area_S1_v()[ch]->GetMean() << "; " <<
 					" S1[PE] (bkg) = " << peak_area_bkg_avr[ch] * S1_dt << "; " <<
 					" S1[PE] (- bkg) = " << peak_area_S1_min_bkg_avr[ch] << "; " <<
 					" S2[PE] (- bkg) = " << peak_area_S2_min_bkg_avr[ch] << "; " << 
@@ -1062,16 +1046,16 @@ int main(int argc, char *argv[])
 		c1->Divide(2, 2, 0.01, 0.01);
 		c1->cd(1);
 		gPad->SetLogy();
-		hist_ymin_v[ch_index_for_view_list[0]]->Draw();
+		DefHists->Get_hist_ymin_v()[ch_index_for_view_list[0]]->Draw();
 		c1->cd(2);
 		gPad->SetLogy();
-		hist_ymin_v[ch_index_for_view_list[1]]->Draw();
+		DefHists->Get_hist_ymin_v()[ch_index_for_view_list[1]]->Draw();
 		c1->cd(3);
 		gPad->SetLogy();
-		hist_ymin_v[ch_index_for_view_list[2]]->Draw();
+		DefHists->Get_hist_ymin_v()[ch_index_for_view_list[2]]->Draw();
 		c1->cd(4);
 		gPad->SetLogy();
-		hist_ymin_v[ch_index_for_view_list[3]]->Draw();
+		DefHists->Get_hist_ymin_v()[ch_index_for_view_list[3]]->Draw();
 	}
 
 	if (draw_var.find("ymax") != std::string::npos)
@@ -1080,16 +1064,16 @@ int main(int argc, char *argv[])
 		c2->Divide(2, 2, 0.01, 0.01);
 		c2->cd(1);
 		gPad->SetLogy();
-		hist_ymax_v[ch_index_for_view_list[0]]->Draw();
+		DefHists->Get_hist_ymax_v()[ch_index_for_view_list[0]]->Draw();
 		c2->cd(2);
 		gPad->SetLogy();
-		hist_ymax_v[ch_index_for_view_list[1]]->Draw();
+		DefHists->Get_hist_ymax_v()[ch_index_for_view_list[1]]->Draw();
 		c2->cd(3);
 		gPad->SetLogy();
-		hist_ymax_v[ch_index_for_view_list[2]]->Draw();
+		DefHists->Get_hist_ymax_v()[ch_index_for_view_list[2]]->Draw();
 		c2->cd(4);
 		gPad->SetLogy();
-		hist_ymax_v[ch_index_for_view_list[3]]->Draw();
+		DefHists->Get_hist_ymax_v()[ch_index_for_view_list[3]]->Draw();
 	}
 
 	if (draw_var.find("baseline_mean") != std::string::npos)
@@ -1098,16 +1082,16 @@ int main(int argc, char *argv[])
 		c3->Divide(2, 2, 0.01, 0.01);
 		c3->cd(1);
 		gPad->SetLogy();
-		hist_baseline_mean_v[ch_index_for_view_list[0]]->Draw();
+		DefHists->Get_hist_baseline_mean_v()[ch_index_for_view_list[0]]->Draw();
 		c3->cd(2);
 		gPad->SetLogy();
-		hist_baseline_mean_v[ch_index_for_view_list[1]]->Draw();
+		DefHists->Get_hist_baseline_mean_v()[ch_index_for_view_list[1]]->Draw();
 		c3->cd(3);
 		gPad->SetLogy();
-		hist_baseline_mean_v[ch_index_for_view_list[2]]->Draw();
+		DefHists->Get_hist_baseline_mean_v()[ch_index_for_view_list[2]]->Draw();
 		c3->cd(4);
 		gPad->SetLogy();
-		hist_baseline_mean_v[ch_index_for_view_list[3]]->Draw();
+		DefHists->Get_hist_baseline_mean_v()[ch_index_for_view_list[3]]->Draw();
 	}
 
 	if (draw_var.find("baseline_sigma") != std::string::npos)
@@ -1116,16 +1100,16 @@ int main(int argc, char *argv[])
 		c4->Divide(2, 2, 0.01, 0.01);
 		c4->cd(1);
 		gPad->SetLogy();
-		hist_baseline_sigma_v[ch_index_for_view_list[0]]->Draw();
+		DefHists->Get_hist_baseline_sigma_v()[ch_index_for_view_list[0]]->Draw();
 		c4->cd(2);
 		gPad->SetLogy();
-		hist_baseline_sigma_v[ch_index_for_view_list[1]]->Draw();
+		DefHists->Get_hist_baseline_sigma_v()[ch_index_for_view_list[1]]->Draw();
 		c4->cd(3);
 		gPad->SetLogy();
-		hist_baseline_sigma_v[ch_index_for_view_list[2]]->Draw();
+		DefHists->Get_hist_baseline_sigma_v()[ch_index_for_view_list[2]]->Draw();
 		c4->cd(4);
 		gPad->SetLogy();
-		hist_baseline_sigma_v[ch_index_for_view_list[3]]->Draw();
+		DefHists->Get_hist_baseline_sigma_v()[ch_index_for_view_list[3]]->Draw();
 	}
 
 	if (draw_var.find("peak_time") != std::string::npos)
@@ -1134,16 +1118,16 @@ int main(int argc, char *argv[])
 		c5->Divide(2, 2, 0.01, 0.01);
 		c5->cd(1);
 		gPad->SetLogy();
-		hist_peak_time_v[ch_index_for_view_list[0]]->Draw();
+		DefHists->Get_hist_peak_time_v()[ch_index_for_view_list[0]]->Draw();
 		c5->cd(2);
 		gPad->SetLogy();
-		hist_peak_time_v[ch_index_for_view_list[1]]->Draw();
+		DefHists->Get_hist_peak_time_v()[ch_index_for_view_list[1]]->Draw();
 		c5->cd(3);
 		gPad->SetLogy();
-		hist_peak_time_v[ch_index_for_view_list[2]]->Draw();
+		DefHists->Get_hist_peak_time_v()[ch_index_for_view_list[2]]->Draw();
 		c5->cd(4);
 		gPad->SetLogy();
-		hist_peak_time_v[ch_index_for_view_list[3]]->Draw();
+		DefHists->Get_hist_peak_time_v()[ch_index_for_view_list[3]]->Draw();
 	}
 
 	if (draw_var.find("peak_amp") != std::string::npos)
@@ -1151,13 +1135,13 @@ int main(int argc, char *argv[])
 		TCanvas *c6 = new TCanvas("c6", "peak_amp");
 		c6->Divide(2, 2, 0.01, 0.01);
 		c6->cd(1);
-		hist_peak_amp_v[ch_index_for_view_list[0]]->Draw();
+		DefHists->Get_hist_peak_amp_v()[ch_index_for_view_list[0]]->Draw();
 		c6->cd(2);
-		hist_peak_amp_v[ch_index_for_view_list[1]]->Draw();
+		DefHists->Get_hist_peak_amp_v()[ch_index_for_view_list[1]]->Draw();
 		c6->cd(3);
-		hist_peak_amp_v[ch_index_for_view_list[2]]->Draw();
+		DefHists->Get_hist_peak_amp_v()[ch_index_for_view_list[2]]->Draw();
 		c6->cd(4);
-		hist_peak_amp_v[ch_index_for_view_list[3]]->Draw();
+		DefHists->Get_hist_peak_amp_v()[ch_index_for_view_list[3]]->Draw();
 	}
 
 	if (draw_var.find("peak_area") != std::string::npos)
@@ -1165,13 +1149,13 @@ int main(int argc, char *argv[])
 		TCanvas *c7 = new TCanvas("c7", "peak_area");
 		c7->Divide(2, 2, 0.01, 0.01);
 		c7->cd(1);
-		hist_peak_area_v[ch_index_for_view_list[0]]->Draw();
+		DefHists->Get_hist_peak_area_v()[ch_index_for_view_list[0]]->Draw();
 		c7->cd(2);
-		hist_peak_area_v[ch_index_for_view_list[1]]->Draw();
+		DefHists->Get_hist_peak_area_v()[ch_index_for_view_list[1]]->Draw();
 		c7->cd(3);
-		hist_peak_area_v[ch_index_for_view_list[2]]->Draw();
+		DefHists->Get_hist_peak_area_v()[ch_index_for_view_list[2]]->Draw();
 		c7->cd(4);
-		hist_peak_area_v[ch_index_for_view_list[3]]->Draw();
+		DefHists->Get_hist_peak_area_v()[ch_index_for_view_list[3]]->Draw();
 	}
 
 	if (draw_var.find("peak_length") != std::string::npos)
@@ -1179,13 +1163,13 @@ int main(int argc, char *argv[])
 		TCanvas *c13 = new TCanvas("c13", "peak_length");
 		c13->Divide(2, 2, 0.01, 0.01);
 		c13->cd(1);
-		hist_peak_length_v[ch_index_for_view_list[0]]->Draw();
+		DefHists->Get_hist_peak_length_v()[ch_index_for_view_list[0]]->Draw();
 		c13->cd(2);
-		hist_peak_length_v[ch_index_for_view_list[1]]->Draw();
+		DefHists->Get_hist_peak_length_v()[ch_index_for_view_list[1]]->Draw();
 		c13->cd(3);
-		hist_peak_length_v[ch_index_for_view_list[2]]->Draw();
+		DefHists->Get_hist_peak_length_v()[ch_index_for_view_list[2]]->Draw();
 		c13->cd(4);
-		hist_peak_length_v[ch_index_for_view_list[3]]->Draw();
+		DefHists->Get_hist_peak_length_v()[ch_index_for_view_list[3]]->Draw();
 	}
 
 	if (draw_var.find("peak_area_ev") != std::string::npos)
@@ -1197,9 +1181,9 @@ int main(int argc, char *argv[])
 			c12->cd(i + 1);
 			gPad->SetLogy();
 			int ch = ch_index_for_view_list[i];
-			hist_peak_area_ev_v[ch]->Draw();
-			hist_peak_area_ev_v[ch]->GetXaxis()->SetTitle("Total area in event [ns*mV]");
-			hist_peak_area_ev_v[ch]->GetYaxis()->SetTitle("Counts");
+			DefHists->Get_hist_peak_area_ev_v()[ch]->Draw();
+			DefHists->Get_hist_peak_area_ev_v()[ch]->GetXaxis()->SetTitle("Total area in event [ns*mV]");
+			DefHists->Get_hist_peak_area_ev_v()[ch]->GetYaxis()->SetTitle("Counts");
 		}
 	}
 
@@ -1212,9 +1196,9 @@ int main(int argc, char *argv[])
 			c17->cd(i + 1);
 			gPad->SetLogy();
 			int ch = ch_index_for_view_list[i];
-			hist_peak_area_bkg_v[ch]->Draw();
-			hist_peak_area_bkg_v[ch]->GetXaxis()->SetTitle("Bkg area [ns*mV]");
-			hist_peak_area_bkg_v[ch]->GetYaxis()->SetTitle("Counts");
+			DefHists->Get_hist_peak_area_bkg_v()[ch]->Draw();
+			DefHists->Get_hist_peak_area_bkg_v()[ch]->GetXaxis()->SetTitle("Bkg area [ns*mV]");
+			DefHists->Get_hist_peak_area_bkg_v()[ch]->GetYaxis()->SetTitle("Counts");
 		}
 	}
 
@@ -1227,9 +1211,9 @@ int main(int argc, char *argv[])
 			c18->cd(i + 1);
 			gPad->SetLogy();
 			int ch = ch_index_for_view_list[i];
-			hist_peak_area_S1_v[ch]->Draw();
-			hist_peak_area_S1_v[ch]->GetXaxis()->SetTitle("S1 area [PE]");
-			hist_peak_area_S1_v[ch]->GetYaxis()->SetTitle("Counts");
+			DefHists->Get_hist_peak_area_S1_v()[ch]->Draw();
+			DefHists->Get_hist_peak_area_S1_v()[ch]->GetXaxis()->SetTitle("S1 area [PE]");
+			DefHists->Get_hist_peak_area_S1_v()[ch]->GetYaxis()->SetTitle("Counts");
 		}
 	}
 
@@ -1242,9 +1226,9 @@ int main(int argc, char *argv[])
 			c19->cd(i + 1);
 			gPad->SetLogy();
 			int ch = ch_index_for_view_list[i];
-			hist_peak_area_S2_v[ch]->Draw();
-			hist_peak_area_S2_v[ch]->GetXaxis()->SetTitle("S2 area [ns*mV]");
-			hist_peak_area_S2_v[ch]->GetYaxis()->SetTitle("Counts");
+			DefHists->Get_hist_peak_area_S2_v()[ch]->Draw();
+			DefHists->Get_hist_peak_area_S2_v()[ch]->GetXaxis()->SetTitle("S2 area [ns*mV]");
+			DefHists->Get_hist_peak_area_S2_v()[ch]->GetYaxis()->SetTitle("Counts");
 		}
 	}
 
@@ -1257,9 +1241,9 @@ int main(int argc, char *argv[])
 			c20->cd(i + 1);
 			gPad->SetLogy();
 			int ch = ch_index_for_view_list[i];
-			hist_n_peaks_bkg_v[ch]->Draw();
-			hist_n_peaks_bkg_v[ch]->GetXaxis()->SetTitle("Bkg n_peaks");
-			hist_n_peaks_bkg_v[ch]->GetYaxis()->SetTitle("Counts");
+			DefHists->Get_hist_n_peaks_bkg_v()[ch]->Draw();
+			DefHists->Get_hist_n_peaks_bkg_v()[ch]->GetXaxis()->SetTitle("Bkg n_peaks");
+			DefHists->Get_hist_n_peaks_bkg_v()[ch]->GetYaxis()->SetTitle("Counts");
 		}
 	}
 
@@ -1272,9 +1256,9 @@ int main(int argc, char *argv[])
 			c21->cd(i + 1);
 			gPad->SetLogy();
 			int ch = ch_index_for_view_list[i];
-			hist_n_peaks_S1_v[ch]->Draw();
-			hist_n_peaks_S1_v[ch]->GetXaxis()->SetTitle("S1 n_peaks");
-			hist_n_peaks_S1_v[ch]->GetYaxis()->SetTitle("Counts");
+			DefHists->Get_hist_n_peaks_S1_v()[ch]->Draw();
+			DefHists->Get_hist_n_peaks_S1_v()[ch]->GetXaxis()->SetTitle("S1 n_peaks");
+			DefHists->Get_hist_n_peaks_S1_v()[ch]->GetYaxis()->SetTitle("Counts");
 		}
 	}
 
@@ -1287,9 +1271,9 @@ int main(int argc, char *argv[])
 			c22->cd(i + 1);
 			gPad->SetLogy();
 			int ch = ch_index_for_view_list[i];
-			hist_n_peaks_S2_v[ch]->Draw();
-			hist_n_peaks_S2_v[ch]->GetXaxis()->SetTitle("S2 n_peaks");
-			hist_n_peaks_S2_v[ch]->GetYaxis()->SetTitle("Counts");
+			DefHists->Get_hist_n_peaks_S2_v()[ch]->Draw();
+			DefHists->Get_hist_n_peaks_S2_v()[ch]->GetXaxis()->SetTitle("S2 n_peaks");
+			DefHists->Get_hist_n_peaks_S2_v()[ch]->GetYaxis()->SetTitle("Counts");
 		}
 	}
 
@@ -1316,7 +1300,7 @@ int main(int argc, char *argv[])
 	{
 		TCanvas *c25 = new TCanvas("c25", "PE_SiPM_PMTs_slow_S2");
 		c25->Divide(2, 2, 0.01, 0.01);
-		vector<TH1F*> h_vec = { hist_PE_allSiPMs_S2, hist_PE_allPMT_S2, hist_PE_allSiPMs_S2_areabased, hist_PE_allSiPMs_S2_test_pretrigger_areabased };
+		vector<TH1F*> h_vec = { DefHists->Get_hist_PE_allSiPMs_S2(), DefHists->Get_hist_PE_allPMT_S2(), DefHists->Get_hist_PE_allSiPMs_S2_areabased(), DefHists->Get_hist_PE_allSiPMs_S2_test_pretrigger_areabased() };
 		vector<string> name = { "23SiPM [PE] (sig + bkg), peak based", "4PMT [PE] (sig + bkg), area based", "23SiPM [PE] (sig + bkg), area based", "23SiPM [PE] (sig + bkg) S2_test_pretrigger, area based" };
 
 		for (int i = 0; i < 4; i++)
@@ -1343,11 +1327,11 @@ int main(int argc, char *argv[])
 			c14->cd(i + 1);
 			gPad->SetLogy();
 			int ch = ch_index_for_view_list[i];
-			hist_peak_area_ev_vs_evnum_v[ch]->GetXaxis()->SetTitle("event");
-			hist_peak_area_ev_vs_evnum_v[ch]->GetYaxis()->SetTitle("peak_area_ev [mV*ns]");
+			DefHists->Get_hist_peak_area_ev_vs_evnum_v()[ch]->GetXaxis()->SetTitle("event");
+			DefHists->Get_hist_peak_area_ev_vs_evnum_v()[ch]->GetYaxis()->SetTitle("peak_area_ev [mV*ns]");
 			//hist_peak_area_ev_vs_evnum_v[ch]->GetYaxis()->SetRangeUser(0, 1E6);
-			hist_peak_area_ev_vs_evnum_v[ch]->Draw("colz");
-			prof_hist_peak_area_ev_vs_evnum_v[ch] = hist_peak_area_ev_vs_evnum_v[ch]->ProfileX();
+			DefHists->Get_hist_peak_area_ev_vs_evnum_v()[ch]->Draw("colz");
+			prof_hist_peak_area_ev_vs_evnum_v[ch] = DefHists->Get_hist_peak_area_ev_vs_evnum_v()[ch]->ProfileX();
 			prof_hist_peak_area_ev_vs_evnum_v[ch]->Draw("same");
 			prof_hist_peak_area_ev_vs_evnum_v[ch]->SetMarkerStyle(20);
 			prof_hist_peak_area_ev_vs_evnum_v[ch]->SetMarkerColor(kRed);
@@ -1359,7 +1343,7 @@ int main(int argc, char *argv[])
 		TCanvas *c15 = new TCanvas("c15", "peak_area_ev_vs_evnum_allSiPMs_allPMTs");
 		c15->Divide(2, 2, 0.01, 0.01);
 
-		vector<TH2F*> hist_vector{ hist_peak_area_ev_vs_evnum_all_SiPMs };
+		vector<TH2F*> hist_vector{ DefHists->Get_hist_peak_area_ev_vs_evnum_all_SiPMs() };
 		vector<TProfile*> profile_vector(hist_vector.size());
 		for (int i = 0; i < hist_vector.size(); i++)
 		{
@@ -1384,9 +1368,9 @@ int main(int argc, char *argv[])
 		{
 			c8->cd(i+1);
 			int ch_index = ch_index_for_view_list[i];
-			hist_n_peaks_v[ch_index]->Draw();
+			DefHists->Get_hist_n_peaks_v()[ch_index]->Draw();
 			gPad->SetLogy();
-			hist_n_peaks_v[ch_index]->SetFillColor(kGreen);
+			DefHists->Get_hist_n_peaks_v()[ch_index]->SetFillColor(kGreen);
 		}
 	}
 
@@ -1421,18 +1405,18 @@ int main(int argc, char *argv[])
 		{
 			c16->cd(i + 1);
 			int ch = ch_index_for_view_list[i];
-			hist_peak_amp_peak_area_v[ch]->Draw("colz");
-			hist_peak_amp_peak_area_v[ch]->GetXaxis()->SetTitle("Peak Amp");
-			hist_peak_amp_peak_area_v[ch]->GetYaxis()->SetTitle("Peak Area");
-			hist_peak_amp_peak_area_v[ch]->GetXaxis()->SetRangeUser(rd_inf.GetHistPeakAmpXminList()[ch], rd_inf.GetHistPeakAmpXmaxList()[ch]);
-			hist_peak_amp_peak_area_v[ch]->GetYaxis()->SetRangeUser(rd_inf.GetHistPeakAreaXminList()[ch], rd_inf.GetHistPeakAreaXmaxList()[ch]);
+			DefHists->Get_hist_peak_amp_peak_area_v()[ch]->Draw("colz");
+			DefHists->Get_hist_peak_amp_peak_area_v()[ch]->GetXaxis()->SetTitle("Peak Amp");
+			DefHists->Get_hist_peak_amp_peak_area_v()[ch]->GetYaxis()->SetTitle("Peak Area");
+			DefHists->Get_hist_peak_amp_peak_area_v()[ch]->GetXaxis()->SetRangeUser(rd_inf.GetHistPeakAmpXminList()[ch], rd_inf.GetHistPeakAmpXmaxList()[ch]);
+			DefHists->Get_hist_peak_amp_peak_area_v()[ch]->GetYaxis()->SetRangeUser(rd_inf.GetHistPeakAreaXminList()[ch], rd_inf.GetHistPeakAreaXmaxList()[ch]);
 		}
 	}
 
 	if (draw_var.find("peak_time_all_SiPMs_PMTs_slow_PMTs_fast") != std::string::npos)
 	{
 		TCanvas *c10 = new TCanvas("c10", "peak_time_spectra");
-		vector<TH1F*> hist_vector{ hist_peak_time_all_SiPMs, hist_peak_time_all_PMTs_slow, hist_peak_time_all_PMTs_fast, hist_peak_time_PMTtrigg_slow};
+		vector<TH1F*> hist_vector{ DefHists->Get_hist_peak_time_all_SiPMs(), DefHists->Get_hist_peak_time_all_PMTs_slow(), DefHists->Get_hist_peak_time_all_PMTs_fast(), DefHists->Get_hist_peak_time_PMTtrigg_slow() };
 		//vector<TH1F*> hist_vector{ hist_peak_time_all_SiPMs, hist_peak_time_3PMTs_slow, hist_peak_time_1PMT_slow };
 		c10->Divide(2, 2, 0.01, 0.01);
 		for (int i = 0; i < 4; i++)
@@ -1477,7 +1461,7 @@ int main(int argc, char *argv[])
 		}
 		levels[0] = 0.01;
 
-		h2_n_peaks_S1->SetContour((sizeof(levels) / sizeof(Double_t)), levels);
+		/*DefHists->Get_h2_n_peaks_S1()*/h2_n_peaks_S1->SetContour((sizeof(levels) / sizeof(Double_t)), levels);
 
 		for (int i = 0; i < 23; i++)
 		{
@@ -1486,7 +1470,7 @@ int main(int argc, char *argv[])
 			int yi = xybins_good_SiPMs[i].second + 3;
 			
 			double z = n_peaks_S1_min_bkg_avr[ch_index];
-			h2_n_peaks_S1->SetBinContent(xi, yi, z);
+			/*DefHists->Get_h2_n_peaks_S1()*/h2_n_peaks_S1->SetBinContent(xi, yi, z);
 		}
 
 		ostringstream h2_n_peaks_S1_name;

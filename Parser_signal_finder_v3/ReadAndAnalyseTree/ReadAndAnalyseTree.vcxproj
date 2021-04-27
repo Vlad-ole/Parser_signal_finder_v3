@@ -95,6 +95,7 @@
     <ClCompile Include="..\ReadDAQInfo.cpp" />
     <ClCompile Include="..\ReadInfo.cpp" />
     <ClCompile Include="ChMapping.cpp" />
+    <ClCompile Include="DefineHists.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -105,6 +106,7 @@
     <ClInclude Include="..\ReadDAQInfo.h" />
     <ClInclude Include="..\ReadInfo.h" />
     <ClInclude Include="ChMapping.h" />
+    <ClInclude Include="DefineHists.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
