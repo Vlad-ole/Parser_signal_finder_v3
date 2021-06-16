@@ -42,6 +42,7 @@ public:
 	TH1F* &Get_hist_peak_time_1PMT_slow();
 	TH1F* &Get_hist_peak_time_PMTtrigg_slow();
 	TH2F* &Get_hist_peak_area_ev_vs_evnum_all_SiPMs();
+	TH1F* &Get_hist_allSiPM_time_spectrum_PE_corrected();
 
 	TH1F* &Get_hist_PE_allPMT_S2();
 	TH1F* &Get_hist_PE_allSiPMs_S2();
@@ -85,6 +86,7 @@ private:
 	TH1F* hist_peak_time_1PMT_slow;
 	TH1F* hist_peak_time_PMTtrigg_slow; 
 	TH2F* hist_peak_area_ev_vs_evnum_all_SiPMs;
+	TH1F* hist_allSiPM_time_spectrum_PE_corrected;
 
 	int x_max_hist_PE;
 	TH1F* hist_PE_allPMT_S2; 
@@ -120,24 +122,7 @@ private:
 	std::vector<TH2F*> hist_peak_amp_peak_area_v;
 	std::vector<TH2F*> hist_peak_area_ev_vs_evnum_v;
 
-	std::ostringstream hist_ymin_name;
-	std::ostringstream hist_ymax_name;
-	std::ostringstream hist_baseline_mean_name;
-	std::ostringstream hist_baseline_sigma_name;
-	std::ostringstream hist_n_peaks_name;
-	std::ostringstream hist_peak_time_name;
-	std::ostringstream hist_peak_amp_name;
-	std::ostringstream hist_peak_area_name;
-	std::ostringstream hist_peak_length_name;
-	std::ostringstream hist_peak_area_ev_name;
-	std::ostringstream hist_peak_area_ev_vs_evnum_name;
-	std::ostringstream hist_peak_amp_peak_area_name;
-	std::ostringstream hist_peak_area_bkg_name;
-	std::ostringstream hist_peak_area_S1_name;
-	std::ostringstream hist_peak_area_S2_name;
-	std::ostringstream hist_n_peaks_bkg_name;
-	std::ostringstream hist_n_peaks_S1_name;
-	std::ostringstream hist_n_peaks_S2_name;
+	
 
 	
 };

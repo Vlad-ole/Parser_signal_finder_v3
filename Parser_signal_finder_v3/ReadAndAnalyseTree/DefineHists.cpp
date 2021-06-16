@@ -19,6 +19,7 @@ DefineHists::DefineHists(int NEntries, std::vector<int> ch_list, ReadInfo &rd_in
 	hist_peak_time_PMTtrigg_slow = new TH1F("hist_peak_time_PMTtrigg_slow", "hist_peak_time_PMTtrigg_slow", 1330, 0, 160E3);
 	hist_peak_area_ev_vs_evnum_all_SiPMs = new TH2F("hist_peak_area_ev_vs_evnum_all_SiPMs", "hist_peak_area_ev_vs_evnum_all_SiPMs", 110, 0, NEntries/*tree->GetEntries()*/,
 		200, 0, 600);
+	hist_allSiPM_time_spectrum_PE_corrected = new TH1F("hist_allSiPM_time_spectrum_PE_corrected", "hist_allSiPM_time_spectrum_PE_corrected", 1330, 0, 160E3);
 
 	x_max_hist_PE = 180;
 	hist_PE_allPMT_S2 = new TH1F("hist_PE_allPMT_S2", "hist_PE_allPMT_S2", x_max_hist_PE * 2, 0, x_max_hist_PE);
@@ -26,13 +27,13 @@ DefineHists::DefineHists(int NEntries, std::vector<int> ch_list, ReadInfo &rd_in
 	hist_PE_allSiPMs_S2_areabased = new TH1F("hist_PE_allSiPMs_S2_areabased", "hist_PE_allSiPMs_S2_areabased", x_max_hist_PE * 2, 0, x_max_hist_PE);
 	hist_PE_allSiPMs_S2_test_pretrigger_areabased = new TH1F("hist_PE_allSiPMs_S2_test_pretrigger_areabased", "hist_PE_allSiPMs_S2_test_pretrigger_areabased", x_max_hist_PE * 2, 0, x_max_hist_PE);
 
-	TH2F* h2_n_peaks_S1 = new TH2F("h2_n_peaks_S1", "h2_n_peaks_S1", 5, -23, 23, 5, -23, 23);
+	/*TH2F* h2_n_peaks_S1 = new TH2F("h2_n_peaks_S1", "h2_n_peaks_S1", 5, -23, 23, 5, -23, 23);
 	TH2F* h2_n_peaks_S2 = new TH2F("h2_n_peaks_S2", "h2_n_peaks_S2", 5, -23, 23, 5, -23, 23);
 	TH2F* h2_n_peaks_bkg = new TH2F("h2_n_peaks_bkg", "h2_n_peaks_bkg", 5, -23, 23, 5, -23, 23);
 
 	TH2F* h2_peaks_area_S1 = new TH2F("h2_peaks_area_S1", "h2_peaks_area_S1", 5, -23, 23, 5, -23, 23);
 	TH2F* h2_peaks_area_S2 = new TH2F("h2_peaks_area_S2", "h2_peaks_area_S2", 5, -23, 23, 5, -23, 23);
-	TH2F* h2_peaks_area_bkg = new TH2F("h2_peaks_area_bkg", "h2_peaks_area_bkg", 5, -23, 23, 5, -23, 23);
+	TH2F* h2_peaks_area_bkg = new TH2F("h2_peaks_area_bkg", "h2_peaks_area_bkg", 5, -23, 23, 5, -23, 23);*/
 
 	hist_ymin_v.resize(ch_list.size(), NULL);
 	hist_ymax_v.resize(ch_list.size(), NULL);
@@ -56,6 +57,25 @@ DefineHists::DefineHists(int NEntries, std::vector<int> ch_list, ReadInfo &rd_in
 
 	for (int ch = 0; ch < ch_list.size(); ch++)
 	{
+		std::ostringstream hist_ymin_name;
+		std::ostringstream hist_ymax_name;
+		std::ostringstream hist_baseline_mean_name;
+		std::ostringstream hist_baseline_sigma_name;
+		std::ostringstream hist_n_peaks_name;
+		std::ostringstream hist_peak_time_name;
+		std::ostringstream hist_peak_amp_name;
+		std::ostringstream hist_peak_area_name;
+		std::ostringstream hist_peak_length_name;
+		std::ostringstream hist_peak_area_ev_name;
+		std::ostringstream hist_peak_area_ev_vs_evnum_name;
+		std::ostringstream hist_peak_amp_peak_area_name;
+		std::ostringstream hist_peak_area_bkg_name;
+		std::ostringstream hist_peak_area_S1_name;
+		std::ostringstream hist_peak_area_S2_name;
+		std::ostringstream hist_n_peaks_bkg_name;
+		std::ostringstream hist_n_peaks_S1_name;
+		std::ostringstream hist_n_peaks_S2_name;
+		
 		hist_ymin_name << "hist_ymin_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
 		hist_ymax_name << "hist_ymax_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
 		hist_baseline_mean_name << "hist_baseline_mean_ch_" << ch_list[ch] << " (" << rd_inf.GetChNameList()[ch] << ")";
@@ -104,7 +124,7 @@ DefineHists::DefineHists(int NEntries, std::vector<int> ch_list, ReadInfo &rd_in
 			110, 0, NEntries, rd_inf.GetHistPeakAreaEvNbinsList()[ch], rd_inf.GetHistPeakAreaEvXminList()[ch], rd_inf.GetHistPeakAreaEvXmaxList()[ch]);
 
 		hist_peak_area_bkg_v[ch] = new TH1F(hist_peak_area_bkg_name.str().c_str(), hist_peak_area_bkg_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 100);
-		hist_peak_area_S1_v[ch] = new TH1F(hist_peak_area_S1_name.str().c_str(), hist_peak_area_S1_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 50);//test
+		hist_peak_area_S1_v[ch] = new TH1F(hist_peak_area_S1_name.str().c_str(), hist_peak_area_S1_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 100);//test
 		hist_peak_area_S2_v[ch] = new TH1F(hist_peak_area_S2_name.str().c_str(), hist_peak_area_S2_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 100);
 
 		hist_n_peaks_bkg_v[ch] = new TH1F(hist_n_peaks_bkg_name.str().c_str(), hist_n_peaks_bkg_name.str().c_str(), rd_inf.GetHistPeakAreaEvNbinsList()[ch], 0, 5);
@@ -122,6 +142,7 @@ TH1F* &DefineHists::Get_hist_peak_time_3PMTs_slow(){ return hist_peak_time_3PMTs
 TH1F* &DefineHists::Get_hist_peak_time_1PMT_slow(){ return hist_peak_time_1PMT_slow; }
 TH1F* &DefineHists::Get_hist_peak_time_PMTtrigg_slow(){ return hist_peak_time_PMTtrigg_slow; }
 TH2F* &DefineHists::Get_hist_peak_area_ev_vs_evnum_all_SiPMs(){ return hist_peak_area_ev_vs_evnum_all_SiPMs; }
+TH1F* &DefineHists::Get_hist_allSiPM_time_spectrum_PE_corrected(){ return hist_allSiPM_time_spectrum_PE_corrected; }
 
 TH1F* &DefineHists::Get_hist_PE_allPMT_S2(){ return hist_PE_allPMT_S2; }
 TH1F* &DefineHists::Get_hist_PE_allSiPMs_S2(){ return hist_PE_allSiPMs_S2; }
