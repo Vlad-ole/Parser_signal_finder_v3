@@ -101,7 +101,8 @@ int main(int argc, char *argv[])
 			ch = 1;*/
 
 			//if ( !((ch == 9) /*|| (ch == 8)*/) ) continue;
-			if ( !(ch == 2) ) continue;
+			//if ( !(ch == 2) ) continue;
+			//if ( !( /*(ch == 2) ||*/ (ch == 4)) ) continue;
 			
 			file_detailed_info_output << "\t" << "ch = " << rd_inf.GetChList()[ch] << endl;
 			cout << "\t" << "ch = " << rd_inf.GetChList()[ch] << endl;

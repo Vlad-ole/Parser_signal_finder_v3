@@ -63,11 +63,11 @@ int main(int argc, char *argv[])
 	for (int i = 0; i < points_per_event_per_ch; i++)
 		xv[i] = i * ns_per_point / 1000.0;
 
-	//vector<int> ch_to_avr_list = {0};
-	vector<int> ch_to_avr_list = { 1,2,3,4 };
+	vector<int> ch_to_avr_list = {10};
+	//vector<int> ch_to_avr_list = { 1, 2, 3, 4 };
 	//vector<int> ch_to_avr_list = { 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59 };
 
-	if (rd_inf.GetChList().size() != 34)
+	if (rd_inf.GetChList().size() != 33)
 	{
 		cout << "rd_inf.GetChList().size() = " << rd_inf.GetChList().size() << " ;err" << endl;
 		system("pause");
